@@ -9,11 +9,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
-class AppModule {
+object AppModule {
 
     @Provides
     @Singleton
     fun provideAppClient() = AppClient()
-
 
 }

@@ -21,6 +21,6 @@
     </fragment>
     <fragment
         android:id="@+id/mailFragment"
-        android:name="github.sachin2dehury.nitrmail.ui.fragments.MailFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.MailItemFragment"
         android:label="MailFragment" />
 </navigation>

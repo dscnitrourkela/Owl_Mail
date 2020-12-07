@@ -86,6 +86,9 @@ dependencies {
     //moshi
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
+    //Jsoup
+    implementation 'org.jsoup:jsoup:1.11.2'
+
     // Activity KTX for viewModels()
     implementation "androidx.activity:activity-ktx:1.1.0"
 
