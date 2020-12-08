@@ -33,7 +33,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             result?.let {
                 binding.apply {
                     progressBarMail.isVisible = false
-                    textViewMailBody.text = mailItemViewModel.item.value
+                    mailItemViewModel.item.value?.let { mail ->
+                        textViewDate.text = mail.date
+                        textViewSender.text = mail.sender
+                        textViewMailSubject.text = mail.subject
+//                        webView.loadData(mail.messageBody, mail.contentType, mail.charSet)
+                        textViewMailBody.text = mail.messageBody
+                    }
                 }
             }
         }

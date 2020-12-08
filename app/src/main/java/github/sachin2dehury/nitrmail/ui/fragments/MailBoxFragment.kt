@@ -14,9 +14,6 @@ import github.sachin2dehury.nitrmail.api.calls.AppClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,7 +43,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         subscribeToObservers()
     }
 
-    private fun getMails() = CoroutineScope(Dispatchers.IO).launch {
+    private fun getMails() {
         appClient.makeMailRequest(Constants.INBOX_URL)
     }
 
