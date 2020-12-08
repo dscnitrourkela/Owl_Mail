@@ -5,10 +5,12 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 
+@AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     lateinit var mailItemViewModel: MailItemViewModel
@@ -29,7 +31,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private fun subscribeToObservers() {
         mailItemViewModel.item.observe(viewLifecycleOwner) { result ->
             result?.let {
-                binding.progressBarMail.isVisible = false
+                binding.apply {
+                    progressBarMail.isVisible = false
+                    textViewMailBody.text = mailItemViewModel.item.value
+                }
             }
         }
     }

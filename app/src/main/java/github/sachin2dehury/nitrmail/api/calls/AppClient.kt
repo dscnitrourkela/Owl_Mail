@@ -11,21 +11,22 @@ import java.io.IOException
 
 class AppClient {
 
-    companion object {
-        lateinit var credential: String
-    }
-
     private val _mails = MutableLiveData<Mails>()
     val mails: LiveData<Mails> = _mails
 
     private val _item = MutableLiveData<String>()
     val item: LiveData<String> = _item
 
+    private val _credential = MutableLiveData<String>()
+    val credential: LiveData<String> = _credential
 
     private val client = OkHttpClient.Builder().authenticator { _, response ->
-        response.request.newBuilder().header("Authorization", credential).build()
+        response.request.newBuilder().header("Authorization", credential.value!!).build()
     }.build()
 
+    fun setCredentials(credential: String) {
+        _credential.postValue(credential)
+    }
 
     fun makeMailRequest(url: String): LiveData<Mails> {
         val request = Request.Builder().url(url).build()

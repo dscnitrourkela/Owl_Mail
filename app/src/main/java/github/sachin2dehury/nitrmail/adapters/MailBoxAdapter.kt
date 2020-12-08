@@ -3,11 +3,14 @@ package github.sachin2dehury.nitrmail.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.nitrmail.R
+import github.sachin2dehury.nitrmail.api.calls.AppClient
 import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
 
 class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() {
 
@@ -24,6 +27,10 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
         }
     }
 
+    lateinit var appClient: AppClient
+
+    lateinit var navController: NavController
+
     private val differ = AsyncListDiffer(this, diffCallback)
 
     var mails: List<Mail>
@@ -38,8 +45,16 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
 
     override fun onBindViewHolder(holder: MailBoxViewHolder, position: Int) {
         val mail = mails[position]
-        holder.itemView.apply {
-
+        val binding = ListMailItemBinding.bind(holder.itemView)
+        binding.apply {
+            textViewDate.text = mail.time.toString()
+            textViewMailBody.text = mail.body
+            textViewMailSubject.text = mail.subject
+            textViewSender.text = mail.sender.last().address
+        }
+        holder.itemView.setOnClickListener {
+            appClient.makeItemRequest(mail.id)
+            navController.navigate(R.id.action_mailBoxFragment_to_mail_item_Fragment)
         }
     }
 

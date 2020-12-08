@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_mailBoxFragment"
             app:destination="@id/mailBoxFragment" />
@@ -14,13 +15,13 @@
     <fragment
         android:id="@+id/mailBoxFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.MailBoxFragment"
-        android:label="MailBoxFragment" >
+        android:label="MailBoxFragment">
         <action
-            android:id="@+id/action_mailBoxFragment_to_mailFragment"
-            app:destination="@id/mailFragment" />
+            android:id="@+id/action_mailBoxFragment_to_mail_item_Fragment"
+            app:destination="@id/mailItemFragment" />
     </fragment>
     <fragment
-        android:id="@+id/mailFragment"
+        android:id="@+id/mailItemFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.MailItemFragment"
         android:label="MailFragment" />
 </navigation>
