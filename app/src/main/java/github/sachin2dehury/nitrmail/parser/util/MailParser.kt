@@ -3,7 +3,7 @@ package github.sachin2dehury.nitrmail.parser.util
 import github.sachin2dehury.nitrmail.parser.data.Address
 import github.sachin2dehury.nitrmail.parser.data.MessageHint
 import github.sachin2dehury.nitrmail.parser.data.ParseResult
-import github.sachin2dehury.nitrmail.parser.data.ParsedMessage
+import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import org.apache.commons.io.IOUtils
 import org.apache.james.mime4j.dom.MessageBuilder
 import org.apache.james.mime4j.dom.TextBody
@@ -26,10 +26,10 @@ class MailParser {
         }
     }
 
-    fun parse(inputStream: InputStream): ParsedMessage =
+    fun parse(inputStream: InputStream): ParsedMail =
         parse(inputStream, createDefaultMessageBuilder())
 
-    private fun parse(inputStream: InputStream, messageBuilder: MessageBuilder): ParsedMessage {
+    private fun parse(inputStream: InputStream, messageBuilder: MessageBuilder): ParsedMail {
         val sizeInputStream = SizeInputStream(inputStream)
         val parsedMessage = messageBuilder.parseMessage(sizeInputStream)
 
@@ -104,7 +104,7 @@ class MailParser {
             if (textParts.isNotEmpty()) textParts.joinToString("\n").replace("\r\n", "\n")
                 .replace("\r", "\n") else null
 
-        return ParsedMessage(
+        return ParsedMail(
             subject,
             messageId,
             fromAddress,

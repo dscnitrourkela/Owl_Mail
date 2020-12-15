@@ -44,7 +44,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun getMails() {
-        appClient.makeMailRequest(Constants.INBOX_URL)
+        appClient.makeMailRequest(Constants.JUNK_URL)
     }
 
     private fun setUpAdapter() {

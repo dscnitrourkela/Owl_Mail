@@ -31,8 +31,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun login() {
-        val roll = binding.textViewUserRoll.text.toString()
-        val password = binding.textViewUserPassword.text.toString()
+        val roll = binding.editTextUserRoll.text.toString().toLowerCase()
+        val password = binding.editTextUserPassword.text.toString()
         mainViewModel.postCredential(roll, password)
         findNavController().navigate(R.id.action_loginFragment_to_mailBoxFragment)
     }

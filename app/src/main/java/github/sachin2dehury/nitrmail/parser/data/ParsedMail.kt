@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.math.ln
 import kotlin.math.pow
 
-data class ParsedMessage(
+data class ParsedMail(
     val subject: String,
     val messageId: String? = null,
     val from: Address? = null,

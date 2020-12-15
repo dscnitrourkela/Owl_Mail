@@ -1,21 +1,21 @@
 package github.sachin2dehury.nitrmail.parser.util
 
-import github.sachin2dehury.nitrmail.parser.data.ParsedMessage
+import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 
 interface SerializerInterface {
 
-    fun writeToStream(message: ParsedMessage, outputStream: OutputStream)
+    fun writeToStream(mail: ParsedMail, outputStream: OutputStream)
 
-    fun writeToString(message: ParsedMessage): String {
+    fun writeToString(mail: ParsedMail): String {
         val outputStream = ByteArrayOutputStream()
-        writeToStream(message, outputStream)
+        writeToStream(mail, outputStream)
         return outputStream.toString(StandardCharsets.UTF_8.name())
     }
 
-    fun writeToOutput(message: ParsedMessage) {
-        writeToStream(message, System.out)
+    fun writeToOutput(mail: ParsedMail) {
+        writeToStream(mail, System.out)
     }
 }

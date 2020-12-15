@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.moshi.Moshi
 import github.sachin2dehury.nitrmail.api.data.Mails
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.parser.data.ParsedMessage
+import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +19,8 @@ class AppClient {
     private val _mails = MutableLiveData<Mails>()
     val mails: LiveData<Mails> = _mails
 
-    private val _item = MutableLiveData<ParsedMessage>()
-    val item: LiveData<ParsedMessage> = _item
+    private val _item = MutableLiveData<ParsedMail>()
+    val item: LiveData<ParsedMail> = _item
 
     private val _credential = MutableLiveData<String>()
     val credential: LiveData<String> = _credential
@@ -65,6 +65,7 @@ class AppClient {
         responseBody?.let {
             val mailParser = MailParser()
             val message = mailParser.parse(it.byteInputStream())
+            _item.postValue(message)
         }
     }
 
