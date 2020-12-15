@@ -11,6 +11,8 @@ object Constants {
     const val TRASH_URL = "https://mail.nitrkl.ac.in/home/~/trash.json"
     const val CALENDAR_URL = "https://mail.nitrkl.ac.in/home/~/calendar.json"
     const val ITEM_URL = "https://mail.nitrkl.ac.in/home/~/?id="
+//    https://mail.nitrkl.ac.in/service/home/~/?auth=co&view=text&id=
+//    add query params
 
     const val MIME_TAG = "MIME-Version: 1.0"
     const val FROM_TAG = "From: "
