@@ -3,40 +3,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="?android:attr/listPreferredItemHeightLarge">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSender"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="4dp"
         android:gravity="start"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toTopOf="@+id/textViewMailSubject"
+        app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
         tools:text="Sender" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewMailSubject"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="normal"
+        android:layout_margin="12dp"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSender"
+        app:layout_constraintStart_toEndOf="@+id/imageViewSender"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Mail Subject" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewMailBody"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+        app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
         app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
         tools:text="Mail Body" />
 
@@ -44,11 +48,26 @@
         android:id="@+id/textViewDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="4dp"
         android:gravity="end"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toTopOf="@+id/textViewMailSubject"
+        app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
         tools:text="Date" />
+
+    <ImageView
+        android:id="@+id/imageViewSender"
+        android:layout_width="?android:attr/listPreferredItemHeightSmall"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/circle"
+        android:backgroundTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewMailSubject"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_person_24"
+        app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

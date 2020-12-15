@@ -1,12 +1,12 @@
 package github.sachin2dehury.nitrmail.api.calls
 
-import android.util.Base64
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.squareup.moshi.Moshi
 import github.sachin2dehury.nitrmail.api.data.Mails
-import github.sachin2dehury.nitrmail.api.data.ParsedMail
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.parser.data.ParsedMessage
+import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,8 +19,8 @@ class AppClient {
     private val _mails = MutableLiveData<Mails>()
     val mails: LiveData<Mails> = _mails
 
-    private val _item = MutableLiveData<ParsedMail>()
-    val item: LiveData<ParsedMail> = _item
+    private val _item = MutableLiveData<ParsedMessage>()
+    val item: LiveData<ParsedMessage> = _item
 
     private val _credential = MutableLiveData<String>()
     val credential: LiveData<String> = _credential
@@ -63,38 +63,8 @@ class AppClient {
     private fun fetchItem(response: Response) {
         val responseBody = response.body?.string()
         responseBody?.let {
-            val data = it.substringAfter(Constants.MIME_TAG)
-            val sender = data.substringAfter(Constants.FROM_TAG).substringBefore(Constants.TO_TAG)
-            val date = data.substringAfter(Constants.DATE_TAG).substringBefore(Constants.UTC_TAG)
-            val subject =
-                data.substringAfter(Constants.SUBJECT_TAG)
-                    .substringBefore(Constants.CONTENT_TYPE_TAG)
-            val contentType = data.substringAfter(Constants.CONTENT_TYPE_TAG)
-                .substringBefore(Constants.CHAR_SET_TAG)
-            val charSet =
-                data.substringAfter(Constants.CHAR_SET_TAG).substringBefore(Constants.ENCODING_TAG)
-            val encoding =
-                data.substringAfter(Constants.ENCODING_TAG)
-                    .substringBefore(Constants.MESSAGE_ID_TAG)
-            val messageID =
-                data.substringAfter(Constants.MESSAGE_ID_TAG).substringBefore(Constants.CLOSE_TAG)
-            var messageBody = data.substringAfter(messageID + Constants.CLOSE_TAG)
-            if (encoding.contains(Constants.BASE_64)) {
-                messageBody = Base64.decode(messageBody, Base64.DEFAULT).decodeToString()
-            }
-            val result =
-                ParsedMail(
-                    sender,
-                    date,
-                    subject,
-                    contentType,
-                    charSet,
-                    encoding,
-                    messageID,
-                    messageBody
-                )
-            _item.postValue(result)
-//            Log.d("Test", result.toString())
+            val mailParser = MailParser()
+            val message = mailParser.parse(it.byteInputStream())
         }
     }
 

@@ -8,11 +8,11 @@
         android:id="@+id/imageViewPerson"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintBottom_toTopOf="@+id/textViewUserRoll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_person_24" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogin"

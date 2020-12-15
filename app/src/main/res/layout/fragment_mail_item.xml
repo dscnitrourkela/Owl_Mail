@@ -19,10 +19,12 @@
         android:id="@+id/textViewSender"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="12dp"
         android:gravity="start"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+        app:layout_constraintStart_toEndOf="@+id/imageViewSender"
+        app:layout_constraintTop_toTopOf="@+id/imageViewSender"
         tools:text="Sender" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -30,42 +32,51 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSender"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Mail Subject" />
+
+    <ImageView
+        android:id="@+id/imageViewSender"
+        android:layout_width="?android:attr/listPreferredItemHeightSmall"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circle"
+        android:backgroundTint="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
+        app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
+        app:srcCompat="@drawable/ic_baseline_person_24"
+        app:tint="@color/white" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewMailBody"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:scrollHorizontally="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
+        app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewSender"
         tools:text="Mail Body" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:gravity="end"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSender"
         tools:text="Date" />
-
-<!--    <WebView-->
-<!--        android:id="@+id/webView"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_margin="16dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

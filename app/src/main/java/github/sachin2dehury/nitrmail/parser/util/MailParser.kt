@@ -29,9 +29,9 @@ class MailParser {
     fun parse(inputStream: InputStream): ParsedMessage =
         parse(inputStream, createDefaultMessageBuilder())
 
-    fun parse(inputStream: InputStream, msgBuilder: MessageBuilder): ParsedMessage {
+    private fun parse(inputStream: InputStream, messageBuilder: MessageBuilder): ParsedMessage {
         val sizeInputStream = SizeInputStream(inputStream)
-        val parsedMessage = msgBuilder.parseMessage(sizeInputStream)
+        val parsedMessage = messageBuilder.parseMessage(sizeInputStream)
 
         val messageId = parsedMessage.messageId ?: null
 
@@ -123,7 +123,10 @@ class MailParser {
         )
     }
 
-    fun parseToResult(inputStream: InputStream, messageBuilder: MessageBuilder): ParseResult {
+    private fun parseToResult(
+        inputStream: InputStream,
+        messageBuilder: MessageBuilder
+    ): ParseResult {
         val contextId = UUID.randomUUID().toString()
         var exception: Exception? = null
 
