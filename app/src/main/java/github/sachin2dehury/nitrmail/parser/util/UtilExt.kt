@@ -165,7 +165,7 @@ fun guessIsAutoMessage(msg: Message): Boolean {
     }
 
     if (msg.header.hasHeaderEqual("Delivered-To", "Autoresponder")) {
-        return true;
+        return true
     }
 
     if (msg.header.hasHeader("Auto-Submitted") && !msg.header.hasHeaderEqual(
