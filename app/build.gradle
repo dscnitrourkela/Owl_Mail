@@ -93,6 +93,9 @@ dependencies {
     //Mime4j
     implementation group: 'org.apache.james', name: 'apache-mime4j', version: '0.8.3'
 
+    //Jackson Core
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.0'
+
     // Activity KTX for viewModels()
     implementation "androidx.activity:activity-ktx:1.1.0"
 

@@ -27,4 +27,6 @@ object Constants {
     const val CLOSE_TAG = ">"
 
     const val BASE_64 = "base64"
+
+    const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 }
