@@ -43,7 +43,8 @@ class MailParser {
         val ccAddresses: List<Address> = parsedMessage.cc?.toAddressList() ?: listOf()
 
         val returnPathField = parsedMessage.header.getField("Return-Path")
-        val returnPath = if (returnPathField != null) getReturnPathAddr(returnPathField) else null
+        val returnPath =
+            if (returnPathField != null) getReturnPathAddress(returnPathField) else null
 
         val date = guessDateFromMessage(parsedMessage)
         val headers = parsedMessage.header.fields.map { fieldToHeader(it) }
@@ -73,6 +74,7 @@ class MailParser {
             // - we don't care about processing multi-parts which are essentially containers
             // for the real parts we want to read. So we have this condition to ignore them
             // and only process actual parts.
+
             if (!part.isMultipart) {
                 val disposition = part.dispositionType
                 val filename = part.filename
@@ -84,10 +86,8 @@ class MailParser {
                 // And we also handle the edge-case where the disposition is inline, but it's not a
                 // a file (no filename, no content-id) which is something some clients do sometimes
                 // when they feel like it
-                if (body is TextBody && (
-                            disposition == null
-                                    || (disposition == "inline" && filename == null && contentId == null)
-                            )
+                if (body is TextBody && (disposition == null ||
+                            (disposition == "inline" && filename == null && contentId == null))
                 ) {
                     if (mimeType == "text/html") {
                         htmlParts.add(IOUtils.toString(body.reader))

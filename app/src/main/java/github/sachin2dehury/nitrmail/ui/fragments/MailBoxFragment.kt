@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
-import github.sachin2dehury.nitrmail.api.calls.AppClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
 import javax.inject.Inject
 
@@ -23,9 +21,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
-
-    @Inject
-    lateinit var appClient: AppClient
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
@@ -44,12 +39,11 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun getMails() {
-        appClient.makeMailRequest(Constants.JUNK_URL)
+//        appClient.makeMailRequest(Constants.JUNK_URL)
     }
 
     private fun setUpAdapter() {
         mailBoxAdapter.apply {
-            appClient = this@MailBoxFragment.appClient
             navController = findNavController()
         }
     }
@@ -61,6 +55,16 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private fun subscribeToObservers() {
         mainViewModel.mails.observe(viewLifecycleOwner) { result ->
+//            when (result.status) {
+//                Status.SUCCESS -> {
+//
+//                }
+//                Status.LOADING -> {
+//
+//                }
+//                Status.ERROR -> {
+//                }
+//            }
             result?.let { data ->
                 binding.progressBarMailBox.isVisible = false
                 mailBoxAdapter.mails = data.mails

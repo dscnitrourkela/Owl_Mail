@@ -56,6 +56,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha03'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -95,8 +96,11 @@ dependencies {
     //RetroFit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
+    //Gson
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
     //moshi
-    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+//    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
 //    Jsoup
 //    implementation 'org.jsoup:jsoup:1.11.2'
@@ -105,9 +109,6 @@ dependencies {
     implementation('org.apache.james:apache-mime4j:0.8.3') {
         exclude group: 'org.apache.james', module: 'apache-mime4j-benchmark'
     }
-
-    //Jackson Core
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.0'
 
     // Activity KTX for viewModels()
     implementation "androidx.activity:activity-ktx:1.1.0"
@@ -127,6 +128,8 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.2.5"
+
+//    implementation group: 'tech.blueglacier', name: 'email-mime-parser', version: '1.0.5'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'

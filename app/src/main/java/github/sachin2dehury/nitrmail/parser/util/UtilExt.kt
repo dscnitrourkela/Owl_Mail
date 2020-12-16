@@ -14,23 +14,23 @@ import org.apache.james.mime4j.stream.Field
 import java.io.StringReader
 import java.util.*
 
-fun mailboxToAddress(mb: Mailbox): Address {
-    val cleanName = mb.name?.trim()?.trim('"', '\'') ?: ""
+fun mailboxToAddress(mailbox: Mailbox): Address {
+    val cleanName = mailbox.name?.trim()?.trim('"', '\'') ?: ""
     val name = if (cleanName.isNotEmpty()) cleanName else null
 
-    return Address(name, "${mb.localPart}@${mb.domain}")
+    return Address(name, "${mailbox.localPart}@${mailbox.domain}")
 }
 
 fun Mailbox.toAddress(): Address = mailboxToAddress(this)
 
-fun mailboxListToAddressList(mbs: MailboxList): List<Address> {
-    return mbs.map { mailboxToAddress(it) }
+fun mailboxListToAddressList(mailboxList: MailboxList): List<Address> {
+    return mailboxList.map { mailboxToAddress(it) }
 }
 
 fun MailboxList.toAddressList(): List<Address> = mailboxListToAddressList(this)
 
-fun mailboxListToAddressList(mbs: AddressList): List<Address> {
-    return mbs.flatten().map { mailboxToAddress(it) }
+fun mailboxListToAddressList(addressList: AddressList): List<Address> {
+    return addressList.flatten().map { mailboxToAddress(it) }
 }
 
 fun AddressList.toAddressList(): List<Address> = mailboxListToAddressList(this)
@@ -80,10 +80,7 @@ fun guessDateFromMessage(msg: Message): Date? {
         return msg.date
     }
 
-    val rec = msg.header.getField("Received")?.body
-    if (rec == null) {
-        return null
-    }
+    val rec = msg.header.getField("Received")?.body ?: return null
 
     val parts = rec.split(';', limit = 2)
     if (parts.size != 2) {
@@ -98,7 +95,7 @@ fun guessDateFromMessage(msg: Message): Date? {
     }
 }
 
-fun getReturnPathAddr(field: Field): Address? {
+fun getReturnPathAddress(field: Field): Address? {
     if (field is MailboxField) {
         return if (field.mailbox != null) {
             mailboxToAddress(field.mailbox)
@@ -108,8 +105,8 @@ fun getReturnPathAddr(field: Field): Address? {
     }
 
     val body = field.body
-    if (body == null) {
-    }
+//    if (body == null) {
+//    }
 
     if (body == "<>") {
         // special no return value should be kept
@@ -208,17 +205,17 @@ fun guessIsOooSubject(subject: String): Boolean {
             || s.endsWith("is out of the office")
 }
 
-fun guessIsReply(msg: Message): Boolean {
-    if (msg.header.getFields("References").isNotEmpty()) {
+fun guessIsReply(message: Message): Boolean {
+    if (message.header.getFields("References").isNotEmpty()) {
         return true
     }
 
-    val s = msg.subject.toLowerCase()
+    val s = message.subject.toLowerCase()
     return s.matches("^re:".toRegex())
 }
 
-fun guessIsForward(msg: Message): Boolean {
-    val s = msg.subject.toLowerCase()
+fun guessIsForward(message: Message): Boolean {
+    val s = message.subject.toLowerCase()
     return s.matches("^(fwd|fw):".toRegex())
 }
 
