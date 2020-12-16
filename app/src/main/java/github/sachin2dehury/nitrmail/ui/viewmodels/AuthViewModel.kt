@@ -13,9 +13,6 @@ class AuthViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _registerStatus = MutableLiveData<Resource<String>>()
-    val registerStatus: LiveData<Resource<String>> = _registerStatus
-
     private val _loginStatus = MutableLiveData<Resource<String>>()
     val loginStatus: LiveData<Resource<String>> = _loginStatus
 

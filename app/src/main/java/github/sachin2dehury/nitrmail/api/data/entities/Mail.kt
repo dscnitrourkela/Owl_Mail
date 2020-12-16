@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "mails")
 data class Mail(
     @SerializedName("d") val time: Long = 0,
-    @SerializedName("e") val address: List<Address> = emptyList(),
+    @SerializedName("e") val senders: List<Sender> = emptyList(),
     @SerializedName("f") val isUnread: String = "",
     @SerializedName("fr") val body: String = "",
     @SerializedName("su") val subject: String = "",

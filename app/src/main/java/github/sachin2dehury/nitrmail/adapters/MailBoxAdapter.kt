@@ -47,7 +47,7 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
             textViewDate.text = mail.time.toString()
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSender.text = mail.address.last().email
+            textViewSender.text = mail.senders.last().email
         }
         holder.itemView.setOnClickListener {
             navController.navigate(R.id.action_mailBoxFragment_to_mail_item_Fragment)
