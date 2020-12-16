@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightLarge">
+    android:layout_height="?attr/listPreferredItemHeightLarge">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSender"
@@ -58,8 +58,8 @@
 
     <ImageView
         android:id="@+id/imageViewSender"
-        android:layout_width="?android:attr/listPreferredItemHeightSmall"
-        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:layout_width="?attr/listPreferredItemHeightSmall"
+        android:layout_height="?attr/listPreferredItemHeightSmall"
         android:layout_marginStart="16dp"
         android:background="@drawable/circle"
         android:backgroundTint="@color/black"

@@ -37,7 +37,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewDate.text = mail.date.toString()
                         textViewSender.text = mail.from?.email
                         textViewMailSubject.text = mail.subject
-                        webView.loadData(mail.bodyText ?: "", "text/html; charset=utf-8", "UTF-8")
+                        webView.apply {
+                            settings.loadsImagesAutomatically = true
+                            loadData("${mail.bodyHtml} ${mail.bodyHtml}", "text/html", "UTF-8")
+                        }
 //                        textViewMailBody.text = mail.bodyText
                     }
                 }

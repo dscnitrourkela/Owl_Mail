@@ -14,19 +14,11 @@ object Constants {
 //    https://mail.nitrkl.ac.in/service/home/~/?auth=co&view=text&id=
 //    add query params
 
-    const val MIME_TAG = "MIME-Version: 1.0"
-    const val FROM_TAG = "From: "
-    const val TO_TAG = "To: "
-    const val DATE_TAG = "Date: "
-    const val UTC_TAG = " +0530"
-    const val SUBJECT_TAG = "Subject: "
-    const val CONTENT_TYPE_TAG = "Content-Type: "
-    const val CHAR_SET_TAG = "; charset="
-    const val ENCODING_TAG = "Content-Transfer-Encoding: "
-    const val MESSAGE_ID_TAG = "Message-Id: "
-    const val CLOSE_TAG = ">"
+    const val INBOX_DATABASE = "inbox"
+    const val SENT_DATABASE = "sent"
+    const val DRAFT_DATABASE = "draft"
+    const val JUNK_DATABASE = "junk"
+    const val TRASH_DATABASE = "trash"
 
-    const val BASE_64 = "base64"
-
-    const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    const val DATE_FORMAT = "dd-MM-yyyy HH:mm"
 }

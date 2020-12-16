@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.parser.util
+package github.sachin2dehury.nitrmail.parser.unused
 
 import android.annotation.SuppressLint
 import com.fasterxml.jackson.databind.ObjectMapper

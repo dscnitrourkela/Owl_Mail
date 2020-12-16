@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.parser.util
+package github.sachin2dehury.nitrmail.parser.unused
 
 import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import java.io.ByteArrayOutputStream

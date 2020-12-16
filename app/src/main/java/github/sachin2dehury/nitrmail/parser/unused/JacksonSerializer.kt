@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.parser.util
+package github.sachin2dehury.nitrmail.parser.unused
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import github.sachin2dehury.nitrmail.parser.data.ParsedMail

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/inbox"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Inbox" />
+    <item
+        android:id="@+id/sent"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Sent" />
+    <item
+        android:id="@+id/draft"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Draft" />
+    <item
+        android:id="@+id/junk"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Junk" />
+    <item
+        android:id="@+id/trash"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Trash" />
+</menu>
