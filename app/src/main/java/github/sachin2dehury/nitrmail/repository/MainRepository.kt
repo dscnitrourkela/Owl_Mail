@@ -19,11 +19,11 @@ class MainRepository @Inject constructor(
     private val context: Application
 ) {
 
-    suspend fun insertMail(mail: Mail) {
+    private suspend fun insertMail(mail: Mail) {
         mailDao.insertMail(mail)
     }
 
-    private suspend fun insertMails(mails: List<Mail>) {
+    suspend fun insertMails(mails: List<Mail>) {
         mails.forEach { insertMail(it) }
     }
 

@@ -17,7 +17,7 @@ interface MailApi {
 //        var item = ""
     }
 
-    @POST(Constants.JUNK_URL)
+    @POST("")
     suspend fun login(
         @Body loginRequest: AccountRequest
     ): Response<SimpleResponse>

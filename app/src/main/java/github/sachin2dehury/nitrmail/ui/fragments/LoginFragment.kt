@@ -39,7 +39,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         if (isLoggedIn()) {
-            authenticateApi(curRoll ?: "", curPassword ?: "")
+            authenticate(curRoll ?: "", curPassword ?: "")
         }
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         subscribeToObservers()
@@ -63,7 +63,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         return curRoll != Constants.NO_EMAIL && curPassword != Constants.NO_PASSWORD
     }
 
-    private fun authenticateApi(email: String, password: String) {
+    private fun authenticate(email: String, password: String) {
         basicAuthInterceptor.email = email
         basicAuthInterceptor.password = password
     }
@@ -77,7 +77,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         showSnackbar(result.data ?: "Successfully logged in")
                         sharedPref.edit().putString(Constants.KEY_LOGGED_IN_EMAIL, curRoll).apply()
                         sharedPref.edit().putString(Constants.KEY_PASSWORD, curPassword).apply()
-                        authenticateApi(curRoll ?: "", curPassword ?: "")
+                        authenticate(curRoll ?: "", curPassword ?: "")
                         Timber.d("CALLED")
                     }
                     Status.ERROR -> {

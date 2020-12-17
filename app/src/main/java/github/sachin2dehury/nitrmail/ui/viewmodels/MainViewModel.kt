@@ -1,9 +1,7 @@
 package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.entities.Mail
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
@@ -15,35 +13,22 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-/*
-val mails = appClient.mails
+    private val _forceUpdate = MutableLiveData<Boolean>(false)
 
-fun postCredential(userRoll: String, userPassword: String) {
-val result = Credentials.basic(userRoll, userPassword)
-appClient.setCredentials(result)
-}
-private val _mails = MutableLiveData<Mails>()
-val mails: LiveData<Mails> = _mails
-
-private val _item = MutableLiveData<ParsedMail>()
-val item: LiveData<ParsedMail> = _item
-
-private val _credential = MutableLiveData<String>()
-val credential: LiveData<String> = _credential
-*/
-
-    private val _mails = MutableLiveData<Event<Resource<Mail>>>()
-    val mails: LiveData<Event<Resource<Mail>>> = _mails
-
-    fun insertMail(mail: Mail) = GlobalScope.launch {
-        repository.insertMail(mail)
+    private val _mails = _forceUpdate.switchMap {
+        repository.getAllMails().asLiveData(viewModelScope.coroutineContext)
+    }.switchMap {
+        MutableLiveData(Event(it))
     }
+    val mails: LiveData<Event<Resource<List<Mail>>>> = this._mails
 
-//    fun getNoteById(noteID: String) = viewModelScope.launch {
-//        _mails.postValue(Event(Resource.loading(null)))
-//        val note = repository.getNoteById(noteID)
-//        note?.let {
-//            _mails.postValue(Event(Resource.success(it)))
-//        } ?: _mails.postValue(Event(Resource.error("Note not found", null)))
-//    }
+    fun syncAllNotes() = _forceUpdate.postValue(true)
+
+
+    fun insertMails() = GlobalScope.launch {
+        val result = mails.value?.peekContent()?.data
+        result?.let {
+            repository.insertMails(it)
+        }
+    }
 }

@@ -4,20 +4,23 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
-    lateinit var mainViewModel: MainViewModel
+    lateinit var viewModel: MainViewModel
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -30,16 +33,11 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         _binding = FragmentMailBoxBinding.bind(view)
 
-        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
-        getMails()
         setUpAdapter()
         setupRecyclerView()
         subscribeToObservers()
-    }
-
-    private fun getMails() {
-//        appClient.makeMailRequest(Constants.JUNK_URL)
     }
 
     private fun setUpAdapter() {
@@ -54,21 +52,38 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun subscribeToObservers() {
-        mainViewModel.mails.observe(viewLifecycleOwner) { result ->
-//            when (result.status) {
-//                Status.SUCCESS -> {
-//
-//                }
-//                Status.LOADING -> {
-//
-//                }
-//                Status.ERROR -> {
-//                }
-//            }
-            result?.let { data ->
-                binding.progressBarMailBox.isVisible = false
-                mailBoxAdapter.mails = data.mails
+        viewModel.mails.observe(viewLifecycleOwner, Observer {
+            it?.let { event ->
+                val result = event.peekContent()
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        mailBoxAdapter.mails = result.data!!
+                        binding.progressBarMailBox.isVisible = false
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.ERROR -> {
+                        event.getContentIfNotHandled()?.let { errorResource ->
+                            errorResource.message?.let { message ->
+                                showSnackbar(message)
+                            }
+                        }
+                        result.data?.let { mails ->
+                            mailBoxAdapter.mails = mails
+                        }
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.LOADING -> {
+                        result.data?.let { mails ->
+                            mailBoxAdapter.mails = mails
+                        }
+                        binding.swipeRefreshLayout.isRefreshing = true
+                    }
+                }
             }
-        }
+        })
+    }
+
+    private fun showSnackbar(text: String) {
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
     }
 }
