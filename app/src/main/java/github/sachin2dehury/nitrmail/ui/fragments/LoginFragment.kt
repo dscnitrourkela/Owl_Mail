@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -15,7 +15,6 @@ import github.sachin2dehury.nitrmail.databinding.FragmentLoginBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,8 +28,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     @Inject
     lateinit var basicAuthInterceptor: BasicAuthInterceptor
 
-    private var curRoll: String? = null
-    private var curPassword: String? = null
+    lateinit var roll: String
+    lateinit var password: String
 
     private var _binding: FragmentLoginBinding? = null
     private val binding: FragmentLoginBinding get() = _binding!!
@@ -39,50 +38,52 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         if (isLoggedIn()) {
-            authenticate(curRoll ?: "", curPassword ?: "")
+            authenticate()
         }
+
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         subscribeToObservers()
 
         _binding = FragmentLoginBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
-            val roll = binding.editTextUserRoll.text.toString()
-            val password = binding.editTextUserPassword.text.toString()
-            curRoll = roll
-            curPassword = password
-            viewModel.login(roll, password)
+            roll = binding.editTextUserRoll.text.toString()
+            password = binding.editTextUserPassword.text.toString()
+
+            authenticate()
         }
     }
 
     private fun isLoggedIn(): Boolean {
-        curRoll = sharedPref.getString(Constants.KEY_LOGGED_IN_EMAIL, Constants.NO_EMAIL)
+        roll = sharedPref.getString(Constants.KEY_LOGGED_IN_EMAIL, Constants.NO_EMAIL)
             ?: Constants.NO_EMAIL
-        curPassword = sharedPref.getString(Constants.KEY_PASSWORD, Constants.NO_PASSWORD)
+        password = sharedPref.getString(Constants.KEY_PASSWORD, Constants.NO_PASSWORD)
             ?: Constants.NO_PASSWORD
-        return curRoll != Constants.NO_EMAIL && curPassword != Constants.NO_PASSWORD
+        return roll != Constants.NO_EMAIL && password != Constants.NO_PASSWORD
     }
 
-    private fun authenticate(email: String, password: String) {
-        basicAuthInterceptor.email = email
+    private fun authenticate() {
+        basicAuthInterceptor.roll = roll
         basicAuthInterceptor.password = password
+
+        viewModel.login(roll, password)
     }
 
     private fun subscribeToObservers() {
-        viewModel.loginStatus.observe(viewLifecycleOwner, Observer { result ->
+        viewModel.loginStatus.observe(viewLifecycleOwner, { result ->
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
-                        showSnackbar(result.data ?: "Successfully logged in")
-                        sharedPref.edit().putString(Constants.KEY_LOGGED_IN_EMAIL, curRoll).apply()
-                        sharedPref.edit().putString(Constants.KEY_PASSWORD, curPassword).apply()
-                        authenticate(curRoll ?: "", curPassword ?: "")
-                        Timber.d("CALLED")
+                        showSnackbar("Successfully logged in")
+                        sharedPref.edit().putString(Constants.KEY_LOGGED_IN_EMAIL, roll).apply()
+                        sharedPref.edit().putString(Constants.KEY_PASSWORD, password).apply()
+                        findNavController().navigate(R.id.action_loginFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        showSnackbar(result.message ?: "An unknown error occured")
+                        showSnackbar("An unknown error occured")
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE

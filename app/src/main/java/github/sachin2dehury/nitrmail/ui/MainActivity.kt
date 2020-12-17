@@ -27,14 +27,17 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        binding.navView.setCheckedItem(R.id.inbox)
+
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
-//                R.id.inbox -> appClient.makeMailRequest(Constants.INBOX_URL)
-//                R.id.sent -> appClient.makeMailRequest(Constants.SENT_URL)
-//                R.id.draft -> appClient.makeMailRequest(Constants.DRAFT_URL)
-//                R.id.junk -> appClient.makeMailRequest(Constants.JUNK_URL)
-//                R.id.trash -> appClient.makeMailRequest(Constants.TRASH_URL)
+//                R.id.inbox -> MailApi.request = Constants.INBOX_URL
+//                R.id.sent -> MailApi.request = Constants.SENT_URL
+//                R.id.draft -> MailApi.request = Constants.DRAFT_URL
+//                R.id.junk -> MailApi.request = Constants.JUNK_URL
+//                R.id.trash -> MailApi.request = Constants.TRASH_URL
             }
+            binding.navView.setCheckedItem(it)
             true
         }
     }

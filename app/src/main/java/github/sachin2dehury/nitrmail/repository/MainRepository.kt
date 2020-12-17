@@ -4,7 +4,6 @@ import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.entities.Mail
 import github.sachin2dehury.nitrmail.api.data.local.MailDao
-import github.sachin2dehury.nitrmail.api.data.remote.AccountRequest
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.checkForInternetConnection
 import github.sachin2dehury.nitrmail.others.networkBoundResource
@@ -48,11 +47,11 @@ class MainRepository @Inject constructor(
 
     suspend fun login(email: String, password: String) = withContext(Dispatchers.IO) {
         try {
-            val response = mailApi.login(AccountRequest(email, password))
-            if (response.isSuccessful && response.body()!!.successful) {
-                Resource.success(response.body()?.message)
+            val response = mailApi.getMails()
+            if (response.isSuccessful && response.code() == 200) {
+                Resource.success(response.body()?.mails)
             } else {
-                Resource.error(response.body()?.message ?: response.message(), null)
+                Resource.error(response.message() ?: response.message(), null)
             }
         } catch (e: Exception) {
             Resource.error("Couldn't connect to the servers. Check your internet connection", null)

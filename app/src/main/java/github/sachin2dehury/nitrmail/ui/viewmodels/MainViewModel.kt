@@ -13,7 +13,13 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _forceUpdate = MutableLiveData<Boolean>(false)
+    private val _request = MutableLiveData<String>()
+    val request: LiveData<String> = _request
+
+//    private val _mails = MutableLiveData<Resource<List<Mail>>>()
+//    val mails: LiveData<Resource<List<Mail>>> = _mails
+
+    private val _forceUpdate = MutableLiveData(false)
 
     private val _mails = _forceUpdate.switchMap {
         repository.getAllMails().asLiveData(viewModelScope.coroutineContext)
@@ -22,13 +28,18 @@ class MainViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = this._mails
 
-    fun syncAllNotes() = _forceUpdate.postValue(true)
-
+    fun syncAllMails() = _forceUpdate.postValue(true)
 
     fun insertMails() = GlobalScope.launch {
         val result = mails.value?.peekContent()?.data
         result?.let {
             repository.insertMails(it)
         }
+//        val result = mails.value?.data
+//        result.let {
+//            if (it != null) {
+//                repository.insertMails(it)
+//            }
+//        }
     }
 }

@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
-//    id "androidx.navigation.safeargs.kotlin"
 }
 
 android {
@@ -35,17 +34,6 @@ android {
     }
     buildFeatures {
         viewBinding true
-    }
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
-        exclude("META-INF/*.kotlin_module")
     }
 }
 
@@ -100,14 +88,6 @@ dependencies {
     //Gson
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-//    Jsoup
-//    implementation 'org.jsoup:jsoup:1.11.2'
-
-    //Mime4j
-    implementation('org.apache.james:apache-mime4j:0.8.3') {
-        exclude group: 'org.apache.james', module: 'apache-mime4j-benchmark'
-    }
-
     // Activity KTX for viewModels()
     implementation "androidx.activity:activity-ktx:1.1.0"
 
@@ -127,11 +107,9 @@ dependencies {
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.2.6"
 
-//    implementation group: 'tech.blueglacier', name: 'email-mime-parser', version: '1.0.5'
-
     // Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    //
+    //Encrypt
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
 }
