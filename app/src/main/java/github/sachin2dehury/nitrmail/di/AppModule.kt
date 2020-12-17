@@ -30,7 +30,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideNoteApi(
+    fun provideMailApi(
         basicAuthInterceptor: BasicAuthInterceptor
     ): MailApi {
         val client = OkHttpClient.Builder()
