@@ -45,7 +45,7 @@ class MainRepository @Inject constructor(
         )
     }
 
-    suspend fun login(email: String, password: String) = withContext(Dispatchers.IO) {
+    suspend fun login() = withContext(Dispatchers.IO) {
         try {
             val response = mailApi.getMails()
             if (response.isSuccessful && response.code() == 200) {

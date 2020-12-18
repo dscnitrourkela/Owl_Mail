@@ -112,4 +112,10 @@ dependencies {
 
     //Encrypt
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
+
+    //EML converter
+    implementation(group: "org.simplejavamail", name: "simple-java-mail", version: "6.4.4") {
+        exclude group: "jakarta.activation", module: "jakarta.activation-api"
+        exclude group: "com.github.bbottema", module: "jetbrains-runtime-annotations"
+    }
 }

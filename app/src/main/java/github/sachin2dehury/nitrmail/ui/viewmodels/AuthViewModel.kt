@@ -24,7 +24,7 @@ class AuthViewModel @ViewModelInject constructor(
             return
         }
         viewModelScope.launch {
-            val result = repository.login(roll, password)
+            val result = repository.login()
             _loginStatus.postValue(result)
         }
     }
