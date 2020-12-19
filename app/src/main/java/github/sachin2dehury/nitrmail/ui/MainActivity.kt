@@ -1,7 +1,6 @@
 package github.sachin2dehury.nitrmail.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,6 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
-import org.simplejavamail.converter.EmailConverter
 
 
 @AndroidEntryPoint
@@ -37,12 +35,12 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        val string = this.assets.open("test.eml").bufferedReader().use {
-            it.readText()
-        }
-        val mail = EmailConverter.emlToEmail(string)
-
-        Log.w("Test", mail.htmlText.toString())
+//        val string = this.assets.open("test.eml").bufferedReader().use {
+//            it.readText()
+//        }
+//        val mail = EmailConverter.emlToEmail(string)
+//
+//        Log.w("Test", mail.htmlText.toString())
 
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {

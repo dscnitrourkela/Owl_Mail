@@ -51,8 +51,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun subscribeToObservers() {
-        viewModel.mails.observe(viewLifecycleOwner, { result ->
-            result?.let {
+        viewModel.mails.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
                 when (result.status) {
                     Status.SUCCESS -> {
                         mailBoxAdapter.mails = result.data!!
@@ -61,8 +62,10 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                         viewModel.insertMails()
                     }
                     Status.ERROR -> {
-                        result.message?.let { message ->
-                            showSnackbar(message)
+                        event.getContentIfNotHandled()?.let { errorResource ->
+                            errorResource.message?.let { message ->
+                                showSnackbar(message)
+                            }
                         }
                         result.data?.let { mails ->
                             mailBoxAdapter.mails = mails

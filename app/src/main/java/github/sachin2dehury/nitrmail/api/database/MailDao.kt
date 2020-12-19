@@ -1,10 +1,10 @@
-package github.sachin2dehury.nitrmail.api.data.local
+package github.sachin2dehury.nitrmail.api.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import github.sachin2dehury.nitrmail.api.data.entities.Mail
+import github.sachin2dehury.nitrmail.api.data.Mail
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -2,8 +2,8 @@ package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.data.entities.Mail
-import github.sachin2dehury.nitrmail.api.data.local.MailDao
+import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.checkForInternetConnection
 import github.sachin2dehury.nitrmail.others.networkBoundResource
@@ -26,13 +26,13 @@ class MainRepository @Inject constructor(
         mails.forEach { insertMail(it) }
     }
 
-    fun getMailsDatabase(): Flow<Resource<List<Mail>>> {
+    fun getMails(request: String): Flow<Resource<List<Mail>>> {
         return networkBoundResource(
             query = {
                 mailDao.getAllMails()
             },
             fetch = {
-                mailApi.getMails()
+                mailApi.getMails(request)
             },
             saveFetchResult = { response ->
                 response.body()?.let {
@@ -58,17 +58,17 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun getMailsNetwork(request: String) = withContext(Dispatchers.IO) {
-        try {
-            val response = mailApi.getMails(request)
-            if (response.isSuccessful && response.code() == 200) {
-                Resource.success(response.body()?.mails)
-            } else {
-                Resource.error(response.message() ?: response.message(), null)
-            }
-        } catch (e: Exception) {
-            Resource.error("Couldn't connect to the servers. Check your internet connection", null)
-        }
-    }
+//    suspend fun getMailsNetwork(request: String) = withContext(Dispatchers.IO) {
+//        try {
+//            val response = mailApi.getMails(request)
+//            if (response.isSuccessful && response.code() == 200) {
+//                Resource.success(response.body()?.mails)
+//            } else {
+//                Resource.error(response.message() ?: response.message(), null)
+//            }
+//        } catch (e: Exception) {
+//            Resource.error("Couldn't connect to the servers. Check your internet connection", null)
+//        }
+//    }
 
 }

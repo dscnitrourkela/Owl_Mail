@@ -13,14 +13,16 @@ object Constants {
     const val TRASH_URL = "trash.json"
     const val CALENDAR_URL = "calendar.json"
     const val ITEM_URL = "/?id="
-//    https://mail.nitrkl.ac.in/service/home/~/?auth=co&view=text&id=
+
+    const val DATABASE_NAME = "app_db"
+
 //    add query params
 
-    const val INBOX_DATABASE = "inbox"
-    const val SENT_DATABASE = "sent"
-    const val DRAFT_DATABASE = "draft"
-    const val JUNK_DATABASE = "junk"
-    const val TRASH_DATABASE = "trash"
+//    const val INBOX_DATABASE = "inbox"
+//    const val SENT_DATABASE = "sent"
+//    const val DRAFT_DATABASE = "draft"
+//    const val JUNK_DATABASE = "junk"
+//    const val TRASH_DATABASE = "trash"
 
     const val ENCRYPTED_SHARED_PREF_NAME = "enc_shared_pref"
 

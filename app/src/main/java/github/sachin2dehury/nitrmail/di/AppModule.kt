@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.data.local.MailDatabase
+import github.sachin2dehury.nitrmail.api.database.MailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -52,7 +52,7 @@ object AppModule {
     @Provides
     fun provideMailDatabase(
         @ApplicationContext context: Context
-    ) = Room.databaseBuilder(context, MailDatabase::class.java, "DATABASE_NAME")
+    ) = Room.databaseBuilder(context, MailDatabase::class.java, Constants.DATABASE_NAME)
         .fallbackToDestructiveMigration().build()
 
     @Singleton
