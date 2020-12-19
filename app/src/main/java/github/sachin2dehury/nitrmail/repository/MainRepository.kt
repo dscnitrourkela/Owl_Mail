@@ -18,25 +18,24 @@ class MainRepository @Inject constructor(
     private val context: Application
 ) {
 
-    private suspend fun insertMail(mail: Mail) {
-        mailDao.insertMail(mail)
-    }
-
-    suspend fun insertMails(mails: List<Mail>) {
-        mails.forEach { insertMail(it) }
+    private suspend fun insertMails(mails: List<Mail>, request: String) {
+        mails.forEach {
+            it.box = request
+            mailDao.insertMail(it)
+        }
     }
 
     fun getMails(request: String): Flow<Resource<List<Mail>>> {
         return networkBoundResource(
             query = {
-                mailDao.getAllMails()
+                mailDao.getAllMails(request)
             },
             fetch = {
                 mailApi.getMails(request)
             },
             saveFetchResult = { response ->
                 response.body()?.let {
-
+                    insertMails(it.mails, request)
                 }
             },
             shouldFetch = {
@@ -57,18 +56,4 @@ class MainRepository @Inject constructor(
             Resource.error("Couldn't connect to the servers. Check your internet connection", null)
         }
     }
-
-//    suspend fun getMailsNetwork(request: String) = withContext(Dispatchers.IO) {
-//        try {
-//            val response = mailApi.getMails(request)
-//            if (response.isSuccessful && response.code() == 200) {
-//                Resource.success(response.body()?.mails)
-//            } else {
-//                Resource.error(response.message() ?: response.message(), null)
-//            }
-//        } catch (e: Exception) {
-//            Resource.error("Couldn't connect to the servers. Check your internet connection", null)
-//        }
-//    }
-
 }

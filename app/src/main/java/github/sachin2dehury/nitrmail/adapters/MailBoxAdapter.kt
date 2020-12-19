@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.adapters
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
+import github.sachin2dehury.nitrmail.others.Constants
+import java.text.SimpleDateFormat
 
 class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() {
 
@@ -28,6 +31,8 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
 
     lateinit var navController: NavController
 
+    private val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+
     private val differ = AsyncListDiffer(this, diffCallback)
 
     var mails: List<Mail>
@@ -44,10 +49,16 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
         val mail = mails[position]
         val binding = ListMailItemBinding.bind(holder.itemView)
         binding.apply {
-            textViewDate.text = mail.time.toString()
+            textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
             textViewSender.text = mail.senders.last().email
+            if (mail.isUnread == "t") {
+                textViewSender.typeface = Typeface.DEFAULT_BOLD
+                textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
+                textViewDate.typeface = Typeface.DEFAULT_BOLD
+                textViewMailBody.typeface = Typeface.DEFAULT_BOLD
+            }
         }
         holder.itemView.setOnClickListener {
             navController.navigate(R.id.action_mailBoxFragment_to_mail_item_Fragment)

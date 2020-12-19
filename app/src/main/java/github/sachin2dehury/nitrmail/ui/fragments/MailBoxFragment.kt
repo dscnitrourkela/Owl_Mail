@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
 import javax.inject.Inject
@@ -33,6 +34,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         _binding = FragmentMailBoxBinding.bind(view)
 
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+
+        viewModel.setRequest(Constants.INBOX_URL)
 
         setUpAdapter()
         setupRecyclerView()
@@ -59,7 +62,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                         mailBoxAdapter.mails = result.data!!
                         binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
-                        viewModel.insertMails()
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -83,7 +85,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
         viewModel.request.observe(viewLifecycleOwner, { string ->
             string?.let {
-                viewModel.getMails()
+                viewModel.syncAllNotes()
             }
         })
     }

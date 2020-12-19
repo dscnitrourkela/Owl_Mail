@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
@@ -18,8 +19,10 @@ import github.sachin2dehury.nitrmail.others.Constants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
 import javax.inject.Singleton
 
+@SuppressLint("SimpleDateFormat")
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -30,19 +33,20 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideOkHttpClient(basicAuthInterceptor: BasicAuthInterceptor) = OkHttpClient.Builder()
+        .addInterceptor(basicAuthInterceptor)
+        .build()
+
+    @Singleton
+    @Provides
     fun provideMailApi(
-        basicAuthInterceptor: BasicAuthInterceptor
-    ): MailApi {
-        val client = OkHttpClient.Builder()
-            .addInterceptor(basicAuthInterceptor)
-            .build()
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(MailApi::class.java)
-    }
+        okHttpClient: OkHttpClient
+    ): MailApi = Retrofit.Builder()
+        .baseUrl(Constants.BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(okHttpClient)
+        .build()
+        .create(MailApi::class.java)
 
     @Provides
     @Singleton
@@ -75,4 +79,8 @@ object AppModule {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
+
+    @Singleton
+    @Provides
+    fun provideSimpleDateFormat() = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
 }

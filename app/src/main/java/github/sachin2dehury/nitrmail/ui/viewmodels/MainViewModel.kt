@@ -3,39 +3,28 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.MainRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData<String>()
+    private val _request = MutableLiveData<String>(Constants.JUNK_URL)
     val request: LiveData<String> = _request
 
-    private val _mails = MutableLiveData<Event<Resource<List<Mail>>>>()
-    val mails: LiveData<Event<Resource<List<Mail>>>> = this._mails
+    private val _forceUpdate = MutableLiveData(false)
 
-    fun insertMails() = GlobalScope.launch {
-        val result = mails.value?.peekContent()?.data
-        result?.let {
-            repository.insertMails(it)
-        }
+    private val _mails = _forceUpdate.switchMap {
+        repository.getMails(request.value!!).asLiveData(viewModelScope.coroutineContext)
+    }.switchMap {
+        MutableLiveData(Event(it))
     }
+    val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun getMails() {
-        _mails.postValue(Event(Resource.loading(null)))
-        viewModelScope.launch {
-            val result =
-                repository.getMails(request.value!!).asLiveData(viewModelScope.coroutineContext)
-            result.value?.let {
-                _mails.postValue(Event(it))
-            }
-        }
-    }
+    fun syncAllNotes() = _forceUpdate.postValue(true)
 
     fun setRequest(string: String) {
         _request.postValue(string)

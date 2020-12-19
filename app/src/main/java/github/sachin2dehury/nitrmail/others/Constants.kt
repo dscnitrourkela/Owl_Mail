@@ -16,21 +16,13 @@ object Constants {
 
     const val DATABASE_NAME = "app_db"
 
-//    add query params
-
-//    const val INBOX_DATABASE = "inbox"
-//    const val SENT_DATABASE = "sent"
-//    const val DRAFT_DATABASE = "draft"
-//    const val JUNK_DATABASE = "junk"
-//    const val TRASH_DATABASE = "trash"
-
     const val ENCRYPTED_SHARED_PREF_NAME = "enc_shared_pref"
 
-    const val KEY_LOGGED_IN_EMAIL = "KEY_LOGGED_IN_EMAIL"
-    const val KEY_PASSWORD = "KEY_PASSWORD"
+    const val KEY_CREDENTIAL = "KEY_CREDENTIAL"
 
-    const val NO_EMAIL = "NO_EMAIL"
-    const val NO_PASSWORD = "NO_PASSWORD"
+    const val NO_CREDENTIAL = "NO_CREDENTIAL"
 
-    const val DATE_FORMAT = "dd-MM-yyyy HH:mm"
+    const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
+    const val DATE_FORMAT_MONTH = "dd-MM"
+    const val DATE_FORMAT_DATE = "dd-MM HH:mm"
 }

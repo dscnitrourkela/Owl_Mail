@@ -17,9 +17,9 @@ class AuthViewModel @ViewModelInject constructor(
     private val _loginStatus = MutableLiveData<Resource<List<Mail>>>()
     val loginStatus: LiveData<Resource<List<Mail>>> = _loginStatus
 
-    fun login(roll: String, password: String) {
+    fun login(credential: String) {
         _loginStatus.postValue(Resource.loading(null))
-        if (roll.isEmpty() || password.isEmpty()) {
+        if (credential.isEmpty()) {
             _loginStatus.postValue(Resource.error("Please fill out all the fields", null))
             return
         }

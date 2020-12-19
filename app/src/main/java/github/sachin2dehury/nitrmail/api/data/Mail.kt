@@ -6,12 +6,15 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "mails")
 data class Mail(
+
+    @PrimaryKey(autoGenerate = false)
+    @SerializedName("id") val id: String = "",
+
     @SerializedName("d") val time: Long = 0,
     @SerializedName("e") val senders: List<Sender> = emptyList(),
     @SerializedName("f") val isUnread: String = "",
     @SerializedName("fr") val body: String = "",
     @SerializedName("su") val subject: String = "",
 
-    @PrimaryKey(autoGenerate = false)
-    @SerializedName("id") val id: String = ""
+    var box: String = "",
 )

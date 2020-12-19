@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="github.sachin2dehury.nitrmail.ui.fragments.LoginFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.AuthFragment"
         android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_mailBoxFragment"

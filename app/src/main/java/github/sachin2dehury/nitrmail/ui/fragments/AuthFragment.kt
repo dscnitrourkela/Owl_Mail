@@ -11,14 +11,15 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
-import github.sachin2dehury.nitrmail.databinding.FragmentLoginBinding
+import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
+import okhttp3.Credentials
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginFragment : Fragment(R.layout.fragment_login) {
+class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -28,46 +29,45 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     @Inject
     lateinit var basicAuthInterceptor: BasicAuthInterceptor
 
-    lateinit var roll: String
-    lateinit var password: String
+    lateinit var credential: String
 
-    private var _binding: FragmentLoginBinding? = null
-    private val binding: FragmentLoginBinding get() = _binding!!
+    private var _binding: FragmentAuthBinding? = null
+    private val binding: FragmentAuthBinding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (isLoggedIn()) {
-            authenticate()
-        }
+//        if (isLoggedIn()) {
+//            authenticate()
+//        }
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         subscribeToObservers()
 
-        _binding = FragmentLoginBinding.bind(view)
+        _binding = FragmentAuthBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
-            roll = binding.editTextUserRoll.text.toString()
-            password = binding.editTextUserPassword.text.toString()
-
+            getCredential()
             authenticate()
         }
     }
 
+    private fun getCredential() {
+        val roll = binding.editTextUserRoll.text.toString()
+        val password = binding.editTextUserPassword.text.toString()
+        credential = Credentials.basic(roll, password)
+    }
+
     private fun isLoggedIn(): Boolean {
-        roll = sharedPref.getString(Constants.KEY_LOGGED_IN_EMAIL, Constants.NO_EMAIL)
-            ?: Constants.NO_EMAIL
-        password = sharedPref.getString(Constants.KEY_PASSWORD, Constants.NO_PASSWORD)
-            ?: Constants.NO_PASSWORD
-        return roll != Constants.NO_EMAIL && password != Constants.NO_PASSWORD
+        credential = sharedPref.getString(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
+            ?: Constants.NO_CREDENTIAL
+        return credential != Constants.NO_CREDENTIAL
     }
 
     private fun authenticate() {
-        basicAuthInterceptor.roll = roll
-        basicAuthInterceptor.password = password
-
-        viewModel.login(roll, password)
+        basicAuthInterceptor.credential = credential
+        viewModel.login(credential)
     }
 
     private fun subscribeToObservers() {
@@ -77,8 +77,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         showSnackbar("Successfully logged in")
-                        sharedPref.edit().putString(Constants.KEY_LOGGED_IN_EMAIL, roll).apply()
-                        sharedPref.edit().putString(Constants.KEY_PASSWORD, password).apply()
+                        sharedPref.edit().putString(Constants.KEY_CREDENTIAL, credential).apply()
                         findNavController().navigate(R.id.action_loginFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
