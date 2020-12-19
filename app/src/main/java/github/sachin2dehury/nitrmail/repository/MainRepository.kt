@@ -26,7 +26,7 @@ class MainRepository @Inject constructor(
         mails.forEach { insertMail(it) }
     }
 
-    fun getAllMails(): Flow<Resource<List<Mail>>> {
+    fun getMailsDatabase(): Flow<Resource<List<Mail>>> {
         return networkBoundResource(
             query = {
                 mailDao.getAllMails()
@@ -48,6 +48,19 @@ class MainRepository @Inject constructor(
     suspend fun login() = withContext(Dispatchers.IO) {
         try {
             val response = mailApi.getMails()
+            if (response.isSuccessful && response.code() == 200) {
+                Resource.success(response.body()?.mails)
+            } else {
+                Resource.error(response.message() ?: response.message(), null)
+            }
+        } catch (e: Exception) {
+            Resource.error("Couldn't connect to the servers. Check your internet connection", null)
+        }
+    }
+
+    suspend fun getMailsNetwork(request: String) = withContext(Dispatchers.IO) {
+        try {
+            val response = mailApi.getMails(request)
             if (response.isSuccessful && response.code() == 200) {
                 Resource.success(response.body()?.mails)
             } else {

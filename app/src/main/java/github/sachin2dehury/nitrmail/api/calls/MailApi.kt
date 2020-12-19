@@ -8,10 +8,6 @@ import retrofit2.http.Path
 
 interface MailApi {
 
-    companion object {
-        const val request = Constants.JUNK_URL
-    }
-
     @GET("{request}")
-    suspend fun getMails(@Path("request") request: String = MailApi.request): Response<Mails>
+    suspend fun getMails(@Path("request") request: String = Constants.JUNK_URL): Response<Mails>
 }

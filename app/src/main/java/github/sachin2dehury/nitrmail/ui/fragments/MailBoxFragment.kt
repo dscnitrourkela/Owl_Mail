@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,20 +51,18 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun subscribeToObservers() {
-        viewModel.mails.observe(viewLifecycleOwner, Observer {
-            it?.let { event ->
-                val result = event.peekContent()
+        viewModel.mails.observe(viewLifecycleOwner, { result ->
+            result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
                         mailBoxAdapter.mails = result.data!!
                         binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
+                        viewModel.insertMails()
                     }
                     Status.ERROR -> {
-                        event.getContentIfNotHandled()?.let { errorResource ->
-                            errorResource.message?.let { message ->
-                                showSnackbar(message)
-                            }
+                        result.message?.let { message ->
+                            showSnackbar(message)
                         }
                         result.data?.let { mails ->
                             mailBoxAdapter.mails = mails
@@ -79,6 +76,11 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
+            }
+        })
+        viewModel.request.observe(viewLifecycleOwner, { string ->
+            string?.let {
+                viewModel.getMails()
             }
         })
     }
