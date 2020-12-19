@@ -61,8 +61,6 @@
         android:layout_width="?attr/listPreferredItemHeightSmall"
         android:layout_height="?attr/listPreferredItemHeightSmall"
         android:layout_marginStart="16dp"
-        android:background="@drawable/ic_baseline_brightness_1_24"
-        android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textViewMailSubject"
         app:layout_constraintHorizontal_bias="0.5"

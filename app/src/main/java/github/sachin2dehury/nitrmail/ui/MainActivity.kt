@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
                 R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
                 R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
+                R.id.all -> viewModel.setRequest("")
             }
             binding.navView.setCheckedItem(it)
             true

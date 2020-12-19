@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/inbox"
-        android:icon="@drawable/ic_baseline_inbox_24"
+        android:icon="@drawable/ic_baseline_move_to_inbox_24"
         android:title="@string/inbox" />
     <item
         android:id="@+id/sent"
@@ -14,8 +13,12 @@
         android:icon="@drawable/ic_baseline_drafts_24"
         android:title="@string/draft" />
     <item
+        android:id="@+id/all"
+        android:icon="@drawable/ic_baseline_mail_24"
+        android:title="@string/all_mails" />
+    <item
         android:id="@+id/junk"
-        android:icon="@drawable/ic_baseline_warning_24"
+        android:icon="@drawable/ic_baseline_report_24"
         android:title="@string/junk" />
     <item
         android:id="@+id/trash"

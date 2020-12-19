@@ -37,9 +37,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        if (isLoggedIn()) {
+        if (isLoggedIn()) {
 //            authenticate()
-//        }
+            findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+        }
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -78,7 +79,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         binding.progressBar.visibility = View.GONE
                         showSnackbar("Successfully logged in")
                         sharedPref.edit().putString(Constants.KEY_CREDENTIAL, credential).apply()
-                        findNavController().navigate(R.id.action_loginFragment_to_mailBoxFragment)
+                        findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE

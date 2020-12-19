@@ -8,4 +8,5 @@
     <string name="draft">Draft</string>
     <string name="junk">Junk</string>
     <string name="trash">Trash</string>
+    <string name="all_mails">All Mails</string>
 </resources>

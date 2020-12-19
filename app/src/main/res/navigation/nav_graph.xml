@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/authFragment">
 
     <fragment
-        android:id="@+id/loginFragment"
+        android:id="@+id/authFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.AuthFragment"
-        android:label="LoginFragment">
+        android:label="AuthFragment">
         <action
-            android:id="@+id/action_loginFragment_to_mailBoxFragment"
+            android:id="@+id/action_authFragment_to_mailBoxFragment"
             app:destination="@id/mailBoxFragment" />
     </fragment>
     <fragment
@@ -23,5 +23,5 @@
     <fragment
         android:id="@+id/mailItemFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.MailItemFragment"
-        android:label="MailFragment" />
+        android:label="MailItemFragment" />
 </navigation>
