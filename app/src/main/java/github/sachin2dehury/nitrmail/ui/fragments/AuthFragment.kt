@@ -42,6 +42,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
         }
 
+//        binding.editTextUserRoll.showKeyboard()
+
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         subscribeToObservers()
@@ -69,6 +71,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun authenticate() {
         basicAuthInterceptor.credential = credential
         viewModel.login(credential)
+//        binding.editTextUserPassword.hideKeyboard()
     }
 
     private fun subscribeToObservers() {

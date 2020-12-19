@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.all -> viewModel.setRequest("")
             }
             binding.navView.setCheckedItem(it)
+            binding.drawerLayout.closeDrawer(Gravity.LEFT)
             true
         }
     }
