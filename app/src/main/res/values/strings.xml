@@ -3,4 +3,9 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="inbox">Inbox</string>
+    <string name="sent">Sent</string>
+    <string name="draft">Draft</string>
+    <string name="junk">Junk</string>
+    <string name="trash">Trash</string>
 </resources>

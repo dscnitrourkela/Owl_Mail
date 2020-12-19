@@ -61,14 +61,14 @@
         android:layout_width="?attr/listPreferredItemHeightSmall"
         android:layout_height="?attr/listPreferredItemHeightSmall"
         android:layout_marginStart="16dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/ic_baseline_brightness_1_24"
         android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textViewMailSubject"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_person_24"
+        app:srcCompat="@drawable/ic_baseline_account_circle_24"
         app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

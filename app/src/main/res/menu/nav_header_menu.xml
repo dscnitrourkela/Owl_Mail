@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/inbox"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="Inbox" />
+        android:icon="@drawable/ic_baseline_inbox_24"
+        android:title="@string/inbox" />
     <item
         android:id="@+id/sent"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="Sent" />
+        android:icon="@drawable/ic_baseline_send_24"
+        android:title="@string/sent" />
     <item
         android:id="@+id/draft"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="Draft" />
+        android:icon="@drawable/ic_baseline_drafts_24"
+        android:title="@string/draft" />
     <item
         android:id="@+id/junk"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="Junk" />
+        android:icon="@drawable/ic_baseline_warning_24"
+        android:title="@string/junk" />
     <item
         android:id="@+id/trash"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="Trash" />
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/trash" />
 </menu>
