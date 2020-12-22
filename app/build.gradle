@@ -21,8 +21,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -76,10 +76,6 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
 
-    // Glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    kapt 'com.github.bumptech.glide:compiler:4.11.0'
-
     //OkHttp
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
@@ -98,9 +94,6 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
     kapt "androidx.hilt:hilt-compiler:1.0.0-alpha02"
 
-    // Easy Permissions
-    implementation 'pub.devrel:easypermissions:3.0.0'
-
     // Room
     implementation "androidx.room:room-runtime:2.2.6"
     kapt "androidx.room:room-compiler:2.2.6"
@@ -108,15 +101,9 @@ dependencies {
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.2.6"
 
-    // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    // Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha05"
 
     //Encrypt
     implementation 'androidx.security:security-crypto:1.1.0-alpha03'
-
-    //EML converter
-//    implementation(group: "org.simplejavamail", name: "simple-java-mail", version: "6.4.4") {
-//        exclude group: "jakarta.activation", module: "jakarta.activation-api"
-//        exclude group: "com.github.bbottema", module: "jetbrains-runtime-annotations"
-//    }
 }

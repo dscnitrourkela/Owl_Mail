@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding get() = _binding!!
     private lateinit var toggle: ActionBarDrawerToggle
 
+    @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,13 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-//        val string = this.assets.open("test.eml").bufferedReader().use {
-//            it.readText()
-//        }
-//        val mail = EmailConverter.emlToEmail(string)
-//
-//        Log.w("Test", mail.htmlText.toString())
-
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.inbox -> viewModel.setRequest(Constants.INBOX_URL)
@@ -50,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
                 R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
                 R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
-                R.id.all -> viewModel.setRequest("")
+//                R.id.all -> viewModel.setRequest("")
             }
             binding.navView.setCheckedItem(it)
             binding.drawerLayout.closeDrawer(Gravity.LEFT)
@@ -63,5 +58,10 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

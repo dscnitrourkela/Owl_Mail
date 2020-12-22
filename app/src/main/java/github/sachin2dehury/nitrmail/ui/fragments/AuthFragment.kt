@@ -4,8 +4,13 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.preferencesKey
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +20,8 @@ import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import okhttp3.Credentials
 import javax.inject.Inject
 
@@ -29,7 +36,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     @Inject
     lateinit var basicAuthInterceptor: BasicAuthInterceptor
 
-    lateinit var credential: String
+    @Inject
+    lateinit var dataStore: DataStore<Preferences>
+
+    private var credential = Constants.NO_CREDENTIAL
 
     private var _binding: FragmentAuthBinding? = null
     private val binding: FragmentAuthBinding get() = _binding!!
@@ -38,11 +48,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         super.onViewCreated(view, savedInstanceState)
 
         if (isLoggedIn()) {
-//            authenticate()
+            authenticate()
             findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
         }
-
-//        binding.editTextUserRoll.showKeyboard()
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -63,15 +71,28 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     }
 
     private fun isLoggedIn(): Boolean {
-        credential = sharedPref.getString(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
-            ?: Constants.NO_CREDENTIAL
-        return credential != Constants.NO_CREDENTIAL
+        lifecycleScope.launch {
+            credential = readCredential(Constants.KEY_CREDENTIAL) ?: Constants.NO_CREDENTIAL
+        }
+        return credential == Constants.NO_CREDENTIAL
     }
 
     private fun authenticate() {
         basicAuthInterceptor.credential = credential
         viewModel.login(credential)
-//        binding.editTextUserPassword.hideKeyboard()
+    }
+
+    private suspend fun saveCredential(key: String, value: String) {
+        val dataStoreKey = preferencesKey<String>(key)
+        dataStore.edit { settings ->
+            settings[dataStoreKey] = value
+        }
+    }
+
+    private suspend fun readCredential(key: String): String? {
+        val dataStoreKey = preferencesKey<String>(key)
+        val preferences = dataStore.data.first()
+        return preferences[dataStoreKey]
     }
 
     private fun subscribeToObservers() {
@@ -81,7 +102,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
                         showSnackbar("Successfully logged in")
-                        sharedPref.edit().putString(Constants.KEY_CREDENTIAL, credential).apply()
+                        lifecycleScope.launch {
+                            saveCredential(Constants.KEY_CREDENTIAL, credential)
+                        }
                         findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
@@ -98,5 +121,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun showSnackbar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

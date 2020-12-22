@@ -5,7 +5,7 @@ import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.others.checkForInternetConnection
+import github.sachin2dehury.nitrmail.others.isInternetConnected
 import github.sachin2dehury.nitrmail.others.networkBoundResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +39,7 @@ class MainRepository @Inject constructor(
                 }
             },
             shouldFetch = {
-                checkForInternetConnection(context)
+                isInternetConnected(context)
             }
         )
     }

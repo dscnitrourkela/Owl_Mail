@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.di
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.preferences.createDataStore
 import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -73,7 +74,7 @@ object AppModule {
             .build()
         return EncryptedSharedPreferences.create(
             context,
-            Constants.ENCRYPTED_SHARED_PREF_NAME,
+            Constants.DATA_STORE_NAME,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -83,4 +84,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSimpleDateFormat() = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+
+    @Singleton
+    @Provides
+    fun provideDataStore(
+        @ApplicationContext context: Context
+    ) = context.createDataStore(Constants.DATA_STORE_NAME)
 }

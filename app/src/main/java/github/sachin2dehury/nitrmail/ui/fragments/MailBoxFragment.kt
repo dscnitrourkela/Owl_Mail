@@ -93,4 +93,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private fun showSnackbar(text: String) {
         Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }

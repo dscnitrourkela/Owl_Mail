@@ -14,12 +14,10 @@ object Constants {
     const val CALENDAR_URL = "calendar.json"
     const val ITEM_URL = "/?id="
 
-    const val DATABASE_NAME = "app_db"
+    const val DATABASE_NAME = "MAIL_DB"
 
-    const val ENCRYPTED_SHARED_PREF_NAME = "enc_shared_pref"
-
+    const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"
-
     const val NO_CREDENTIAL = "NO_CREDENTIAL"
 
     const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
