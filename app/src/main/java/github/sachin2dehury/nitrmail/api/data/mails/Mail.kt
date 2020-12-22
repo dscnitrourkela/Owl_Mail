@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.api.data.mail
+package github.sachin2dehury.nitrmail.api.data.mails
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
