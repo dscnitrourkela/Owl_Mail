@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.nitrmail.R
-import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.data.mail.Mail
 import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import java.text.SimpleDateFormat

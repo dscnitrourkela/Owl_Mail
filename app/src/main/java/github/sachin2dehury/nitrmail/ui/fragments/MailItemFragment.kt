@@ -42,10 +42,12 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewDate.text = dateFormat.format(mail.time)
                         textViewMailSubject.text = mail.subject
                         textViewSender.text = mail.senders.last().email
-//                        webView.apply {
-//                            settings.loadsImagesAutomatically = true
-//                            loadData("${mail.bodyHtml} ${mail.bodyHtml}", "text/html", "UTF-8")
-//                        }
+                        webView.apply {
+                            settings.loadsImagesAutomatically = true
+                            loadUrl(
+                                "https://mail.nitrkl.ac.in/h/search?cid=-16680"
+                            )
+                        }
 //                        textViewMailBody.text = mail.bodyText
                     }
                 }

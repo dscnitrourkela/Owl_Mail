@@ -2,8 +2,9 @@ package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.data.mail.Mail
 import github.sachin2dehury.nitrmail.api.database.MailDao
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.isInternetConnected
 import github.sachin2dehury.nitrmail.others.networkBoundResource
@@ -28,10 +29,13 @@ class MainRepository @Inject constructor(
     fun getMails(request: String): Flow<Resource<List<Mail>>> {
         return networkBoundResource(
             query = {
-                mailDao.getAllMails(request)
+                mailDao.getMails(request)
             },
             fetch = {
                 mailApi.getMails(request)
+            },
+            update = {
+                mailApi.getMails(Constants.CONTACTS_URL)
             },
             saveFetchResult = { response ->
                 response.body()?.let {

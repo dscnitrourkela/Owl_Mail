@@ -2,11 +2,8 @@ package github.sachin2dehury.nitrmail.di
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.datastore.preferences.createDataStore
 import androidx.room.Room
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,23 +60,6 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMailDao(mailDatabase: MailDatabase) = mailDatabase.getMailDao()
-
-    @Singleton
-    @Provides
-    fun provideEncryptedSharedPreferences(
-        @ApplicationContext context: Context
-    ): SharedPreferences {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        return EncryptedSharedPreferences.create(
-            context,
-            Constants.DATA_STORE_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
 
     @Singleton
     @Provides

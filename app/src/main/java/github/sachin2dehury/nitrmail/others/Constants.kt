@@ -14,6 +14,8 @@ object Constants {
     const val CALENDAR_URL = "calendar.json"
     const val ITEM_URL = "/?id="
 
+    const val UPDATE_QUERY = "?after:"
+
     const val DATABASE_NAME = "MAIL_DB"
 
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"

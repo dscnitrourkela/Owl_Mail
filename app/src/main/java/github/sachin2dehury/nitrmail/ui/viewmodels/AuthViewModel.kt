@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.data.mail.Mail
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.MainRepository
 import kotlinx.coroutines.launch

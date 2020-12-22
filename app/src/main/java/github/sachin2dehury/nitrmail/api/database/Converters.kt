@@ -3,7 +3,7 @@ package github.sachin2dehury.nitrmail.api.database
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import github.sachin2dehury.nitrmail.api.data.Sender
+import github.sachin2dehury.nitrmail.api.data.mail.Sender
 
 class Converters {
 

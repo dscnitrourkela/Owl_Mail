@@ -1,6 +1,5 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
-import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
@@ -29,9 +28,6 @@ import javax.inject.Inject
 class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private val viewModel: AuthViewModel by viewModels()
-
-    @Inject
-    lateinit var sharedPref: SharedPreferences
 
     @Inject
     lateinit var basicAuthInterceptor: BasicAuthInterceptor
@@ -72,9 +68,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun isLoggedIn(): Boolean {
         lifecycleScope.launch {
-            credential = readCredential(Constants.KEY_CREDENTIAL) ?: Constants.NO_CREDENTIAL
+            credential = readCredential() ?: Constants.NO_CREDENTIAL
         }
-        return credential == Constants.NO_CREDENTIAL
+        return credential != Constants.NO_CREDENTIAL
     }
 
     private fun authenticate() {
@@ -82,15 +78,15 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         viewModel.login(credential)
     }
 
-    private suspend fun saveCredential(key: String, value: String) {
-        val dataStoreKey = preferencesKey<String>(key)
+    private fun saveCredential(value: String) = lifecycleScope.launch {
+        val dataStoreKey = preferencesKey<String>(Constants.KEY_CREDENTIAL)
         dataStore.edit { settings ->
             settings[dataStoreKey] = value
         }
     }
 
-    private suspend fun readCredential(key: String): String? {
-        val dataStoreKey = preferencesKey<String>(key)
+    private suspend fun readCredential(): String? {
+        val dataStoreKey = preferencesKey<String>(Constants.KEY_CREDENTIAL)
         val preferences = dataStore.data.first()
         return preferences[dataStoreKey]
     }
@@ -100,11 +96,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
+                        saveCredential(credential)
                         binding.progressBar.visibility = View.GONE
                         showSnackbar("Successfully logged in")
-                        lifecycleScope.launch {
-                            saveCredential(Constants.KEY_CREDENTIAL, credential)
-                        }
                         findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {

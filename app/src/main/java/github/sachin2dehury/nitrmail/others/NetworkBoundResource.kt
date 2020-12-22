@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.*
 inline fun <ResultType, RequestType> networkBoundResource(
     crossinline query: () -> Flow<ResultType>,
     crossinline fetch: suspend () -> RequestType,
+    crossinline update: suspend () -> RequestType,
     crossinline saveFetchResult: suspend (RequestType) -> Unit,
     crossinline onFetchFailed: (Throwable) -> Unit = { },
     crossinline shouldFetch: (ResultType) -> Boolean = { true }
@@ -16,6 +17,7 @@ inline fun <ResultType, RequestType> networkBoundResource(
         emit(Resource.loading(data))
 
         try {
+//            val fetchedResult = if (data == null) fetch() else update()
             val fetchedResult = fetch()
             saveFetchResult(fetchedResult)
             query().map { Resource.success(it) }
@@ -26,6 +28,16 @@ inline fun <ResultType, RequestType> networkBoundResource(
             }
         }
     } else {
+        try {
+            val fetchedResult = update()
+            saveFetchResult(fetchedResult)
+            query().map { Resource.success(it) }
+        } catch (t: Throwable) {
+            onFetchFailed(t)
+            query().map {
+                Resource.error("Couldn't reach server. It might be down", it)
+            }
+        }
         query().map { Resource.success(it) }
     }
     emitAll(flow)
