@@ -28,16 +28,6 @@ inline fun <ResultType, RequestType> networkBoundResource(
             }
         }
     } else {
-        try {
-            val fetchedResult = update()
-            saveFetchResult(fetchedResult)
-            query().map { Resource.success(it) }
-        } catch (t: Throwable) {
-            onFetchFailed(t)
-            query().map {
-                Resource.error("Couldn't reach server. It might be down", it)
-            }
-        }
         query().map { Resource.success(it) }
     }
     emitAll(flow)

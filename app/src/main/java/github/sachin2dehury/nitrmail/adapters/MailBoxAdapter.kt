@@ -1,10 +1,12 @@
 package github.sachin2dehury.nitrmail.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavController
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +16,7 @@ import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() {
+class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
 
     class MailBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -29,8 +31,9 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
         }
     }
 
-    lateinit var navController: NavController
+    private var onItemClickListener: ((Mail) -> Unit)? = null
 
+    @SuppressLint("SimpleDateFormat")
     private val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
 
     private val differ = AsyncListDiffer(this, diffCallback)
@@ -61,11 +64,42 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>() 
             }
         }
         holder.itemView.setOnClickListener {
-            navController.navigate(R.id.action_mailBoxFragment_to_mail_item_Fragment)
+            onItemClickListener?.let { click ->
+                click(mail)
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return mails.size
+    }
+
+    fun setOnItemClickListener(onItemClick: (Mail) -> Unit) {
+        this.onItemClickListener = onItemClick
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(value: CharSequence?): FilterResults {
+                val search = value.toString()
+                val filterResults = FilterResults()
+                filterResults.values = if (search.isEmpty()) {
+                    mails
+                } else {
+                    mails.filter {
+                        it.senders.first().email.contains(search, true) || it.body.contains(
+                            search,
+                            true
+                        ) ||
+                                it.subject.contains(search, true)
+                    }
+                }
+                return filterResults
+            }
+
+            override fun publishResults(value: CharSequence?, filterResults: FilterResults?) {
+                mails = filterResults?.values as List<Mail>
+            }
+        }
     }
 }

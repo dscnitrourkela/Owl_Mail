@@ -3,7 +3,6 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.mails.Mail
-import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.MainRepository
@@ -12,7 +11,7 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData<String>(Constants.JUNK_URL)
+    private val _request = MutableLiveData<String>()
     val request: LiveData<String> = _request
 
     private val _forceUpdate = MutableLiveData(false)

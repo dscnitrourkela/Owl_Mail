@@ -16,6 +16,9 @@ interface MailDao {
     @Query("SELECT * FROM mails WHERE box= :box ORDER BY time DESC")
     fun getMails(box: String): Flow<List<Mail>>
 
-    @Query("DELETE FROM mails WHERE id = :mailId")
-    suspend fun deleteMailById(mailId: String)
+//    @Query("DELETE FROM mails WHERE id = :mailId")
+//    suspend fun deleteMailById(mailId: String)
+//
+//    @Query("SELECT * FROM mails WHERE id = :mailId")
+//    suspend fun getMailById(mailId: String)
 }
