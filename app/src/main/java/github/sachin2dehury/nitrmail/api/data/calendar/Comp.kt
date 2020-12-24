@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.api.data.calander
+package github.sachin2dehury.nitrmail.api.data.calendar
 
 data class Comp(
     val alarm: List<Alarm>,
