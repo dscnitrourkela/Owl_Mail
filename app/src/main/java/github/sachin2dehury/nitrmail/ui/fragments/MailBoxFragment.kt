@@ -8,6 +8,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -15,8 +16,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.others.isInternetConnected
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +31,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
+
+    @Inject
+    lateinit var dataStore: DataStoreExt
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
@@ -44,12 +52,23 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
 //        viewModel.setRequest(Constants.INBOX_URL)
 
-        setUpAdapter()
+        readLastSync()
+        setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
     }
 
-    private fun setUpAdapter() = mailBoxAdapter.setOnItemClickListener {
+    private fun readLastSync() = lifecycleScope.launch {
+        viewModel.lastSync =
+            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request)?.toLong()
+                ?: Constants.NO_LAST_SYNC
+    }
+
+    private fun saveLastSync() = lifecycleScope.launch {
+        dataStore.saveCredential(Constants.KEY_LAST_SYNC, viewModel.lastSync.toString())
+    }
+
+    private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
         findNavController().navigate(
             MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(
                 it.id
@@ -105,6 +124,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (isInternetConnected(requireContext())) {
+            saveLastSync()
+        }
         _binding = null
     }
 

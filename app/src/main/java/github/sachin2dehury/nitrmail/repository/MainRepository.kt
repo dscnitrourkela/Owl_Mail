@@ -26,7 +26,7 @@ class MainRepository @Inject constructor(
         }
     }
 
-    fun getMails(request: String): Flow<Resource<List<Mail>>> {
+    fun getMails(request: String, lastSync: Long): Flow<Resource<List<Mail>>> {
         return networkBoundResource(
             query = {
                 mailDao.getMails(request)
@@ -35,7 +35,7 @@ class MainRepository @Inject constructor(
                 mailApi.getMails(request)
             },
             update = {
-                mailApi.getMails(Constants.CONTACTS_URL)
+                mailApi.getMails(request + Constants.UPDATE_QUERY + lastSync)
             },
             saveFetchResult = { response ->
                 response.body()?.let {
@@ -43,6 +43,9 @@ class MainRepository @Inject constructor(
                 }
             },
             shouldFetch = {
+                isInternetConnected(context) && lastSync == Constants.NO_LAST_SYNC
+            },
+            shouldUpdate = {
                 isInternetConnected(context)
             }
         )

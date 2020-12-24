@@ -3,10 +3,6 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.preferencesKey
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -17,9 +13,9 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
 import javax.inject.Inject
@@ -33,7 +29,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     lateinit var basicAuthInterceptor: BasicAuthInterceptor
 
     @Inject
-    lateinit var dataStore: DataStore<Preferences>
+    lateinit var dataStore: DataStoreExt
 
     private var credential = Constants.NO_CREDENTIAL
 
@@ -68,7 +64,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun isLoggedIn(): Boolean {
         lifecycleScope.launch {
-            credential = readCredential() ?: Constants.NO_CREDENTIAL
+            credential =
+                dataStore.readCredential(Constants.KEY_CREDENTIAL) ?: Constants.NO_CREDENTIAL
         }
         return credential != Constants.NO_CREDENTIAL
     }
@@ -78,25 +75,14 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         viewModel.login(credential)
     }
 
-    private fun saveCredential(value: String) = lifecycleScope.launch {
-        val dataStoreKey = preferencesKey<String>(Constants.KEY_CREDENTIAL)
-        dataStore.edit { settings ->
-            settings[dataStoreKey] = value
-        }
-    }
-
-    private suspend fun readCredential(): String? {
-        val dataStoreKey = preferencesKey<String>(Constants.KEY_CREDENTIAL)
-        val preferences = dataStore.data.first()
-        return preferences[dataStoreKey]
-    }
-
     private fun subscribeToObservers() {
         viewModel.loginStatus.observe(viewLifecycleOwner, { result ->
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
-                        saveCredential(credential)
+                        lifecycleScope.launch {
+                            dataStore.saveCredential(Constants.KEY_CREDENTIAL, credential)
+                        }
                         binding.progressBar.visibility = View.GONE
                         showSnackbar("Successfully logged in")
                         findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)

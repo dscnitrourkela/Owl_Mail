@@ -21,6 +21,8 @@ object Constants {
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"
     const val NO_CREDENTIAL = "NO_CREDENTIAL"
+    const val KEY_LAST_SYNC = "KEY_LAST_SYNC"
+    const val NO_LAST_SYNC = 0L
 
     const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
     const val DATE_FORMAT_MONTH = "dd-MM"
