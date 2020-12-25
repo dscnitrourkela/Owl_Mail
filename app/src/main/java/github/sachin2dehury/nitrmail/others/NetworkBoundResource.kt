@@ -12,7 +12,6 @@ inline fun <ResultType, RequestType> networkBoundResource(
 ) = flow {
     emit(Resource.loading(null))
     val data = query().first()
-    Log.w("Test", "$data")
     val flow = when {
         shouldFetch(data) -> {
             emit(Resource.loading(data))
@@ -24,7 +23,10 @@ inline fun <ResultType, RequestType> networkBoundResource(
             } catch (t: Throwable) {
                 onFetchFailed(t)
                 query().map {
-                    Resource.error("Couldn't reach server. It might be down", it)
+                    Resource.error(
+                        t.localizedMessage ?: "Couldn't reach server. It might be down",
+                        it
+                    )
                 }
             }
         }

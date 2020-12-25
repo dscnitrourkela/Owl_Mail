@@ -17,6 +17,8 @@ import github.sachin2dehury.nitrmail.others.networkBoundResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
@@ -41,6 +43,7 @@ class MainRepository @Inject constructor(
 
     fun getParsedMailItem(request: String, id: String): Flow<Resource<ParsedMail>> {
         val encodedRequest = Gson().toJson(EncodedMail(request))
+            .toRequestBody("application/json".toMediaTypeOrNull())
         return networkBoundResource(
             query = {
                 parsedMailDao.getMailItem(id)

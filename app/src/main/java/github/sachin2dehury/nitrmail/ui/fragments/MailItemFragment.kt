@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -55,7 +56,12 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewDate.text = mail.date
                         textViewMailSubject.text = mail.subject
                         textViewSender.text = mail.sender.email
-                        webView.loadData(mail.body, "text/html", "utf-8")
+                        Log.d("Test", mail.body)
+                        webView.apply {
+                            settings.loadsImagesAutomatically = true
+                            settings.javaScriptEnabled = true
+                            loadData(mail.body, "text/html", "UTF-8")
+                        }
                     }
                 }
                 when (result.status) {
