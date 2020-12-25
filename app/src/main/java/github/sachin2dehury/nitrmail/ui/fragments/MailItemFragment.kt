@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -31,6 +32,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as DrawerExt).setDrawerEnabled(false)
 
         _binding = FragmentMailItemBinding.bind(view)
 

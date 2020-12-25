@@ -20,6 +20,7 @@ import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.others.isInternetConnected
+import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,6 +46,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as DrawerExt).setDrawerEnabled(true)
 
         _binding = FragmentMailBoxBinding.bind(view)
 

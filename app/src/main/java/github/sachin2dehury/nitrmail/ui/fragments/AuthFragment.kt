@@ -15,6 +15,7 @@ import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
@@ -38,6 +39,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (activity as DrawerExt).setDrawerEnabled(false)
 
         isLoggedIn()
 
