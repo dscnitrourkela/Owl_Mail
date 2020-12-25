@@ -12,16 +12,14 @@ class MailItemViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-
-    private val _id = MutableLiveData<String>("")
-    val id: LiveData<String> = _id
-
+    var id = ""
     var encoded = ""
 
     private val _forceUpdate = MutableLiveData(false)
 
     private val _parsedMail = _forceUpdate.switchMap {
-        repository.getParsedMail(encoded, id.value!!).asLiveData(viewModelScope.coroutineContext)
+        repository.getParsedMailItem(encoded, id)
+            .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
     }
@@ -29,8 +27,7 @@ class MailItemViewModel @ViewModelInject constructor(
 
     fun syncParsedMails() = _forceUpdate.postValue(true)
 
-    fun setId(mailId: String) = viewModelScope.launch {
-        encoded = repository.getRawMail(mailId)
-        _id.postValue(mailId)
+    fun getEncodedMail() = viewModelScope.launch {
+        encoded = repository.getRawMailItem(id)
     }
 }

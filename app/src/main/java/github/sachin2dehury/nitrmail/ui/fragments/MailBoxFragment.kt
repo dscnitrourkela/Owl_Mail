@@ -85,12 +85,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.mails.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
+                result.data?.let { mails ->
+                    mailBoxAdapter.mails = mails
+                }
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (isInternetConnected(requireContext())) {
                             saveLastSync()
                         }
-                        mailBoxAdapter.mails = result.data!!
                         binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -100,15 +102,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                                 showSnackbar(message)
                             }
                         }
-                        result.data?.let { mails ->
-                            mailBoxAdapter.mails = mails
-                        }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.LOADING -> {
-                        result.data?.let { mails ->
-                            mailBoxAdapter.mails = mails
-                        }
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }

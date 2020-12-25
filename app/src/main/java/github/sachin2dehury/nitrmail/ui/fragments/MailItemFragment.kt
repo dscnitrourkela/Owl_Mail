@@ -1,7 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -37,8 +36,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
 
         viewModel.apply {
-            setId(args.id).invokeOnCompletion {
-                Log.w("Test", viewModel.encoded)
+            id = args.id
+            getEncodedMail().invokeOnCompletion {
                 syncParsedMails()
             }
         }
@@ -50,17 +49,18 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
+                result.data?.let { mail ->
+                    binding.apply {
+                        progressBarMail.isVisible = false
+                        textViewDate.text = mail.date
+                        textViewMailSubject.text = mail.subject
+                        textViewSender.text = mail.sender.email
+                        webView.loadData(mail.body, "text/html", "utf-8")
+                    }
+                }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        val mail = result.data
-                        binding.apply {
-                            progressBarMail.isVisible = false
-                            textViewDate.text = mail?.date
-                            textViewMailSubject.text = mail?.subject
-                            textViewSender.text = mail?.sender?.email
-                            webView.loadData(mail?.body ?: "", "text/html", "utf-8")
-                        }
-
+                        binding.progressBarMail.isVisible = false
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -74,11 +74,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         binding.progressBarMail.isVisible = true
                     }
                 }
-            }
-        })
-        viewModel.id.observe(viewLifecycleOwner, { string ->
-            string?.let {
-                viewModel.syncParsedMails()
             }
         })
     }

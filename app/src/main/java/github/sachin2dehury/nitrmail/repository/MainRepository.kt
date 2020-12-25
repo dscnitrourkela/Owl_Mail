@@ -34,12 +34,12 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun getRawMail(id: String) = withContext(Dispatchers.IO) {
-        val result = mailApi.getMailItem(id).bytes()
-        return@withContext Base64.encode(result, Base64.DEFAULT).toString()
+    suspend fun getRawMailItem(id: String): String = withContext(Dispatchers.IO) {
+        val result = mailApi.getMailItem(id).string().encodeToByteArray()
+        return@withContext Base64.encodeToString(result, Base64.DEFAULT)
     }
 
-    fun getParsedMail(request: String, id: String): Flow<Resource<ParsedMail>> {
+    fun getParsedMailItem(request: String, id: String): Flow<Resource<ParsedMail>> {
         val encodedRequest = Gson().toJson(EncodedMail(request))
         return networkBoundResource(
             query = {

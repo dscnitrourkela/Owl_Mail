@@ -51,11 +51,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideParseMailApi(
-        okHttpClient: OkHttpClient
     ): ParseMailApi = Retrofit.Builder()
         .baseUrl(Constants.PARSE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .client(okHttpClient)
+        .client(OkHttpClient.Builder().build())
         .build()
         .create(ParseMailApi::class.java)
 
