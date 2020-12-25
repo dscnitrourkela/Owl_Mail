@@ -2,6 +2,7 @@ package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
 import android.util.Base64
+import android.util.Log
 import com.google.gson.Gson
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.calls.ParseMailApi
@@ -14,6 +15,7 @@ import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.isInternetConnected
 import github.sachin2dehury.nitrmail.others.networkBoundResource
+import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -37,8 +39,10 @@ class MainRepository @Inject constructor(
     }
 
     suspend fun getRawMailItem(id: String): String = withContext(Dispatchers.IO) {
-        val result = mailApi.getMailItem(id).string().encodeToByteArray()
-        return@withContext Base64.encodeToString(result, Base64.DEFAULT)
+        val result = mailApi.getMailItem(id).string()
+        val local = MailParser().parse(result.byteInputStream())
+        Log.w("Testing", "$local")
+        return@withContext Base64.encodeToString(result.encodeToByteArray(), Base64.DEFAULT)
     }
 
     fun getParsedMailItem(request: String, id: String): Flow<Resource<ParsedMail>> {
