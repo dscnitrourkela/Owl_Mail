@@ -50,9 +50,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
-//        viewModel.setRequest(Constants.INBOX_URL)
-
-        readLastSync()
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
@@ -60,12 +57,15 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private fun readLastSync() = lifecycleScope.launch {
         viewModel.lastSync =
-            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request)?.toLong()
+            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request.value)?.toLong()
                 ?: Constants.NO_LAST_SYNC
     }
 
     private fun saveLastSync() = lifecycleScope.launch {
-        dataStore.saveCredential(Constants.KEY_LAST_SYNC, viewModel.lastSync.toString())
+        dataStore.saveCredential(
+            Constants.KEY_LAST_SYNC + viewModel.request.value,
+            System.currentTimeMillis().toString()
+        )
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
@@ -87,6 +87,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 val result = event.peekContent()
                 when (result.status) {
                     Status.SUCCESS -> {
+                        if (isInternetConnected(requireContext())) {
+                            saveLastSync()
+                        }
                         mailBoxAdapter.mails = result.data!!
                         binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
@@ -113,7 +116,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
         viewModel.request.observe(viewLifecycleOwner, { string ->
             string?.let {
-                viewModel.syncAllNotes()
+                readLastSync().invokeOnCompletion {
+                    viewModel.syncAllMails()
+                }
             }
         })
     }
@@ -124,9 +129,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (isInternetConnected(requireContext())) {
-            saveLastSync()
-        }
         _binding = null
     }
 

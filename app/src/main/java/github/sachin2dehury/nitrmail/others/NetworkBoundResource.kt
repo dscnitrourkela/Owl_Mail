@@ -1,38 +1,24 @@
 package github.sachin2dehury.nitrmail.others
 
+import android.util.Log
 import kotlinx.coroutines.flow.*
 
 inline fun <ResultType, RequestType> networkBoundResource(
     crossinline query: () -> Flow<ResultType>,
     crossinline fetch: suspend () -> RequestType,
-    crossinline update: suspend () -> RequestType,
     crossinline saveFetchResult: suspend (RequestType) -> Unit,
     crossinline onFetchFailed: (Throwable) -> Unit = { },
     crossinline shouldFetch: (ResultType) -> Boolean = { true },
-    crossinline shouldUpdate: (ResultType) -> Boolean = { true }
 ) = flow {
     emit(Resource.loading(null))
     val data = query().first()
-
     val flow = when {
-        shouldUpdate(data) -> {
-            emit(Resource.loading(data))
-            try {
-                val fetchedResult = update()
-                saveFetchResult(fetchedResult)
-                query().map { Resource.success(it) }
-            } catch (t: Throwable) {
-                onFetchFailed(t)
-                query().map {
-                    Resource.error("Couldn't reach server. It might be down", it)
-                }
-            }
-        }
         shouldFetch(data) -> {
             emit(Resource.loading(data))
             try {
                 val fetchedResult = fetch()
                 saveFetchResult(fetchedResult)
+                Log.w("Test", "$fetchedResult")
                 query().map { Resource.success(it) }
             } catch (t: Throwable) {
                 onFetchFailed(t)

@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.api.database
+package github.sachin2dehury.nitrmail.api.databases.mails
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

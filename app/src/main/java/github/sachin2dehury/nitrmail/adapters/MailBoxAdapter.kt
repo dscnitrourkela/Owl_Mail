@@ -87,11 +87,9 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
                     mails
                 } else {
                     mails.filter {
-                        it.senders.first().email.contains(search, true) || it.body.contains(
-                            search,
-                            true
-                        ) ||
-                                it.subject.contains(search, true)
+                        it.senders.first().email.contains(search, true)
+                                || it.body.contains(search, true)
+                                || it.subject.contains(search, true)
                     }
                 }
                 return filterResults

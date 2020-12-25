@@ -12,7 +12,7 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData<String>()
+    private val _request = MutableLiveData<String>(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
     var lastSync = Constants.NO_LAST_SYNC
@@ -26,7 +26,7 @@ class MainViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun syncAllNotes() {
+    fun syncAllMails() {
         lastSync = System.currentTimeMillis()
         _forceUpdate.postValue(true)
     }
