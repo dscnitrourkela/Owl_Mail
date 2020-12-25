@@ -71,7 +71,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_account_circle_24"
-        app:tint="@color/white" />
+        app:srcCompat="@drawable/ic_baseline_account_circle_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,8 +47,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
         app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
-        app:srcCompat="@drawable/ic_baseline_account_circle_24"
-        app:tint="@color/white" />
+        app:srcCompat="@drawable/ic_baseline_account_circle_24" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewDate"

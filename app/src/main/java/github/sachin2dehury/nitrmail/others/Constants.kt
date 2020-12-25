@@ -2,7 +2,10 @@ package github.sachin2dehury.nitrmail.others
 
 object Constants {
 
-    const val BASE_URL = "https://mail.nitrkl.ac.in/home/~/"
+    const val BASE_URL = "https://mail.nitrkl.ac.in/"
+    const val HOME_URL = "home/~/"
+
+    const val PARSE_URL = "https://webmail.dscnitrourkela.org/"
 
     const val INBOX_URL = "inbox.json"
     const val SENT_URL = "sent.json"
@@ -12,11 +15,10 @@ object Constants {
     const val JUNK_URL = "junk.json"
     const val TRASH_URL = "trash.json"
     const val CALENDAR_URL = "calendar.json"
-    const val ITEM_URL = "/?id="
-
-    const val UPDATE_QUERY = "?after:"
+    const val UPDATE_QUERY = "after:"
 
     const val DATABASE_NAME = "MAIL_DB"
+    const val PARSED_MAIL_DATABASE_NAME = "PARSED_MAIL_DB"
 
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"

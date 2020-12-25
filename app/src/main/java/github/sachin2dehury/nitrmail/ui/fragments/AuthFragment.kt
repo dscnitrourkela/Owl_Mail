@@ -15,6 +15,7 @@ import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
@@ -39,10 +40,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (isLoggedIn()) {
-            authenticate()
-            findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
-        }
+        (activity as DrawerExt).setDrawerEnabled(false)
+
+        isLoggedIn()
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -56,18 +56,18 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         }
     }
 
+    private fun isLoggedIn() = lifecycleScope.launch {
+        dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let {
+            credential = it
+            authenticate()
+            findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+        }
+    }
+
     private fun getCredential() {
         val roll = binding.editTextUserRoll.text.toString()
         val password = binding.editTextUserPassword.text.toString()
         credential = Credentials.basic(roll, password)
-    }
-
-    private fun isLoggedIn(): Boolean {
-        lifecycleScope.launch {
-            credential =
-                dataStore.readCredential(Constants.KEY_CREDENTIAL) ?: Constants.NO_CREDENTIAL
-        }
-        return credential != Constants.NO_CREDENTIAL
     }
 
     private fun authenticate() {
@@ -89,7 +89,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        showSnackbar("An unknown error occured")
+                        showSnackbar(it.message ?: "An unknown error occured")
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE

@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.api.database
+package github.sachin2dehury.nitrmail.api.databases.mails
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -15,10 +15,4 @@ interface MailDao {
 
     @Query("SELECT * FROM mails WHERE box= :box ORDER BY time DESC")
     fun getMails(box: String): Flow<List<Mail>>
-
-//    @Query("DELETE FROM mails WHERE id = :mailId")
-//    suspend fun deleteMailById(mailId: String)
-//
-//    @Query("SELECT * FROM mails WHERE id = :mailId")
-//    suspend fun getMailById(mailId: String)
 }

@@ -20,6 +20,7 @@ import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.others.isInternetConnected
+import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,13 +47,12 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as DrawerExt).setDrawerEnabled(true)
+
         _binding = FragmentMailBoxBinding.bind(view)
 
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
-//        viewModel.setRequest(Constants.INBOX_URL)
-
-        readLastSync()
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
@@ -60,12 +60,15 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private fun readLastSync() = lifecycleScope.launch {
         viewModel.lastSync =
-            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request)?.toLong()
+            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request.value)?.toLong()
                 ?: Constants.NO_LAST_SYNC
     }
 
     private fun saveLastSync() = lifecycleScope.launch {
-        dataStore.saveCredential(Constants.KEY_LAST_SYNC, viewModel.lastSync.toString())
+        dataStore.saveCredential(
+            Constants.KEY_LAST_SYNC + viewModel.request.value,
+            System.currentTimeMillis().toString()
+        )
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
@@ -85,9 +88,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.mails.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
+                result.data?.let { mails ->
+                    mailBoxAdapter.mails = mails
+                }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        mailBoxAdapter.mails = result.data!!
+                        if (isInternetConnected(requireContext())) {
+                            saveLastSync()
+                        }
                         binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -97,15 +105,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                                 showSnackbar(message)
                             }
                         }
-                        result.data?.let { mails ->
-                            mailBoxAdapter.mails = mails
-                        }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.LOADING -> {
-                        result.data?.let { mails ->
-                            mailBoxAdapter.mails = mails
-                        }
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
@@ -113,7 +115,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
         viewModel.request.observe(viewLifecycleOwner, { string ->
             string?.let {
-                viewModel.syncAllNotes()
+                readLastSync().invokeOnCompletion {
+                    viewModel.syncAllMails()
+                }
             }
         })
     }
@@ -124,9 +128,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (isInternetConnected(requireContext())) {
-            saveLastSync()
-        }
         _binding = null
     }
 

@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.ui
+package github.sachin2dehury.nitrmail.others
 
 import android.app.Activity
 import android.view.View
