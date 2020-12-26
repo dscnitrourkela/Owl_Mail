@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -116,6 +117,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { string ->
             string?.let {
                 readLastSync().invokeOnCompletion {
+                    Log.w("Test", "${viewModel.lastSync}")
                     viewModel.syncAllMails()
                 }
             }

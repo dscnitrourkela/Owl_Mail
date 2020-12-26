@@ -26,10 +26,7 @@ class MainViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun syncAllMails() {
-        lastSync = System.currentTimeMillis()
-        _forceUpdate.postValue(true)
-    }
+    fun syncAllMails() = _forceUpdate.postValue(true)
 
     fun setRequest(string: String) {
         _request.postValue(string)
