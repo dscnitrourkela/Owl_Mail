@@ -1,6 +1,5 @@
 package github.sachin2dehury.nitrmail.others
 
-import android.util.Log
 import kotlinx.coroutines.flow.*
 
 inline fun <ResultType, RequestType> networkBoundResource(
@@ -18,7 +17,6 @@ inline fun <ResultType, RequestType> networkBoundResource(
             try {
                 val fetchedResult = fetch()
                 saveFetchResult(fetchedResult)
-                Log.w("Test", "$fetchedResult")
                 query().map { Resource.success(it) }
             } catch (t: Throwable) {
                 onFetchFailed(t)

@@ -11,15 +11,16 @@ class MailItemViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    var id = ""
+    companion object {
+        var id = ""
+    }
 
     private val _forceUpdate = MutableLiveData(false)
 
     private val _parsedMail = _forceUpdate.switchMap {
-        repository.getParsedMailItem(id)
-            .asLiveData(viewModelScope.coroutineContext)
-    }.switchMap {
-        MutableLiveData(Event(it))
+        repository.getParsedMailItem(id).asLiveData(viewModelScope.coroutineContext).switchMap {
+            MutableLiveData(Event(it))
+        }
     }
     val parsedMail: LiveData<Event<Resource<ParsedMail>>> = _parsedMail
 

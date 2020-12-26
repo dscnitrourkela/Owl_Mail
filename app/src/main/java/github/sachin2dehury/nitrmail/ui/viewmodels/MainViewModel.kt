@@ -12,7 +12,7 @@ class MainViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData<String>(Constants.INBOX_URL)
+    private val _request = MutableLiveData(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
     var lastSync = Constants.NO_LAST_SYNC

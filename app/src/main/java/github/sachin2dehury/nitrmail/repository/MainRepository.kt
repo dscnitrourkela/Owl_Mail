@@ -30,17 +30,6 @@ class MainRepository @Inject constructor(
         }
     }
 
-    private suspend fun insertParsedMail(parsedMail: ParsedMail) {
-        parsedMailDao.insertMail(parsedMail)
-    }
-
-    private suspend fun getRawMailItem(id: String): ParsedMail = withContext(Dispatchers.IO) {
-        val result = mailApi.getMailItem(id).string().byteInputStream()
-        val parsedMail = MailParser().parse(result)
-        parsedMail.id = id
-        return@withContext parsedMail
-    }
-
     fun getParsedMailItem(
         id: String
     ): Flow<Resource<ParsedMail>> {
@@ -49,10 +38,14 @@ class MainRepository @Inject constructor(
                 parsedMailDao.getMailItem(id)
             },
             fetch = {
-                getRawMailItem(id)
+                mailApi.getMailItem(id)
             },
-            saveFetchResult = {
-                insertParsedMail(it)
+            saveFetchResult = { result ->
+                result.string().byteInputStream().let {
+                    val parsedMail = MailParser().parse(it)
+                    parsedMail.id = id
+                    parsedMailDao.insertMail(parsedMail)
+                }
             },
             shouldFetch = {
                 isInternetConnected(context)
@@ -92,7 +85,10 @@ class MainRepository @Inject constructor(
                 Resource.error(response.message() ?: response.message(), null)
             }
         } catch (e: Exception) {
-            Resource.error("Couldn't connect to the servers. Check your internet connection", null)
+            Resource.error(
+                e.localizedMessage
+                    ?: "Couldn't connect to the servers. Check your internet connection", null
+            )
         }
     }
 }

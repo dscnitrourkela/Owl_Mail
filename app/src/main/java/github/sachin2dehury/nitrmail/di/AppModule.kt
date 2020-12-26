@@ -11,7 +11,6 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.calls.ParseMailApi
 import github.sachin2dehury.nitrmail.api.databases.mails.MailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
@@ -47,16 +46,6 @@ object AppModule {
         .client(okHttpClient)
         .build()
         .create(MailApi::class.java)
-
-    @Singleton
-    @Provides
-    fun provideParseMailApi(
-    ): ParseMailApi = Retrofit.Builder()
-        .baseUrl(Constants.PARSE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(OkHttpClient.Builder().build())
-        .build()
-        .create(ParseMailApi::class.java)
 
     @Provides
     @Singleton

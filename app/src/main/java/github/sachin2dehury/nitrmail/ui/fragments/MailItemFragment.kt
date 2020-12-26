@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -31,9 +32,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
-    @SuppressLint("SetJavaScriptEnabled", "SimpleDateFormat")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        MailItemViewModel.id = args.id
 
         (activity as DrawerExt).setDrawerEnabled(false)
 
@@ -41,14 +43,11 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
 
-        viewModel.apply {
-            id = args.id
-            syncParsedMails()
-        }
+        viewModel.syncParsedMails()
         subscribeToObservers()
     }
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")
     private fun subscribeToObservers() {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
@@ -59,12 +58,20 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
                         textViewMailSubject.text = mail.subject
-                        textViewSender.text = mail.sender.email
+                        textViewSender.text = mail.from.email
                         webView.apply {
+                            settings.javaScriptEnabled = true
+                            settings.loadWithOverviewMode = true
+                            settings.defaultTextEncodingName = "utf-8"
                             settings.loadsImagesAutomatically = true
-                            val body =
-                                if (mail.bodyHtml.length > mail.bodyText.length) mail.bodyHtml else mail.bodyText
-                            loadData(body, "text/html", "UTF-8")
+                            settings.domStorageEnabled = true
+                            settings.useWideViewPort = false
+                            isHorizontalScrollBarEnabled = false
+                            val body = mail.bodyText + mail.bodyHtml
+                            val html = HtmlCompat.fromHtml(
+                                body, HtmlCompat.FROM_HTML_MODE_LEGACY
+                            ).toString()
+                            loadData(html, "text/html", "utf-8")
                         }
                     }
                 }

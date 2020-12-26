@@ -39,21 +39,21 @@ class MailParser {
 
     private fun parseHelper(parsedMessage: Message): ParsedMail {
 
-        val messageId = parsedMessage.messageId ?: ""
+//        val messageId = parsedMessage.messageId ?: ""
 
         val subject = parsedMessage.subject ?: ""
         val fromAddress: Address = parsedMessage.from?.toAddressList()?.first() ?: Address()
-        val senderAddress: Address = parsedMessage.sender?.toAddress() ?: Address()
-        val replyToAddresses: List<Address> = parsedMessage.replyTo?.toAddressList() ?: emptyList()
-        val toAddresses: List<Address> = parsedMessage.to?.toAddressList() ?: emptyList()
-        val ccAddresses: List<Address> = parsedMessage.cc?.toAddressList() ?: emptyList()
+//        val senderAddress: Address = parsedMessage.sender?.toAddress() ?: Address()
+//        val replyToAddresses: List<Address> = parsedMessage.replyTo?.toAddressList() ?: emptyList()
+//        val toAddresses: List<Address> = parsedMessage.to?.toAddressList() ?: emptyList()
+//        val ccAddresses: List<Address> = parsedMessage.cc?.toAddressList() ?: emptyList()
 
-        val returnPathField = parsedMessage.header?.getField("Return-Path")
-        val returnPath = returnPathField?.let { getReturnPathAddress(it) } ?: Address()
+//        val returnPathField = parsedMessage.header?.getField("Return-Path")
+//        val returnPath = returnPathField?.let { getReturnPathAddress(it) } ?: Address()
 
         val date = guessDateFromMessage(parsedMessage)
-        val headers = parsedMessage.header.fields.map { fieldToHeader(it) }
-        val references = parseReferences(parsedMessage.header.getFields("References"))
+//        val headers = parsedMessage.header.fields.map { fieldToHeader(it) }
+//        val references = parseReferences(parsedMessage.header.getFields("References"))
 
         val textParts: MutableList<String> = mutableListOf()
         val htmlParts: MutableList<String> = mutableListOf()
@@ -110,40 +110,10 @@ class MailParser {
 
         return ParsedMail(
             subject,
-            messageId,
             fromAddress,
-            senderAddress,
-            replyToAddresses,
-            returnPath,
-            toAddresses,
-            ccAddresses,
             date,
-            references,
             bodyHtml,
             bodyText,
-            headers,
-            hints.toList()
         )
     }
-//
-//    private fun parseToResult(
-//        inputStream: InputStream,
-//        messageBuilder: MessageBuilder
-//    ): ParseResult {
-//        val contextId = UUID.randomUUID().toString()
-//        var exception: Exception? = null
-//
-//        val message = try {
-//            parse(inputStream, messageBuilder)
-//        } catch (e: Exception) {
-//            exception = e
-//            null
-//        }
-//
-//        return ParseResult(message, exception, contextId)
-//    }
-//
-//    fun parseToResult(inputStream: InputStream): ParseResult =
-//        parseToResult(inputStream, createDefaultMessageBuilder())
-
 }
