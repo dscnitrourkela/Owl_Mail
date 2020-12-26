@@ -1,4 +1,4 @@
-package github.sachin2dehury.nitrmail.api.data.mails
+package github.sachin2dehury.nitrmail.api.data
 
 import com.google.gson.annotations.SerializedName
 

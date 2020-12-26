@@ -1,6 +1,6 @@
 package github.sachin2dehury.nitrmail.api.calls
 
-import github.sachin2dehury.nitrmail.api.data.mails.Mails
+import github.sachin2dehury.nitrmail.api.data.Mails
 import github.sachin2dehury.nitrmail.others.Constants
 import okhttp3.ResponseBody
 import retrofit2.Response

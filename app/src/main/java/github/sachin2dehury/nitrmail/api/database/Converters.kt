@@ -1,9 +1,9 @@
-package github.sachin2dehury.nitrmail.api.databases.mails
+package github.sachin2dehury.nitrmail.api.database
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import github.sachin2dehury.nitrmail.api.data.mails.Sender
+import github.sachin2dehury.nitrmail.api.data.Sender
 
 class Converters {
 

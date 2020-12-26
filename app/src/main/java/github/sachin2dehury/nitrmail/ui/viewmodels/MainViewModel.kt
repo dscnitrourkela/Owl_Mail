@@ -2,7 +2,7 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import github.sachin2dehury.nitrmail.api.data.mails.Mail
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource

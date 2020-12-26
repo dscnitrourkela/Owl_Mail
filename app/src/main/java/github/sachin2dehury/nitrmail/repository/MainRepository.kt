@@ -2,8 +2,8 @@ package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.data.mails.Mail
-import github.sachin2dehury.nitrmail.api.databases.mails.MailDao
+import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.isInternetConnected
