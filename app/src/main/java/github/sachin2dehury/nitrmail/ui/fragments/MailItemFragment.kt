@@ -1,7 +1,7 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.DrawerExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
@@ -33,22 +34,19 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        MailItemViewModel.id = args.id
+
         (activity as DrawerExt).setDrawerEnabled(false)
 
         _binding = FragmentMailItemBinding.bind(view)
 
         viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
 
-        viewModel.apply {
-            id = args.id
-            getEncodedMail().invokeOnCompletion {
-                syncParsedMails()
-            }
-        }
-
+        viewModel.syncParsedMails()
         subscribeToObservers()
     }
 
+    @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")
     private fun subscribeToObservers() {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
@@ -56,14 +54,20 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 result.data?.let { mail ->
                     binding.apply {
                         progressBarMail.isVisible = false
-                        textViewDate.text = mail.date
+                        textViewDate.text =
+                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
                         textViewMailSubject.text = mail.subject
-                        textViewSender.text = mail.sender.email
-                        Log.d("Test", mail.body)
+                        textViewSender.text = mail.from.email
                         webView.apply {
-                            settings.loadsImagesAutomatically = true
                             settings.javaScriptEnabled = true
-                            loadData(mail.body, "text/html", "UTF-8")
+                            settings.loadWithOverviewMode = true
+                            settings.defaultTextEncodingName = "utf-8"
+                            settings.loadsImagesAutomatically = true
+                            settings.domStorageEnabled = true
+                            settings.useWideViewPort = false
+                            isHorizontalScrollBarEnabled = false
+                            val body = mail.bodyText + mail.bodyHtml
+                            loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
                         }
                     }
                 }
