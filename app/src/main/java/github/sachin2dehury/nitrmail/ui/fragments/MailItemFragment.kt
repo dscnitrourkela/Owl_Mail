@@ -3,7 +3,6 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -68,10 +67,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             settings.useWideViewPort = false
                             isHorizontalScrollBarEnabled = false
                             val body = mail.bodyText + mail.bodyHtml
-                            val html = HtmlCompat.fromHtml(
-                                body, HtmlCompat.FROM_HTML_MODE_LEGACY
-                            ).toString()
-                            loadData(html, "text/html", "utf-8")
+                            loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
                         }
                     }
                 }
