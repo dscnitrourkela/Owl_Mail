@@ -16,9 +16,8 @@ import java.util.*
 
 fun mailboxToAddress(mailbox: Mailbox): Address {
     val cleanName = mailbox.name?.trim()?.trim('"', '\'') ?: ""
-    val name = if (cleanName.isNotEmpty()) cleanName else null
 
-    return Address(name, "${mailbox.localPart}@${mailbox.domain}")
+    return Address(cleanName, "${mailbox.localPart}@${mailbox.domain}")
 }
 
 fun Mailbox.toAddress(): Address = mailboxToAddress(this)
@@ -45,7 +44,7 @@ fun fieldToHeader(field: Field): HeaderInterface {
         return ParseErrorHeader(name, value, errMsg)
     }
 
-    // DateTimeFieldLenientImpl doesnt raise any errors,
+    // DateTimeFieldLenientImpl doesn't raise any errors,
     // it just returns a null date
     if (field is DateTimeField && field.date == null) {
         val errMsg = field.parseException.message ?: "Invalid date format"
@@ -75,32 +74,30 @@ fun parseReferences(fields: List<Field>): List<String> {
     }
 }
 
-fun guessDateFromMessage(msg: Message): Date? {
+fun guessDateFromMessage(msg: Message): Date {
     if (msg.date != null) {
         return msg.date
     }
 
-    val rec = msg.header.getField("Received")?.body ?: return null
+    val rec = msg.header.getField("Received")?.body ?: return Date()
 
     val parts = rec.split(';', limit = 2)
     if (parts.size != 2) {
-        return null
+        return Date()
     }
 
     val dateStr = parts[1]
     return try {
         DateTimeParser(StringReader(dateStr)).parseAll().date
     } catch (e: Exception) {
-        null
+        Date()
     }
 }
 
-fun getReturnPathAddress(field: Field): Address? {
+fun getReturnPathAddress(field: Field): Address {
     if (field is MailboxField) {
-        return if (field.mailbox != null) {
-            mailboxToAddress(field.mailbox)
-        } else {
-            null
+        if (field.mailbox != null) {
+            return mailboxToAddress(field.mailbox)
         }
     }
 
@@ -113,7 +110,7 @@ fun getReturnPathAddress(field: Field): Address? {
         return Address("NORETURN", "<>")
     }
 
-    return null
+    return Address()
 }
 
 fun walkMessageParts(message: Entity, block: (b: Entity) -> Unit) {

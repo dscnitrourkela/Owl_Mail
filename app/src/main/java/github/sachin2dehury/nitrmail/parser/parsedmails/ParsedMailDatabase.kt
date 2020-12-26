@@ -1,9 +1,9 @@
-package github.sachin2dehury.nitrmail.api.databases.parsedmails
+package github.sachin2dehury.nitrmail.parser.parsedmails
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import github.sachin2dehury.nitrmail.api.data.parsedmails.ParsedMail
+import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 
 @Database(
     entities = [ParsedMail::class],

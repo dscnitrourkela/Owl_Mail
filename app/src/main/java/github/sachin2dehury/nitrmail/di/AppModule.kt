@@ -13,9 +13,9 @@ import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.calls.ParseMailApi
 import github.sachin2dehury.nitrmail.api.databases.mails.MailDatabase
-import github.sachin2dehury.nitrmail.api.databases.parsedmails.ParsedMailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
+import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDatabase
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -81,8 +81,7 @@ object AppModule {
         context,
         ParsedMailDatabase::class.java,
         Constants.PARSED_MAIL_DATABASE_NAME
-    )
-        .fallbackToDestructiveMigration().build()
+    ).fallbackToDestructiveMigration().build()
 
     @Singleton
     @Provides

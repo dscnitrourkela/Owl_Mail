@@ -1,31 +1,23 @@
 package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
-import android.util.Base64
-import android.util.Log
-import com.google.gson.Gson
 import github.sachin2dehury.nitrmail.api.calls.MailApi
-import github.sachin2dehury.nitrmail.api.calls.ParseMailApi
 import github.sachin2dehury.nitrmail.api.data.mails.Mail
-import github.sachin2dehury.nitrmail.api.data.parsedmails.EncodedMail
-import github.sachin2dehury.nitrmail.api.data.parsedmails.ParsedMail
 import github.sachin2dehury.nitrmail.api.databases.mails.MailDao
-import github.sachin2dehury.nitrmail.api.databases.parsedmails.ParsedMailDao
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.isInternetConnected
 import github.sachin2dehury.nitrmail.others.networkBoundResource
+import github.sachin2dehury.nitrmail.parser.data.ParsedMail
+import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDao
 import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(
     private val mailApi: MailApi,
-    private val parseMailApi: ParseMailApi,
     private val mailDao: MailDao,
     private val parsedMailDao: ParsedMailDao,
     private val context: Application
@@ -38,28 +30,29 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun getRawMailItem(id: String): String = withContext(Dispatchers.IO) {
-        val result = mailApi.getMailItem(id).string()
-        val local = MailParser().parse(result.byteInputStream())
-        Log.w("Testing", "$local")
-        return@withContext Base64.encodeToString(result.encodeToByteArray(), Base64.DEFAULT)
+    private suspend fun insertParsedMail(parsedMail: ParsedMail) {
+        parsedMailDao.insertMail(parsedMail)
     }
 
-    fun getParsedMailItem(request: String, id: String): Flow<Resource<ParsedMail>> {
-        val encodedRequest = Gson().toJson(EncodedMail(request))
-            .toRequestBody("application/json".toMediaTypeOrNull())
+    private suspend fun getRawMailItem(id: String): ParsedMail = withContext(Dispatchers.IO) {
+        val result = mailApi.getMailItem(id).string().byteInputStream()
+        val parsedMail = MailParser().parse(result)
+        parsedMail.id = id
+        return@withContext parsedMail
+    }
+
+    fun getParsedMailItem(
+        id: String
+    ): Flow<Resource<ParsedMail>> {
         return networkBoundResource(
             query = {
                 parsedMailDao.getMailItem(id)
             },
             fetch = {
-                parseMailApi.getParsedMail(encodedRequest)
+                getRawMailItem(id)
             },
-            saveFetchResult = { response ->
-                response.body()?.let { parsedMail ->
-                    parsedMail.id = id
-                    parsedMailDao.insertMail(parsedMail)
-                }
+            saveFetchResult = {
+                insertParsedMail(it)
             },
             shouldFetch = {
                 isInternetConnected(context)
