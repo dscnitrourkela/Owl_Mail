@@ -20,6 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <service
+            android:name=".services.SyncService"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
 </manifest>

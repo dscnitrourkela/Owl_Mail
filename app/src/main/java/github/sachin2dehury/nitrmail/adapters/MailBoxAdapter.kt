@@ -56,7 +56,7 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
             textViewSender.text = mail.senders.last().email
-            if (mail.isUnread == "u") {
+            if (mail.flag.contains("u")) {
                 textViewSender.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
                 textViewDate.typeface = Typeface.DEFAULT_BOLD

@@ -64,6 +64,10 @@ class MainActivity : AppCompatActivity(), DrawerExt {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+//        val intent = Intent(this, SyncService::class.java).apply {
+//            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+//        }
+//        startService(intent)
     }
 
     override fun setDrawerEnabled(enabled: Boolean) {
