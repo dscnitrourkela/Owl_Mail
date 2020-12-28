@@ -51,29 +51,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
-                result.data?.let { mail ->
-                    binding.apply {
-                        progressBarMail.isVisible = false
-                        textViewDate.text =
-                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
-                        textViewMailSubject.text = mail.subject
-                        textViewSender.text = mail.from.email
-                        webView.apply {
-                            settings.javaScriptEnabled = true
-                            settings.loadWithOverviewMode = true
-                            settings.defaultTextEncodingName = "utf-8"
-                            settings.loadsImagesAutomatically = true
-                            settings.domStorageEnabled = true
-                            settings.useWideViewPort = false
-                            isHorizontalScrollBarEnabled = false
-                            val body = mail.bodyText + mail.bodyHtml
-                            loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
-                        }
-                    }
-                }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        binding.progressBarMail.isVisible = false
+                        binding.swipeRefreshLayout.isRefreshing = false
+                        binding.imageViewSender.isVisible = true
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -81,10 +62,26 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                                 showSnackbar(message)
                             }
                         }
-                        binding.progressBarMail.isVisible = false
+                        binding.swipeRefreshLayout.isRefreshing = false
+                        binding.imageViewSender.isVisible = true
                     }
                     Status.LOADING -> {
-                        binding.progressBarMail.isVisible = true
+                        binding.swipeRefreshLayout.isRefreshing = true
+                        binding.imageViewSender.isVisible = false
+                    }
+                }
+                result.data?.let { mail ->
+                    binding.apply {
+                        textViewDate.text =
+                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
+                        textViewMailSubject.text = mail.subject
+                        textViewSender.text = mail.from.email
+                        webView.apply {
+                            settings.javaScriptEnabled = true
+                            settings.loadsImagesAutomatically = true
+                            val body = mail.bodyText
+                            loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
+                        }
                     }
                 }
             }

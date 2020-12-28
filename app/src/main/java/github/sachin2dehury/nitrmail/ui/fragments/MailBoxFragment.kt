@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -97,7 +96,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                         if (isInternetConnected(requireContext())) {
                             saveLastSync()
                         }
-                        binding.progressBarMailBox.isVisible = false
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
