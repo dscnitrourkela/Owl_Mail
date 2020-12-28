@@ -12,21 +12,20 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
+import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.repository.MainRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SyncService : Service() {
 
-    init {
-        Log.w("Test", "Service")
-    }
-
     @Inject
-    lateinit var repository: MainRepository
+    lateinit var mailApi: MailApi
 
-    var lastSync = Constants.NO_LAST_SYNC
+    private var lastSync = Constants.NO_LAST_SYNC
 
     private lateinit var notificationManager: NotificationManagerCompat
 
@@ -46,23 +45,48 @@ class SyncService : Service() {
         return notificationManager
     }
 
-    fun makeNotification(notify: String) {
+    private fun makeNotification(notify: String, info: String) {
         val notification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL).apply {
             priority = NotificationCompat.PRIORITY_DEFAULT
             setSmallIcon(R.mipmap.ic_launcher)
-            setContentTitle(notify)
+            setContentTitle("New Mail From $notify")
+            setContentInfo(info)
         }
         notificationManager.notify(1000, notification.build())
     }
 
+    private fun makeNetworkCalls() = CoroutineScope(Dispatchers.IO).launch {
+//        while (true) {
+//            getNewMails()
+//            delay(10000L)
+//
+//        }
+        getNewMails()
+    }
+
+    private suspend fun getNewMails() {
+        val result = mailApi.getMails(Constants.JUNK_URL, Constants.UPDATE_QUERY + lastSync)
+        result.body()?.mails?.let { list ->
+            if (list.isNotEmpty()) {
+                list.forEach { mail ->
+                    Log.w("Test", "Notify")
+                    makeNotification(mail.senders.first().name, mail.subject)
+                }
+            }
+        }
+        lastSync = System.currentTimeMillis()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        val lastSync = intent?.getLongExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+        lastSync = intent?.getLongExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
             ?: Constants.NO_LAST_SYNC
 
         setupNotificationManager()
+        makeNetworkCalls()
+        makeNotification("Test", "Test")
 
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {

@@ -10,6 +10,12 @@ import retrofit2.http.Query
 
 interface MailApi {
 
+    @GET(Constants.HOME_URL + Constants.DRAFT_URL)
+    suspend fun login(
+        @Query("query") sync: String,
+        @Query("auth") token: String = Constants.AUTH_TOKEN
+    ): Response<Mails>
+
     @GET("${Constants.HOME_URL}{request}")
     suspend fun getMails(
         @Path("request") request: String,

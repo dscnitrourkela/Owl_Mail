@@ -7,44 +7,38 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
-import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.Status
-import github.sachin2dehury.nitrmail.ui.DrawerExt
+import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthFragment : Fragment(R.layout.fragment_auth) {
 
-    private val viewModel: AuthViewModel by viewModels()
-
-    @Inject
-    lateinit var basicAuthInterceptor: BasicAuthInterceptor
-
-    @Inject
-    lateinit var dataStore: DataStoreExt
-
-    private var credential = Constants.NO_CREDENTIAL
-
     private var _binding: FragmentAuthBinding? = null
     private val binding: FragmentAuthBinding get() = _binding!!
+
+    private val viewModel: AuthViewModel by viewModels()
+
+    private var credential = Constants.NO_CREDENTIAL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as DrawerExt).setDrawerEnabled(false)
+        (activity as ActivityExt).apply {
+            toggleDrawer(false)
+            toggleActionBar(false)
+        }
 
         isLoggedIn()
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
 
         subscribeToObservers()
 
@@ -52,14 +46,12 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         binding.buttonLogin.setOnClickListener {
             getCredential()
-            authenticate()
+            viewModel.login(credential)
         }
     }
 
     private fun isLoggedIn() = lifecycleScope.launch {
-        dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let {
-            credential = it
-            authenticate()
+        if (viewModel.isLoggedIn()) {
             findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
         }
     }
@@ -70,26 +62,23 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         credential = Credentials.basic(roll, password)
     }
 
-    private fun authenticate() {
-        basicAuthInterceptor.credential = credential
-        viewModel.login(credential)
-    }
-
     private fun subscribeToObservers() {
         viewModel.loginStatus.observe(viewLifecycleOwner, { result ->
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
                         lifecycleScope.launch {
-                            dataStore.saveCredential(Constants.KEY_CREDENTIAL, credential)
+                            viewModel.saveLogInCredential(credential)
                         }
                         binding.progressBar.visibility = View.GONE
-                        showSnackbar("Successfully logged in")
+                        (activity as ActivityExt).showSnackbar("Successfully logged in")
                         findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        showSnackbar(it.message ?: "An unknown error occured")
+                        (activity as ActivityExt).showSnackbar(
+                            it.message ?: "An unknown error occurred"
+                        )
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE
@@ -97,10 +86,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 }
             }
         })
-    }
-
-    private fun showSnackbar(text: String) {
-        Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onDestroy() {

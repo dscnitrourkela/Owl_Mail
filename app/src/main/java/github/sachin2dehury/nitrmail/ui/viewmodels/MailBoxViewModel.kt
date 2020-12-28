@@ -6,10 +6,11 @@ import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.repository.MainRepository
+import github.sachin2dehury.nitrmail.repository.Repository
+import kotlinx.coroutines.launch
 
-class MainViewModel @ViewModelInject constructor(
-    private val repository: MainRepository
+class MailBoxViewModel @ViewModelInject constructor(
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _request = MutableLiveData(Constants.INBOX_URL)
@@ -26,9 +27,15 @@ class MainViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
+    fun saveLastSync() = viewModelScope.launch {
+        repository.saveLastSync(request.value!!, System.currentTimeMillis())
+    }
+
+    fun readLastSync() = viewModelScope.launch { repository.readLastSync(request.value!!) }
+
+    fun logOut() = viewModelScope.launch { repository.logOut() }
+
     fun syncAllMails() = _forceUpdate.postValue(true)
 
-    fun setRequest(string: String) {
-        _request.postValue(string)
-    }
+    fun setRequest(string: String) = _request.postValue(string)
 }

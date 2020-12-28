@@ -1,6 +1,5 @@
 package github.sachin2dehury.nitrmail.di
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.room.Room
 import dagger.Module
@@ -14,14 +13,14 @@ import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.database.MailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
+import github.sachin2dehury.nitrmail.others.InternetChecker
+import github.sachin2dehury.nitrmail.others.NetworkBoundResource
 import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDatabase
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.text.SimpleDateFormat
 import javax.inject.Singleton
 
-@SuppressLint("SimpleDateFormat")
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -79,11 +78,15 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSimpleDateFormat() = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
-
-    @Singleton
-    @Provides
     fun provideDataStore(
         @ApplicationContext context: Context
     ) = DataStoreExt(context)
+
+    @Singleton
+    @Provides
+    fun provideNetworkBoundResource() = NetworkBoundResource()
+
+    @Singleton
+    @Provides
+    fun provideInternetChecker() = InternetChecker()
 }

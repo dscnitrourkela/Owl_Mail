@@ -1,43 +1,37 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.others.DataStoreExt
+import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
-import github.sachin2dehury.nitrmail.others.isInternetConnected
-import github.sachin2dehury.nitrmail.ui.DrawerExt
-import github.sachin2dehury.nitrmail.ui.viewmodels.MainViewModel
-import kotlinx.coroutines.launch
+import github.sachin2dehury.nitrmail.ui.ActivityExt
+import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
-    lateinit var viewModel: MainViewModel
+    private var _binding: FragmentMailBoxBinding? = null
+    private val binding: FragmentMailBoxBinding get() = _binding!!
+
+    lateinit var viewModel: MailBoxViewModel
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
     @Inject
-    lateinit var dataStore: DataStoreExt
-
-    private var _binding: FragmentMailBoxBinding? = null
-    private val binding: FragmentMailBoxBinding get() = _binding!!
+    lateinit var internetChecker: InternetChecker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,28 +41,18 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as DrawerExt).setDrawerEnabled(true)
+        (activity as ActivityExt).apply {
+            toggleDrawer(true)
+            toggleActionBar(true)
+        }
 
         _binding = FragmentMailBoxBinding.bind(view)
 
-        viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
-    }
-
-    private fun readLastSync() = lifecycleScope.launch {
-        viewModel.lastSync =
-            dataStore.readCredential(Constants.KEY_LAST_SYNC + viewModel.request.value)?.toLong()
-                ?: Constants.NO_LAST_SYNC
-    }
-
-    private fun saveLastSync() = lifecycleScope.launch {
-        dataStore.saveCredential(
-            Constants.KEY_LAST_SYNC + viewModel.request.value,
-            System.currentTimeMillis().toString()
-        )
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
@@ -93,15 +77,15 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        if (isInternetConnected(requireContext())) {
-                            saveLastSync()
+                        if (internetChecker.isInternetConnected(requireContext())) {
+                            viewModel.saveLastSync()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                showSnackbar(message)
+                                (activity as ActivityExt).showSnackbar(message)
                             }
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
@@ -112,23 +96,13 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
             }
         })
-        viewModel.request.observe(viewLifecycleOwner, { string ->
-            string?.let {
-                readLastSync().invokeOnCompletion {
-                    Log.w("Test", "${viewModel.lastSync}")
+        viewModel.request.observe(viewLifecycleOwner, { request ->
+            request?.let {
+                viewModel.readLastSync().invokeOnCompletion {
                     viewModel.syncAllMails()
                 }
             }
         })
-    }
-
-    private fun showSnackbar(text: String) {
-        Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -145,5 +119,10 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             }
         })
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

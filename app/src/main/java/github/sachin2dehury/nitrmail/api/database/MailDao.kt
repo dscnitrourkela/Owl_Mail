@@ -13,6 +13,9 @@ interface MailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMail(mail: Mail)
 
-    @Query("SELECT * FROM mails WHERE box= :box ORDER BY time DESC")
+    @Query("SELECT * FROM mails WHERE box = :box ORDER BY time DESC")
     fun getMails(box: String): Flow<List<Mail>>
+
+    @Query("DELETE FROM mails")
+    suspend fun deleteMails()
 }

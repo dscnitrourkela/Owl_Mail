@@ -10,4 +10,6 @@
     <string name="trash">Trash</string>
     <string name="all_mails">All Mails</string>
     <string name="search">Search</string>
+    <string name="logout">LogOut</string>
+    <string name="dark_theme">Dark Theme</string>
 </resources>
