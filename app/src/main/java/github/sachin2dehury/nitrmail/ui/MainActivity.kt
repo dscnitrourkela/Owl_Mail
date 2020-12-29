@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,11 +34,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val intent = Intent(this, SyncService::class.java).apply {
-            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-        }
-        stopService(intent)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -85,17 +81,11 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             R.id.logOut -> {
                 viewModel.logOut()
                 showSnackbar("Successfully logged out.")
+                toggleSyncService(false)
                 binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
-                val intent = Intent(this, SyncService::class.java).apply {
-                    putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-                }
-                stopService(intent)
             }
             R.id.darkMode -> {
-                val intent = Intent(this, SyncService::class.java).apply {
-                    putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-                }
-                stopService(intent)
+                toggleSyncService(false)
                 showSnackbar("Will be done. XD")
             }
         }
@@ -121,8 +111,27 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
+    override fun toggleSyncService(isRunning: Boolean) {
+        val intent = Intent(this, SyncService::class.java).apply {
+            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+        }
+        SyncService.currentState = isRunning
+        when (isRunning) {
+            true -> startService(intent)
+            else -> stopService(intent)
+        }
+    }
+
+    override fun hideKeyBoard() {
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+            binding.root.windowToken,
+            0
+        )
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         _binding = null
+        toggleSyncService(true)
+        super.onDestroy()
     }
 }

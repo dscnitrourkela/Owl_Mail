@@ -5,7 +5,7 @@
         android:id="@+id/logOut"
         android:icon="@drawable/ic_baseline_exit_to_app_24"
         android:title="@string/logout"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/darkMode"
         android:icon="@drawable/ic_baseline_dark_mode_24"

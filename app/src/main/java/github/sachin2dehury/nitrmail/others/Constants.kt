@@ -9,6 +9,8 @@ object Constants {
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
+    const val SYNC_DELAY_TIME = 3600000L
+
     const val INBOX_URL = "inbox.json"
     const val SENT_URL = "sent.json"
     const val DRAFT_URL = "drafts.json"
