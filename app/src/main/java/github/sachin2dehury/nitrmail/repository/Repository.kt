@@ -4,11 +4,10 @@ import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.data.ParsedMail
 import github.sachin2dehury.nitrmail.api.database.MailDao
+import github.sachin2dehury.nitrmail.api.database.ParsedMailDao
 import github.sachin2dehury.nitrmail.others.*
-import github.sachin2dehury.nitrmail.parser.data.ParsedMail
-import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDao
-import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -36,11 +35,8 @@ class Repository @Inject constructor(
                 mailApi.getMailItem(id)
             },
             saveFetchResult = { result ->
-                result.string().byteInputStream().let {
-                    val parsedMail = MailParser().parse(it)
-                    parsedMail.id = id
-                    parsedMailDao.insertMail(parsedMail)
-                }
+                val parsedMail = ParsedMail(result.string(), id)
+                parsedMailDao.insertMail(parsedMail)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected(context)
@@ -82,7 +78,7 @@ class Repository @Inject constructor(
             if (response.isSuccessful && response.code() == 200) {
                 Resource.success(response.body()?.mails)
             } else {
-                Resource.error(response.message() ?: response.message(), null)
+                Resource.error(response.message(), null)
             }
         } catch (e: Exception) {
             Resource.error(

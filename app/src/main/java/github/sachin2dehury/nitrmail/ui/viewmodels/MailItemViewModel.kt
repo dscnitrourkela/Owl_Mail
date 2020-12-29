@@ -2,9 +2,9 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import github.sachin2dehury.nitrmail.api.data.ParsedMail
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import github.sachin2dehury.nitrmail.repository.Repository
 
 class MailItemViewModel @ViewModelInject constructor(

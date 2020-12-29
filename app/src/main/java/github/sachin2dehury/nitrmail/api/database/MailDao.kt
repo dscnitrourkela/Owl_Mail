@@ -18,4 +18,7 @@ interface MailDao {
 
     @Query("DELETE FROM mails")
     suspend fun deleteMails()
+
+//    @Query("SELECT * FROM parsed WHERE id= :id")
+//    fun getMailItem(id: String): Flow<Mail>
 }
