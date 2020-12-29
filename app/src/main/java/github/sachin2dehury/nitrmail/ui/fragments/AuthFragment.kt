@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
@@ -12,6 +13,7 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
@@ -53,6 +55,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
             findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+            val intent = Intent(requireContext(), SyncService::class.java).apply {
+                putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+            }
+            requireContext().startService(intent)
         }
     }
 

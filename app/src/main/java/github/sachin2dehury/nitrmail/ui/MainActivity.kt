@@ -48,11 +48,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         drawerOptionMenu()
-//        val intent = Intent(this, SyncService::class.java).apply {
-//            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-//        }
-//        startService(intent)
-//        Log.w("Test", "Started service")
+
     }
 
     private fun drawerOptionMenu() {
@@ -85,12 +81,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 viewModel.logOut()
                 showSnackbar("Successfully logged out.")
                 binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
-            }
-            R.id.darkMode -> {
                 val intent = Intent(this, SyncService::class.java).apply {
                     putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
                 }
-                startService(intent)
+                stopService(intent)
+            }
+            R.id.darkMode -> {
                 showSnackbar("Will be done. XD")
             }
         }
