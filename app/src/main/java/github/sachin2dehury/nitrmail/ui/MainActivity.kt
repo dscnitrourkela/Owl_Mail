@@ -1,7 +1,6 @@
 package github.sachin2dehury.nitrmail.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -17,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 
 
@@ -81,11 +79,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             R.id.logOut -> {
                 viewModel.logOut()
                 showSnackbar("Successfully logged out.")
-                toggleSyncService(false)
                 binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
             }
             R.id.darkMode -> {
-                toggleSyncService(false)
                 showSnackbar("Will be done. XD")
             }
         }
@@ -111,17 +107,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
-    override fun toggleSyncService(isRunning: Boolean) {
-        val intent = Intent(this, SyncService::class.java).apply {
-            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-        }
-        SyncService.currentState = isRunning
-        when (isRunning) {
-            true -> startService(intent)
-            else -> stopService(intent)
-        }
-    }
-
     override fun hideKeyBoard() {
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
             binding.root.windowToken,
@@ -131,7 +116,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     override fun onDestroy() {
         _binding = null
-        toggleSyncService(true)
         super.onDestroy()
     }
 }

@@ -1,19 +1,21 @@
 package github.sachin2dehury.nitrmail.services
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
+import android.content.Context
 import androidx.lifecycle.asLiveData
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.repository.Repository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class SyncService : Service() {
+class SyncManager(context: Context, workerParams: WorkerParameters) :
+    Worker(context, workerParams) {
 
     @Inject
     lateinit var repository: Repository
@@ -24,31 +26,7 @@ class SyncService : Service() {
     @Inject
     lateinit var notificationExt: NotificationExt
 
-    override fun onBind(p0: Intent?): IBinder? = null
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-        startSyncService()
-
-        return START_STICKY
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        val restartServiceIntent = Intent(applicationContext, this.javaClass)
-        restartServiceIntent.setPackage(packageName)
-        startService(restartServiceIntent)
-        super.onTaskRemoved(rootIntent)
-    }
-
-    private fun startSyncService() = GlobalScope.launch {
-        val lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
-        while (true) {
-            syncMails(lastSync)
-            delay(Constants.SYNC_DELAY_TIME)
-        }
-    }
-
-    private fun syncMails(lastSync: Long) {
+    private fun syncMails(lastSync: Long): Result {
         val currentTime = System.currentTimeMillis()
         val response = repository.getMails(Constants.INBOX_URL, lastSync)
             .asLiveData(GlobalScope.coroutineContext).value
@@ -65,7 +43,20 @@ class SyncService : Service() {
                         }
                     }
                 }
+                return Result.success()
             }
         }
+        return Result.failure()
+    }
+
+    override fun doWork(): Result {
+        var result = Result.failure()
+        var lastSync = Constants.NO_LAST_SYNC
+        CoroutineScope(Dispatchers.IO).launch {
+            lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
+        }.invokeOnCompletion {
+            result = syncMails(lastSync)
+        }
+        return result
     }
 }
