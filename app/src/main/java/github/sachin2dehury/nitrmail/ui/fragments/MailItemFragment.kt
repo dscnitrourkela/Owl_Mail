@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -53,7 +54,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
                         textViewMailSubject.text = mail.subject
-                        textViewSender.text = mail.senders.last().email
+                        textViewSenderName.text =
+                            if (mail.flag.contains('s')) mail.senders.first().name else mail.senders.last().name
+                        textViewSenderEmail.text =
+                            if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+                        if (mail.flag.contains('a')) {
+                            imageViewAttachment.isVisible = true
+                        }
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true

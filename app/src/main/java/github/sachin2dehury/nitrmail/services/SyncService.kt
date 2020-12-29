@@ -19,7 +19,9 @@ import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.repository.Repository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -80,7 +82,7 @@ class SyncService @Inject constructor(
         notificationManager.notify(1000, notification.build())
     }
 
-    private fun makeNetworkCalls(time: Long = 3600000L) = CoroutineScope(Dispatchers.IO).launch {
+    private fun makeNetworkCalls(time: Long = 3600000L) = GlobalScope.launch {
         repository.saveLastSync(Constants.INBOX_URL, lastSync)
         getNewMails()
         delay(time)

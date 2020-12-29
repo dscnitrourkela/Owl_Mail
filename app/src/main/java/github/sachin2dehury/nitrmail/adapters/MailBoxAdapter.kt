@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -55,21 +56,20 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSender.text =
-                if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+            textViewSenderName.text =
+                if (mail.flag.contains('s')) mail.senders.first().name else mail.senders.last().name
             if (mail.flag.contains('u')) {
-                textViewSender.typeface = Typeface.DEFAULT_BOLD
+                textViewSenderName.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
                 textViewDate.typeface = Typeface.DEFAULT_BOLD
                 textViewMailBody.typeface = Typeface.DEFAULT_BOLD
             }
-//            if (mail.flag.contains('f')) {
-//
-//            }
-//            if (mail.flag.contains('a')) {
-//
-//            }
-
+            if (mail.flag.contains('f')) {
+                imageViewStared.isVisible = true
+            }
+            if (mail.flag.contains('a')) {
+                imageViewAttachment.isVisible = true
+            }
         }
         holder.itemView.setOnClickListener {
             onItemClickListener?.let { click ->

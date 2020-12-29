@@ -6,7 +6,7 @@
     android:layout_height="?attr/listPreferredItemHeightLarge">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textViewSender"
+        android:id="@+id/textViewSenderName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -30,7 +30,7 @@
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
         app:layout_constraintStart_toEndOf="@+id/imageViewSender"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Mail Subject" />
@@ -54,11 +54,12 @@
         android:id="@+id/textViewDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:gravity="end"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toTopOf="@+id/textViewMailSubject"
-        app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="Date" />
 
     <ImageView
@@ -68,9 +69,28 @@
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textViewMailSubject"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+
+    <ImageView
+        android:id="@+id/imageViewAttachment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewMailSubject"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_attachment_24" />
+
+    <ImageView
+        android:id="@+id/imageViewStared"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewMailBody"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_star_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
