@@ -14,7 +14,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SyncManager(context: Context, workerParams: WorkerParameters) :
+class SyncWorkManager(context: Context, workerParams: WorkerParameters) :
     Worker(context, workerParams) {
 
     @Inject
