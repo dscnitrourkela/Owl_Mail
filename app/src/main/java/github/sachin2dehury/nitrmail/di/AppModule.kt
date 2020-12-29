@@ -11,7 +11,6 @@ import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.database.MailDatabase
-import github.sachin2dehury.nitrmail.api.database.ParsedMailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.InternetChecker
@@ -60,21 +59,6 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMailDao(mailDatabase: MailDatabase) = mailDatabase.getMailDao()
-
-    @Singleton
-    @Provides
-    fun provideParsedMailDatabase(
-        @ApplicationContext context: Context
-    ) = Room.databaseBuilder(
-        context,
-        ParsedMailDatabase::class.java,
-        Constants.PARSED_MAIL_DATABASE_NAME
-    ).fallbackToDestructiveMigration().build()
-
-    @Singleton
-    @Provides
-    fun provideParsedMailDao(parsedMailDatabase: ParsedMailDatabase) =
-        parsedMailDatabase.getParsedMailDao()
 
     @Singleton
     @Provides

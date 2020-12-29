@@ -27,4 +27,10 @@ interface MailApi {
         @Query("id") mailId: String,
         @Query("part") part: String = "1"
     ): ResponseBody
+
+    @GET(Constants.MESSAGE_URL)
+    suspend fun getMailItemHtml(
+        @Query("id") mailId: String,
+        @Query("auth") token: String = Constants.AUTH_TOKEN
+    ): ResponseBody
 }

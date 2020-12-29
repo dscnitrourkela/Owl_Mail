@@ -2,7 +2,6 @@ package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -10,9 +9,11 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
+import java.text.SimpleDateFormat
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
@@ -49,19 +50,15 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 val result = event.peekContent()
                 result.data?.let { mail ->
                     binding.apply {
-//                        textViewDate.text =
-//                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
-//                        textViewMailSubject.text = mail.subject
-//                        textViewSender.text = mail.from.email
+                        textViewDate.text =
+                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
+                        textViewMailSubject.text = mail.subject
+                        textViewSender.text = mail.senders.last().email
                         webView.apply {
-//                            settings.javaScriptEnabled = true
-//                            settings.loadsImagesAutomatically = true
-//                            val body =
-//                                if (mail.bodyText.length > mail.bodyHtml.length) mail.bodyText else mail.bodyHtml
-//                            loadDataWithBaseURL(null, mail.response, "text/html", "utf-8", null)
-                            loadData(mail.response, "text/html", "ascii")
+                            settings.javaScriptEnabled = true
+                            settings.loadsImagesAutomatically = true
+                            loadDataWithBaseURL(null, mail.html, "text/html", "utf-8", null)
                         }
-                        Log.w("Test", mail.response)
                     }
                 }
                 when (result.status) {
@@ -72,7 +69,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
                                 (activity as ActivityExt).showSnackbar(message)
-                                Log.w("Test", message)
                             }
                         }
                         binding.swipeRefreshLayout.isRefreshing = false

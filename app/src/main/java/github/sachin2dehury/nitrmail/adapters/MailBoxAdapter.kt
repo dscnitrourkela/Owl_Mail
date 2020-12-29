@@ -55,13 +55,21 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSender.text = mail.senders.last().email
-            if (mail.flag.contains("u")) {
+            textViewSender.text =
+                if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+            if (mail.flag.contains('u')) {
                 textViewSender.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
                 textViewDate.typeface = Typeface.DEFAULT_BOLD
                 textViewMailBody.typeface = Typeface.DEFAULT_BOLD
             }
+//            if (mail.flag.contains('f')) {
+//
+//            }
+//            if (mail.flag.contains('a')) {
+//
+//            }
+
         }
         holder.itemView.setOnClickListener {
             onItemClickListener?.let { click ->

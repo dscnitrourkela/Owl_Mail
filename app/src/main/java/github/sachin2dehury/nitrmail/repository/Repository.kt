@@ -4,9 +4,7 @@ import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
-import github.sachin2dehury.nitrmail.api.data.ParsedMail
 import github.sachin2dehury.nitrmail.api.database.MailDao
-import github.sachin2dehury.nitrmail.api.database.ParsedMailDao
 import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,22 +19,20 @@ class Repository @Inject constructor(
     private val mailApi: MailApi,
     private val mailDao: MailDao,
     private val networkBoundResource: NetworkBoundResource,
-    private val parsedMailDao: ParsedMailDao
 ) {
 
     fun getParsedMailItem(
         id: String
-    ): Flow<Resource<ParsedMail>> {
+    ): Flow<Resource<Mail>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
-                parsedMailDao.getMailItem(id)
+                mailDao.getMailItem(id)
             },
             fetch = {
                 mailApi.getMailItem(id)
             },
             saveFetchResult = { result ->
-                val parsedMail = ParsedMail(result.string(), id)
-                parsedMailDao.insertMail(parsedMail)
+                mailDao.updateMail(result.string(), id)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected(context)
@@ -66,9 +62,9 @@ class Repository @Inject constructor(
         )
     }
 
-    private suspend fun deleteAllMails() = mailDao.deleteMails()
+    private suspend fun deleteAllMails() = mailDao.deleteAllMails()
 
-    private suspend fun deleteAllParsedMails() = mailDao.deleteMails()
+    private suspend fun deleteAllParsedMails() = mailDao.deleteAllMails()
 
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
         basicAuthInterceptor.credential = credential
