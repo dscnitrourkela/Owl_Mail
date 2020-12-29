@@ -29,4 +29,8 @@
             app:argType="string" />
     </fragment>
 
+    <action
+        android:id="@+id/globalActionToAuthFragment"
+        app:destination="@id/authFragment" />
+
 </navigation>

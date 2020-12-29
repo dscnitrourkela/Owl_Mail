@@ -15,4 +15,7 @@ interface ParsedMailDao {
 
     @Query("SELECT * FROM parsed WHERE id= :id")
     fun getMailItem(id: String): Flow<ParsedMail>
+
+    @Query("DELETE FROM parsed")
+    suspend fun deleteMails()
 }

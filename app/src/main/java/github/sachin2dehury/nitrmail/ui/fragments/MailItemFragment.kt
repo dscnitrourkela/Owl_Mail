@@ -2,21 +2,20 @@ package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
-import github.sachin2dehury.nitrmail.ui.DrawerExt
+import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
@@ -26,9 +25,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private var _binding: FragmentMailItemBinding? = null
     private val binding: FragmentMailItemBinding get() = _binding!!
 
-    @Inject
-    lateinit var dateFormat: SimpleDateFormat
-
     private val args: MailItemFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,7 +32,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         MailItemViewModel.id = args.id
 
-        (activity as DrawerExt).setDrawerEnabled(false)
+        (activity as ActivityExt).apply {
+            toggleDrawer(false)
+            toggleActionBar(true)
+        }
 
         _binding = FragmentMailItemBinding.bind(view)
 
@@ -52,48 +51,42 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mail ->
+                    Log.w("Test", "$mail")
                     binding.apply {
-                        progressBarMail.isVisible = false
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
                         textViewMailSubject.text = mail.subject
                         textViewSender.text = mail.from.email
                         webView.apply {
                             settings.javaScriptEnabled = true
-                            settings.loadWithOverviewMode = true
-                            settings.defaultTextEncodingName = "utf-8"
                             settings.loadsImagesAutomatically = true
-                            settings.domStorageEnabled = true
-                            settings.useWideViewPort = false
-                            isHorizontalScrollBarEnabled = false
-                            val body = mail.bodyText + mail.bodyHtml
+                            val body =
+                                if (mail.bodyText.length > mail.bodyHtml.length) mail.bodyText else mail.bodyHtml
                             loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
                         }
                     }
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        binding.progressBarMail.isVisible = false
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                showSnackbar(message)
+                                (activity as ActivityExt).showSnackbar(message)
                             }
                         }
-                        binding.progressBarMail.isVisible = false
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.LOADING -> {
-                        binding.progressBarMail.isVisible = true
+                        binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
             }
         })
     }
 
-    private fun showSnackbar(text: String) {
-        Snackbar.make(binding.root, text, Snackbar.LENGTH_LONG).show()
-    }
+    fun backPressed() = binding.root.findNavController().popBackStack()
 
     override fun onDestroy() {
         super.onDestroy()

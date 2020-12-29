@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import github.sachin2dehury.nitrmail.api.data.mails.Mail
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.repository.MainRepository
+import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.launch
 
 class AuthViewModel @ViewModelInject constructor(
-    private val repository: MainRepository
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _loginStatus = MutableLiveData<Resource<List<Mail>>>()
@@ -24,8 +24,12 @@ class AuthViewModel @ViewModelInject constructor(
             return
         }
         viewModelScope.launch {
-            val result = repository.login()
+            val result = repository.login(credential)
             _loginStatus.postValue(result)
         }
     }
+
+    suspend fun isLoggedIn() = repository.isLoggedIn()
+
+    suspend fun saveLogInCredential(credential: String) = repository.saveLogInCredential(credential)
 }

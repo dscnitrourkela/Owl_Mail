@@ -5,7 +5,8 @@ object Constants {
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
 
-    const val PARSE_URL = "https://webmail.dscnitrourkela.org/"
+    const val NOTIFICATION_TAG = "NITR Mail Notification Sync"
+    const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
     const val INBOX_URL = "inbox.json"
     const val SENT_URL = "sent.json"
@@ -16,6 +17,7 @@ object Constants {
     const val TRASH_URL = "trash.json"
     const val CALENDAR_URL = "calendar.json"
     const val UPDATE_QUERY = "after:"
+    const val AUTH_TOKEN = "sc"
 
     const val DATABASE_NAME = "MAIL_DB"
     const val PARSED_MAIL_DATABASE_NAME = "PARSED_MAIL_DB"

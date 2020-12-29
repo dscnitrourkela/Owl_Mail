@@ -2,17 +2,18 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import github.sachin2dehury.nitrmail.api.data.mails.Mail
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.repository.MainRepository
+import github.sachin2dehury.nitrmail.repository.Repository
+import kotlinx.coroutines.launch
 
-class MainViewModel @ViewModelInject constructor(
-    private val repository: MainRepository
+class MailBoxViewModel @ViewModelInject constructor(
+    private val repository: Repository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData(Constants.INBOX_URL)
+    private val _request = MutableLiveData(Constants.SENT_URL)
     val request: LiveData<String> = _request
 
     var lastSync = Constants.NO_LAST_SYNC
@@ -26,12 +27,15 @@ class MainViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun syncAllMails() {
-        lastSync = System.currentTimeMillis()
-        _forceUpdate.postValue(true)
+    fun saveLastSync() = viewModelScope.launch {
+        repository.saveLastSync(request.value!!, System.currentTimeMillis())
     }
 
-    fun setRequest(string: String) {
-        _request.postValue(string)
-    }
+    fun readLastSync() = viewModelScope.launch { repository.readLastSync(request.value!!) }
+
+    fun logOut() = viewModelScope.launch { repository.logOut() }
+
+    fun syncAllMails() = _forceUpdate.postValue(true)
+
+    fun setRequest(string: String) = _request.postValue(string)
 }
