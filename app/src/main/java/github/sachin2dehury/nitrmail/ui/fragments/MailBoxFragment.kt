@@ -21,17 +21,20 @@ import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MailBoxFragment @Inject constructor(
-    private val mailBoxAdapter: MailBoxAdapter,
-    private val internetChecker: InternetChecker
-) : Fragment(R.layout.fragment_mail_box) {
+class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private lateinit var viewModel: MailBoxViewModel
+    lateinit var viewModel: MailBoxViewModel
 
     var lastSync = Constants.NO_LAST_SYNC
+
+    @Inject
+    lateinit var mailBoxAdapter: MailBoxAdapter
+
+    @Inject
+    lateinit var internetChecker: InternetChecker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
