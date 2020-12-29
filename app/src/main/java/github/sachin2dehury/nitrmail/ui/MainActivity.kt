@@ -34,6 +34,11 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val intent = Intent(this, SyncService::class.java).apply {
+            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+        }
+        stopService(intent)
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

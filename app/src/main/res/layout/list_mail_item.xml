@@ -6,7 +6,7 @@
     android:layout_height="?attr/listPreferredItemHeightLarge">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textViewSenderName"
+        android:id="@+id/textViewSenderEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
