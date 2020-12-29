@@ -27,8 +27,8 @@ class MailBoxViewModel @ViewModelInject constructor(
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun saveLastSync() = viewModelScope.launch {
-        repository.saveLastSync(request.value!!, System.currentTimeMillis())
+    fun saveLastSync(lastSync: Long) = viewModelScope.launch {
+        repository.saveLastSync(request.value!!, lastSync)
     }
 
     fun readLastSync() = viewModelScope.launch { repository.readLastSync(request.value!!) }

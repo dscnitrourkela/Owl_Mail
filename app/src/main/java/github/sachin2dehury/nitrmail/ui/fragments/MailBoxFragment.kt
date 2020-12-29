@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
@@ -20,18 +21,17 @@ import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
+class MailBoxFragment @Inject constructor(
+    private val mailBoxAdapter: MailBoxAdapter,
+    private val internetChecker: InternetChecker
+) : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    lateinit var viewModel: MailBoxViewModel
+    private lateinit var viewModel: MailBoxViewModel
 
-    @Inject
-    lateinit var mailBoxAdapter: MailBoxAdapter
-
-    @Inject
-    lateinit var internetChecker: InternetChecker
+    var lastSync = Constants.NO_LAST_SYNC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +78,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLastSync()
+                            viewModel.saveLastSync(lastSync)
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -99,6 +99,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
+                    lastSync = System.currentTimeMillis()
                     viewModel.syncAllMails()
                 }
             }
