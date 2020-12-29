@@ -7,14 +7,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.others.Constants
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,33 +37,35 @@ class SyncService : Service() {
                 Constants.NOTIFICATION_CHANNEL,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.WHITE
-            notificationChannel.enableVibration(false)
+            notificationChannel.apply {
+                enableLights(true)
+                lightColor = Color.WHITE
+                enableVibration(false)
+            }
             notificationManager.createNotificationChannel(notificationChannel)
         }
         return notificationManager
     }
 
     private fun makeNotification(notify: String, info: String) {
-        val notification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL).apply {
-            priority = NotificationCompat.PRIORITY_HIGH
-            setStyle(NotificationCompat.InboxStyle(this))
-            setSmallIcon(R.mipmap.ic_launcher)
-            setContentTitle("New Mail From $notify")
-            setContentInfo(info)
-        }
-        notificationManager.notify(1000, notification.build())
-//        startForeground(1000, notification)
+        val notification =
+            NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL).apply {
+                priority = NotificationCompat.PRIORITY_HIGH
+                setStyle(NotificationCompat.InboxStyle(this))
+                setSmallIcon(R.mipmap.ic_launcher)
+                setContentTitle("New Mail From $notify")
+                setContentInfo(info)
+            }
+        notificationManager.notify(12927, notification.build())
     }
 
-    private fun makeNetworkCalls() = CoroutineScope(Dispatchers.IO).launch {
-//        while (true) {
-//            getNewMails()
-//            delay(10000L)
-//
-//        }
-        getNewMails()
+    private fun makeNetworkCalls() = GlobalScope.launch {
+        while (true) {
+            getNewMails()
+//            delay(3600000L)
+            delay(2000L)
+            Log.w("Test", "BG SERVICE")
+        }
     }
 
     private suspend fun getNewMails() {
@@ -80,7 +83,7 @@ class SyncService : Service() {
     override fun onCreate() {
         super.onCreate()
         setupNotificationManager()
-//        makeNetworkCalls()
+        makeNetworkCalls()
 
     }
 

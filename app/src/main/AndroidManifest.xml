@@ -27,7 +27,6 @@
 
         <service
             android:name=".services.SyncService"
-            android:enabled="true"
-            android:exported="false" />
+            android:enabled="true" />
     </application>
 </manifest>

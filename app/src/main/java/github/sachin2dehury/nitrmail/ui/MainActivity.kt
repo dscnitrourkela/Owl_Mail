@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -34,6 +35,13 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val intent = Intent(this, SyncService::class.java).apply {
+            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+        }
+        stopService(intent)
+        Log.w("Test", "Stopped service")
+        startService(intent)
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -48,11 +56,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         drawerOptionMenu()
-//        val intent = Intent(this, SyncService::class.java).apply {
-//            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-//        }
-//        startService(intent)
-//        Log.w("Test", "Started service")
     }
 
     private fun drawerOptionMenu() {
