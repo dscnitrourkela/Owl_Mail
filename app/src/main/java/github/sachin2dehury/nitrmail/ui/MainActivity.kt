@@ -87,6 +87,10 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 stopService(intent)
             }
             R.id.darkMode -> {
+                val intent = Intent(this, SyncService::class.java).apply {
+                    putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+                }
+                stopService(intent)
                 showSnackbar("Will be done. XD")
             }
         }
