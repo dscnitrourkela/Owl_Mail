@@ -12,4 +12,7 @@
     <string name="search">Search</string>
     <string name="logout">LogOut</string>
     <string name="dark_theme">Dark Theme</string>
+    <string name="sign_in">Sign In</string>
+    <string name="enter_roll">Enter Roll</string>
+    <string name="enter_password">Enter Password</string>
 </resources>

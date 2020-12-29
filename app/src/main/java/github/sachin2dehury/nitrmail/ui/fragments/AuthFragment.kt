@@ -70,18 +70,18 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         lifecycleScope.launch {
                             viewModel.saveLogInCredential(credential)
                         }
-                        binding.progressBar.visibility = View.GONE
+                        binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")
                         findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
                     }
                     Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
+                        binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar(
                             it.message ?: "An unknown error occurred"
                         )
                     }
                     Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
+                        binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -15,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 
 
@@ -53,7 +55,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 //        Log.w("Test", "Started service")
     }
 
-    fun drawerOptionMenu() {
+    private fun drawerOptionMenu() {
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.inbox -> viewModel.setRequest(Constants.INBOX_URL)
@@ -84,7 +86,13 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 showSnackbar("Successfully logged out.")
                 binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
             }
-            R.id.darkMode -> showSnackbar("Will be done. XD")
+            R.id.darkMode -> {
+                val intent = Intent(this, SyncService::class.java).apply {
+                    putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
+                }
+                startService(intent)
+                showSnackbar("Will be done. XD")
+            }
         }
         return super.onOptionsItemSelected(item)
     }

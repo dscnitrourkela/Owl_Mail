@@ -2,6 +2,7 @@ package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -50,6 +51,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mail ->
+                    Log.w("Test", "$mail")
                     binding.apply {
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
@@ -58,7 +60,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
-                            val body = mail.bodyText
+                            val body =
+                                if (mail.bodyText.length > mail.bodyHtml.length) mail.bodyText else mail.bodyHtml
                             loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
                         }
                     }

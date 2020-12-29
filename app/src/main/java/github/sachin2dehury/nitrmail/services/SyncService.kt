@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +29,7 @@ class SyncService : Service() {
     private lateinit var notificationManager: NotificationManagerCompat
 
     private fun setupNotificationManager(): NotificationManagerCompat {
-        notificationManager = NotificationManagerCompat.from(this)
+        notificationManager = NotificationManagerCompat.from(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 Constants.NOTIFICATION_TAG,
@@ -47,12 +46,14 @@ class SyncService : Service() {
 
     private fun makeNotification(notify: String, info: String) {
         val notification = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL).apply {
-            priority = NotificationCompat.PRIORITY_DEFAULT
+            priority = NotificationCompat.PRIORITY_HIGH
+            setStyle(NotificationCompat.InboxStyle(this))
             setSmallIcon(R.mipmap.ic_launcher)
             setContentTitle("New Mail From $notify")
             setContentInfo(info)
         }
         notificationManager.notify(1000, notification.build())
+//        startForeground(1000, notification)
     }
 
     private fun makeNetworkCalls() = CoroutineScope(Dispatchers.IO).launch {
@@ -69,7 +70,6 @@ class SyncService : Service() {
         result.body()?.mails?.let { list ->
             if (list.isNotEmpty()) {
                 list.forEach { mail ->
-                    Log.w("Test", "Notify")
                     makeNotification(mail.senders.first().name, mail.subject)
                 }
             }
@@ -77,13 +77,18 @@ class SyncService : Service() {
         lastSync = System.currentTimeMillis()
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        setupNotificationManager()
+//        makeNetworkCalls()
+
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         lastSync = intent?.getLongExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
             ?: Constants.NO_LAST_SYNC
 
-        setupNotificationManager()
-        makeNetworkCalls()
         makeNotification("Test", "Test")
 
         return super.onStartCommand(intent, flags, startId)

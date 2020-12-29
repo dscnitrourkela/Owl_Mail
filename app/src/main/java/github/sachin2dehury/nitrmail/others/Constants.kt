@@ -5,9 +5,8 @@ object Constants {
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
 
-    const val SERVICE_TAG = "SYNC_SERVICE"
-    const val NOTIFICATION_TAG = "SYNC_NOTIFICATION"
-    const val NOTIFICATION_CHANNEL = "SYNC_NOTIFICATION_CHANNEL"
+    const val NOTIFICATION_TAG = "NITR Mail Notification Sync"
+    const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
     const val INBOX_URL = "inbox.json"
     const val SENT_URL = "sent.json"

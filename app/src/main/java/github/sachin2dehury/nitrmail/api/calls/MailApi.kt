@@ -15,6 +15,7 @@ interface MailApi {
         @Query("query") sync: String,
         @Query("auth") token: String = Constants.AUTH_TOKEN
     ): Response<Mails>
+//    https://mail.nitrkl.ac.in/h/message?id=14884#attachments
 
     @GET("${Constants.HOME_URL}{request}")
     suspend fun getMails(
@@ -24,6 +25,7 @@ interface MailApi {
 
     @GET(Constants.HOME_URL)
     suspend fun getMailItem(
-        @Query("id") mailId: String
+        @Query("id") mailId: String,
+        @Query("part") part: String = "1"
     ): ResponseBody
 }
