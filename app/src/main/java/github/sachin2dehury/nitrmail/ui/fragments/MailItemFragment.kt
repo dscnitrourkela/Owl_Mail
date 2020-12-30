@@ -19,10 +19,10 @@ import java.text.SimpleDateFormat
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
-    lateinit var viewModel: MailItemViewModel
-
     private var _binding: FragmentMailItemBinding? = null
     private val binding: FragmentMailItemBinding get() = _binding!!
+
+    lateinit var viewModel: MailItemViewModel
 
     private val args: MailItemFragmentArgs by navArgs()
 
@@ -31,16 +31,15 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         MailItemViewModel.id = args.id
 
+        viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
+
+        _binding = FragmentMailItemBinding.bind(view)
+
         (activity as ActivityExt).apply {
             toggleDrawer(false)
             toggleActionBar(true)
         }
 
-        _binding = FragmentMailItemBinding.bind(view)
-
-        viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
-
-        viewModel.syncParsedMails()
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {

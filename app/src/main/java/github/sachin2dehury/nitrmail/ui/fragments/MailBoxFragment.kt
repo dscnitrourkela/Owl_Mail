@@ -46,14 +46,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(true)
-            toggleActionBar(true)
-        }
+        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         _binding = FragmentMailBoxBinding.bind(view)
-
-        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()
@@ -61,6 +56,11 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncAllMails()
+        }
+
+        (activity as ActivityExt).apply {
+            toggleDrawer(true)
+            toggleActionBar(true)
         }
     }
 

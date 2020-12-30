@@ -1,6 +1,5 @@
 package github.sachin2dehury.nitrmail.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
@@ -27,9 +26,10 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private lateinit var viewModel: MailBoxViewModel
 
-    @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.navView.setCheckedItem(R.id.inbox)
-
-        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         drawerOptionMenu()
 
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
                 R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
                 R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
-//                R.id.all -> viewModel.setRequest("")
             }
             binding.navView.setCheckedItem(it)
             binding.drawerLayout.closeDrawer(Gravity.LEFT)

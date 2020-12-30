@@ -4,7 +4,7 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -24,24 +24,14 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private var _binding: FragmentAuthBinding? = null
     private val binding: FragmentAuthBinding get() = _binding!!
 
-    private val viewModel: AuthViewModel by viewModels()
+    lateinit var viewModel: AuthViewModel
 
     private var credential = Constants.NO_CREDENTIAL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(false)
-            toggleActionBar(false)
-        }
-
-        isLoggedIn()
-
-        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-
-        subscribeToObservers()
+        viewModel = ViewModelProvider(requireActivity()).get(AuthViewModel::class.java)
 
         _binding = FragmentAuthBinding.bind(view)
 
@@ -54,15 +44,26 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.login(credential)
         }
+
+        isLoggedIn()
+
+        (activity as ActivityExt).apply {
+            toggleDrawer(false)
+            toggleActionBar(false)
+        }
+
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        subscribeToObservers()
     }
 
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
-            redirect()
+            redirectFragment()
         }
     }
 
-    private fun redirect() {
+    private fun redirectFragment() {
         val navOptions = NavOptions.Builder()
             .setPopUpTo(R.id.authFragment, true)
             .build()
@@ -88,7 +89,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")
-                        redirect()
+                        redirectFragment()
                     }
                     Status.ERROR -> {
                         binding.swipeRefreshLayout.isRefreshing = false

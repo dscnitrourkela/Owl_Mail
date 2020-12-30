@@ -25,7 +25,7 @@ interface MailApi {
     @GET(Constants.HOME_URL)
     suspend fun getMailItem(
         @Query("id") mailId: String,
-        @Query("part") part: String = "1"
+        @Query("part") part: String = "1",
     ): ResponseBody
 
     @GET(Constants.MESSAGE_URL)
