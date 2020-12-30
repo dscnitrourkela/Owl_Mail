@@ -50,18 +50,26 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             viewModel.login(credential)
             (activity as ActivityExt).hideKeyBoard()
         }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.login(credential)
+        }
     }
 
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.authFragment, true)
-                .build()
-            findNavController().navigate(
-                AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
-                navOptions
-            )
+            redirect()
         }
+    }
+
+    private fun redirect() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.authFragment, true)
+            .build()
+        findNavController().navigate(
+            AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
+            navOptions
+        )
     }
 
     private fun getCredential() {
@@ -80,7 +88,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")
-                        findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+                        redirect()
                     }
                     Status.ERROR -> {
                         binding.swipeRefreshLayout.isRefreshing = false

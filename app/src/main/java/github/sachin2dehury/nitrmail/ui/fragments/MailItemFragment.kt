@@ -42,6 +42,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         viewModel.syncParsedMails()
         subscribeToObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.syncParsedMails()
+        }
     }
 
     @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")

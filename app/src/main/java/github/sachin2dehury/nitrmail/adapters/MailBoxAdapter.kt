@@ -39,6 +39,8 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
 
     private val differ = AsyncListDiffer(this, diffCallback)
 
+    var list: List<Mail> = emptyList()
+
     var mails: List<Mail>
         get() = differ.currentList
         set(value) = differ.submitList(value)
@@ -92,9 +94,9 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
                 val search = value.toString()
                 val filterResults = FilterResults()
                 filterResults.values = if (search.isEmpty()) {
-                    mails
+                    list
                 } else {
-                    mails.filter { mail ->
+                    list.filter { mail ->
                         (if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email).contains(
                             search,
                             true

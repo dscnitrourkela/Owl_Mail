@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.others.Constants
@@ -44,6 +45,7 @@ class SyncService : Service() {
         val lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
         while (true) {
             syncMails(lastSync)
+            Log.w("Test", "Sync Mail")
             delay(Constants.SYNC_DELAY_TIME)
         }
     }

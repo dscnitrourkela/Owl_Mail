@@ -36,11 +36,16 @@ class MailBoxViewModel @ViewModelInject constructor(
         repository.saveLastSync(request.value!!, lastSync)
     }
 
-    fun readLastSync() = viewModelScope.launch { repository.readLastSync(request.value!!) }
+    fun readLastSync() = viewModelScope.launch {
+        repository.readLastSync(request.value!!)
+    }
 
     fun logOut() = viewModelScope.launch { repository.logOut() }
 
-    fun syncAllMails() = _forceUpdate.postValue(true)
+    fun syncAllMails() {
+        lastSync = System.currentTimeMillis()
+        _forceUpdate.postValue(true)
+    }
 
     fun setRequest(string: String) = _request.postValue(string)
 

@@ -58,6 +58,10 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.syncAllMails()
+        }
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
@@ -78,6 +82,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mails ->
+                    mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
                 }
                 when (result.status) {
@@ -104,7 +109,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
-                    lastSync = System.currentTimeMillis()
                     viewModel.syncAllMails()
                 }
             }
@@ -117,9 +121,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLastSync(lastSync)
-                        }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
@@ -156,12 +157,19 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
         inflater.inflate(R.menu.app_menu, menu)
-        val search = menu.findItem(R.id.searchBar).actionView as SearchView
-        search.queryHint = "Search"
-        search.isSubmitButtonEnabled = true
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        val searchAction = menu.findItem(R.id.searchBar).actionView
+        val searchView = searchAction as SearchView
+        searchView.queryHint = "Search"
+        searchView.isSubmitButtonEnabled = true
+        searchView.setOnCloseListener {
+            mailBoxAdapter.mails = mailBoxAdapter.list
+            binding.swipeRefreshLayout.isRefreshing = false
+            false
+        }
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-//                viewModel.searchMails(query)
+                binding.swipeRefreshLayout.isRefreshing = true
+                viewModel.searchMails(query)
                 return true
             }
 
