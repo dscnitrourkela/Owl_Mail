@@ -94,10 +94,14 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
                 filterResults.values = if (search.isEmpty()) {
                     mails
                 } else {
-                    mails.filter {
-                        it.senders.first().email.contains(search, true)
-                                || it.body.contains(search, true)
-                                || it.subject.contains(search, true)
+                    mails.filter { mail ->
+                        (if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email).contains(
+                            search,
+                            true
+                        )
+                                || mail.body.contains(search, true)
+                                || mail.subject.contains(search, true)
+                                || mail.html.contains(search, true)
                     }
                 }
                 return filterResults

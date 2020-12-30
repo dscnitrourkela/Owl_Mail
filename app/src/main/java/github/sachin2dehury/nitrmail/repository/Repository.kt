@@ -40,13 +40,13 @@ class Repository @Inject constructor(
         )
     }
 
-    fun getMails(request: String, lastSync: Long): Flow<Resource<List<Mail>>> {
+    fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(request)
             },
             fetch = {
-                mailApi.getMails(request, Constants.UPDATE_QUERY + lastSync)
+                mailApi.getMails(request, search)
             },
             saveFetchResult = { response ->
                 response.body()?.mails?.let { mails ->

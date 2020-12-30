@@ -19,7 +19,7 @@ interface MailApi {
     @GET("${Constants.HOME_URL}{request}")
     suspend fun getMails(
         @Path("request") request: String,
-        @Query("query") sync: String,
+        @Query("query") search: String,
     ): Response<Mails>
 
     @GET(Constants.HOME_URL)
@@ -33,4 +33,6 @@ interface MailApi {
         @Query("id") mailId: String,
         @Query("auth") token: String = Constants.AUTH_TOKEN
     ): ResponseBody
+
+
 }

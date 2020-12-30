@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -53,7 +54,13 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
-            findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.authFragment, true)
+                .build()
+            findNavController().navigate(
+                AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
+                navOptions
+            )
         }
     }
 

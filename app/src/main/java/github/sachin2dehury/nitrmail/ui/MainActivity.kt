@@ -3,14 +3,12 @@ package github.sachin2dehury.nitrmail.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Gravity
-import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -66,24 +64,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.app_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
             return true
-        }
-        when (item.itemId) {
-            R.id.logOut -> {
-                viewModel.logOut()
-                showSnackbar("Successfully logged out.")
-                binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
-            }
-            R.id.darkMode -> {
-                showSnackbar("Will be done. XD")
-            }
         }
         return super.onOptionsItemSelected(item)
     }

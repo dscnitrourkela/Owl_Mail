@@ -3,10 +3,12 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -107,18 +109,64 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
             }
         })
+        viewModel.search.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
+                result.data?.let { mails ->
+                    mailBoxAdapter.mails = mails
+                }
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        if (internetChecker.isInternetConnected(requireContext())) {
+                            viewModel.saveLastSync(lastSync)
+                        }
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.ERROR -> {
+                        event.getContentIfNotHandled()?.let { errorResource ->
+                            errorResource.message?.let { message ->
+                                (activity as ActivityExt).showSnackbar(message)
+                            }
+                        }
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.LOADING -> {
+                        binding.swipeRefreshLayout.isRefreshing = true
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logOut -> {
+                viewModel.logOut()
+                (requireActivity() as ActivityExt).showSnackbar("Successfully logged out.")
+                binding.root.findNavController()
+                    .navigate(R.id.action_mailBoxFragment_to_authFragment)
+            }
+            R.id.darkMode -> {
+                (requireActivity() as ActivityExt).showSnackbar("Will be done. XD")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
+        inflater.inflate(R.menu.app_menu, menu)
         val search = menu.findItem(R.id.searchBar).actionView as SearchView
+        search.queryHint = "Search"
+        search.isSubmitButtonEnabled = true
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+            override fun onQueryTextSubmit(query: String): Boolean {
+//                viewModel.searchMails(query)
+                return true
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                mailBoxAdapter.filter.filter(newText)
+            override fun onQueryTextChange(query: String): Boolean {
+                mailBoxAdapter.filter.filter(query)
                 return false
             }
         })

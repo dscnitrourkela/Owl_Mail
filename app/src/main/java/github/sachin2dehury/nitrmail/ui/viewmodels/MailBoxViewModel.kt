@@ -21,11 +21,16 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _forceUpdate = MutableLiveData(false)
 
     private val _mails = _forceUpdate.switchMap {
-        repository.getMails(request.value!!, lastSync).asLiveData(viewModelScope.coroutineContext)
+        repository.getMails(request.value!!, Constants.UPDATE_QUERY + lastSync)
+            .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
+
+    private val _search = MutableLiveData<Event<Resource<List<Mail>>>>()
+
+    val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
     fun saveLastSync(lastSync: Long) = viewModelScope.launch {
         repository.saveLastSync(request.value!!, lastSync)
@@ -38,4 +43,13 @@ class MailBoxViewModel @ViewModelInject constructor(
     fun syncAllMails() = _forceUpdate.postValue(true)
 
     fun setRequest(string: String) = _request.postValue(string)
+
+    fun searchMails(search: String) {
+        _search.postValue(
+            repository.getMails(request.value!!, search)
+                .asLiveData(viewModelScope.coroutineContext).switchMap {
+                    MutableLiveData(Event(it))
+                }.value
+        )
+    }
 }
