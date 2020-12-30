@@ -20,8 +20,11 @@ object Constants {
     const val JUNK_URL = "junk.json"
     const val TRASH_URL = "trash.json"
     const val CALENDAR_URL = "calendar.json"
+
     const val UPDATE_QUERY = "after:"
-    const val AUTH_TOKEN = "sc"
+
+    const val AUTH_TYPE = "sc"
+    const val AUTH_QUERY = "qp"
 
     const val DATABASE_NAME = "MAIL_DB"
     const val PARSED_MAIL_DATABASE_NAME = "PARSED_MAIL_DB"

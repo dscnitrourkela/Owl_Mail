@@ -13,13 +13,14 @@ interface MailApi {
     @GET(Constants.HOME_URL + Constants.DRAFT_URL)
     suspend fun login(
         @Query("query") sync: String,
-        @Query("auth") token: String = Constants.AUTH_TOKEN
+        @Query("auth") token: String = Constants.AUTH_TYPE
     ): Response<Mails>
 
     @GET("${Constants.HOME_URL}{request}")
     suspend fun getMails(
         @Path("request") request: String,
         @Query("query") search: String,
+        @Query("auth") token: String = Constants.AUTH_TYPE
     ): Response<Mails>
 
     @GET(Constants.HOME_URL)
@@ -31,7 +32,8 @@ interface MailApi {
     @GET(Constants.MESSAGE_URL)
     suspend fun getMailItemHtml(
         @Query("id") mailId: String,
-        @Query("auth") token: String = Constants.AUTH_TOKEN
+        @Query("auth") auth: String,
+        @Query("zauthtoken") token: String
     ): ResponseBody
 
 
