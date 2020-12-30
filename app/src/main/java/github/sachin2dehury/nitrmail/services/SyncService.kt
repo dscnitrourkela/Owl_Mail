@@ -50,7 +50,7 @@ class SyncService : Service() {
 
     private fun syncMails(lastSync: Long) {
         val currentTime = System.currentTimeMillis()
-        val response = repository.getMails(Constants.INBOX_URL, lastSync)
+        val response = repository.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
             .asLiveData(GlobalScope.coroutineContext).value
 
         response?.let { result ->
