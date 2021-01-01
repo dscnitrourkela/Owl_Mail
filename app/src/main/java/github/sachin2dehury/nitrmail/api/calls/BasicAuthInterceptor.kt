@@ -18,11 +18,21 @@ class BasicAuthInterceptor : Interceptor {
             response = makeRequest(chain)
         }
 
-        if (token == Constants.NO_TOKEN) {
-            token = response.headers("Set-Cookie").first().substringBefore(';')
+        try {
+            getToken(response)
+        } catch (e: Exception) {
+            token = Constants.NO_TOKEN
+            response = makeRequest(chain)
+            getToken(response)
         }
 
         return response
+    }
+
+    private fun getToken(response: Response) {
+        if (token == Constants.NO_TOKEN) {
+            token = response.headers("Set-Cookie").first().substringBefore(';')
+        }
     }
 
     private fun makeRequest(chain: Interceptor.Chain): Response {

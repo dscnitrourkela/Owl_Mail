@@ -43,7 +43,7 @@ class Repository @Inject constructor(
                 getHtml(id)
             },
             saveFetchResult = { result ->
-                val body = result.html()
+                val body = result.getElementById("iframeBody").toString()
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {

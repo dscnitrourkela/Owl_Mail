@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onDestroy() {
         _binding = null
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-        registerReceiver(syncBroadcastReceiver, intentFilter)
+//        registerReceiver(syncBroadcastReceiver, intentFilter)
         super.onDestroy()
     }
 }

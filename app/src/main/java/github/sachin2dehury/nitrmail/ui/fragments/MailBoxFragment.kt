@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +28,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    lateinit var viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by viewModels()
 
     var lastSync = Constants.NO_LAST_SYNC
 
@@ -47,8 +47,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentMailBoxBinding.bind(view)
-
-        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()
@@ -109,9 +107,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
-                    val currentTime = System.currentTimeMillis()
                     viewModel.syncAllMails()
-                    lastSync = currentTime
                 }
             }
         })
