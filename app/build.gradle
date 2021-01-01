@@ -123,4 +123,7 @@ dependencies {
     implementation('org.apache.james:apache-mime4j:0.8.3') {
         exclude group: 'org.apache.james', module: 'apache-mime4j-benchmark'
     }
+
+    //jsoup
+    implementation 'org.jsoup:jsoup:1.13.1'
 }

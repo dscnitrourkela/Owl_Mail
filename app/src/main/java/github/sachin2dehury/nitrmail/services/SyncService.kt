@@ -16,6 +16,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SyncService : Service() {
 
+    init {
+        Log.w("Test", "Created")
+    }
+
     @Inject
     lateinit var repository: Repository
 
@@ -46,19 +50,20 @@ class SyncService : Service() {
         while (true) {
             syncMails(lastSync)
             Log.w("Test", "Sync Mail")
-            delay(Constants.SYNC_DELAY_TIME)
+//            delay(Constants.SYNC_DELAY_TIME)
+            delay(5000L)
         }
     }
 
     private fun syncMails(lastSync: Long) {
         val currentTime = System.currentTimeMillis()
-        val response = repository.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
+        val response = repository.getMails(Constants.JUNK_URL, Constants.UPDATE_QUERY + lastSync)
             .asLiveData(GlobalScope.coroutineContext).value
 
         response?.let { result ->
             if (result.status == Status.SUCCESS) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    repository.saveLastSync(Constants.INBOX_URL, currentTime)
+                    repository.saveLastSync(Constants.JUNK_URL, currentTime)
                 }
                 if (internetChecker.isInternetConnected(applicationContext)) {
                     result.data?.let { mails ->

@@ -6,6 +6,11 @@ import android.content.Intent
 import android.util.Log
 
 class SyncBroadcastReceiver : BroadcastReceiver() {
+
+    init {
+        Log.w("Test", "Created")
+    }
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val syncIntent = Intent(context, SyncService::class.java)
         when (intent?.action) {

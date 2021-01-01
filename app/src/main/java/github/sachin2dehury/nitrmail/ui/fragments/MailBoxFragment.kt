@@ -109,7 +109,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
+                    val currentTime = System.currentTimeMillis()
                     viewModel.syncAllMails()
+                    lastSync = currentTime
                 }
             }
         })
@@ -143,11 +145,16 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         when (item.itemId) {
             R.id.logOut -> {
                 viewModel.logOut()
-                (requireActivity() as ActivityExt).showSnackbar("Successfully logged out.")
+                (requireActivity() as ActivityExt).apply {
+                    unregisterSync()
+                    showSnackbar("Successfully logged out.")
+                }
                 binding.root.findNavController()
                     .navigate(R.id.action_mailBoxFragment_to_authFragment)
             }
             R.id.darkMode -> {
+//                val syncIntent = Intent(context, SyncService::class.java)
+//                requireContext().stopService(syncIntent)
                 (requireActivity() as ActivityExt).showSnackbar("Will be done. XD")
             }
         }

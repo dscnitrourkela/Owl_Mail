@@ -88,7 +88,8 @@ class Repository @Inject constructor(
         deleteAllMails()
         deleteAllParsedMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
-        saveLogInCredential(Constants.NO_CREDENTIAL)
+        basicAuthInterceptor.token = Constants.NO_TOKEN
+        saveLogInCredential()
         saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
@@ -97,17 +98,26 @@ class Repository @Inject constructor(
     }
 
     suspend fun isLoggedIn(): Boolean {
+        var result = false
         dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
             if (credential != Constants.NO_CREDENTIAL) {
                 basicAuthInterceptor.credential = credential
-                return true
             }
         }
-        return false
+
+        dataStore.readCredential(Constants.KEY_TOKEN)?.let { token ->
+            if (token != Constants.NO_TOKEN) {
+                basicAuthInterceptor.token = token
+                result = true
+            }
+        }
+        return result
     }
 
-    suspend fun saveLogInCredential(credential: String) =
-        dataStore.saveCredential(Constants.KEY_CREDENTIAL, credential)
+    suspend fun saveLogInCredential() {
+        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
+        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+    }
 
     suspend fun readLastSync(request: String) =
         dataStore.readCredential(Constants.KEY_LAST_SYNC + request)?.toLong()
@@ -116,4 +126,6 @@ class Repository @Inject constructor(
     suspend fun saveLastSync(request: String, lastSync: Long) = dataStore.saveCredential(
         Constants.KEY_LAST_SYNC + request, lastSync.toString()
     )
+
+    fun getToken() = basicAuthInterceptor.token
 }

@@ -85,7 +85,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         lifecycleScope.launch {
-                            viewModel.saveLogInCredential(credential)
+                            viewModel.saveLogInCredential()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")

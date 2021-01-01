@@ -1,5 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
@@ -13,7 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -25,6 +29,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     private lateinit var toggle: ActionBarDrawerToggle
 
     private lateinit var viewModel: MailBoxViewModel
+
+    @Inject
+    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,8 +101,14 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         )
     }
 
+    override fun unregisterSync() {
+        unregisterReceiver(syncBroadcastReceiver)
+    }
+
     override fun onDestroy() {
         _binding = null
+        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        registerReceiver(syncBroadcastReceiver, intentFilter)
         super.onDestroy()
     }
 }

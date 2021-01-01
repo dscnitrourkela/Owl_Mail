@@ -9,4 +9,6 @@ interface ActivityExt {
     fun toggleDrawer(isEnabled: Boolean)
 
     fun hideKeyBoard()
+
+    fun unregisterSync()
 }

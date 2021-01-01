@@ -72,6 +72,9 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
             if (mail.flag.contains('a')) {
                 imageViewAttachment.isVisible = true
             }
+//            if (mail.flag.contains('r')) {
+//                imageViewReply.isVisible = true
+//            }
         }
         holder.itemView.setOnClickListener {
             onItemClickListener?.let { click ->

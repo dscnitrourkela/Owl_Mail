@@ -31,5 +31,5 @@ class AuthViewModel @ViewModelInject constructor(
 
     suspend fun isLoggedIn() = repository.isLoggedIn()
 
-    suspend fun saveLogInCredential(credential: String) = repository.saveLogInCredential(credential)
+    suspend fun saveLogInCredential() = repository.saveLogInCredential()
 }

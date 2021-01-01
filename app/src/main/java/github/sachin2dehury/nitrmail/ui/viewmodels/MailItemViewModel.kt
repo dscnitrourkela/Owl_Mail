@@ -25,4 +25,6 @@ class MailItemViewModel @ViewModelInject constructor(
     val parsedMail: LiveData<Event<Resource<Mail>>> = _parsedMail
 
     fun syncParsedMails() = _forceUpdate.postValue(true)
+
+    fun getToken() = repository.getToken()
 }

@@ -26,6 +26,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
+    private var token = Constants.NO_TOKEN
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -41,6 +43,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         }
 
         subscribeToObservers()
+
+        token = viewModel.getToken()
+
+        viewModel.syncParsedMails()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
@@ -67,7 +73,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
-                            loadDataWithBaseURL(null, mail.html, "text/html", "utf-8", null)
+                            loadDataWithBaseURL(
+                                Constants.BASE_URL + Constants.MESSAGE_URL,
+                                mail.html,
+                                "text/html",
+                                "utf-8",
+                                null
+                            )
                         }
                     }
                 }
