@@ -8,9 +8,24 @@ class BasicAuthInterceptor : Interceptor {
 
     var credential = Constants.NO_CREDENTIAL
     var token = Constants.NO_TOKEN
-    var isApiCall = true
 
     override fun intercept(chain: Interceptor.Chain): Response {
+
+        var response = makeRequest(chain)
+
+        if (response.code == 401) {
+            token = Constants.NO_TOKEN
+            response = makeRequest(chain)
+        }
+
+        if (token == Constants.NO_TOKEN) {
+            token = response.headers("Set-Cookie").first().substringBefore(';')
+        }
+
+        return response
+    }
+
+    private fun makeRequest(chain: Interceptor.Chain): Response {
 
         val request = chain.request()
 
@@ -24,12 +39,6 @@ class BasicAuthInterceptor : Interceptor {
                 .build()
         }
 
-        val response = chain.proceed(authenticatedRequest)
-
-        if (token == Constants.NO_TOKEN) {
-            token = response.headers("Set-Cookie").first().substringBefore(';')
-        }
-
-        return response
+        return chain.proceed(authenticatedRequest)
     }
 }

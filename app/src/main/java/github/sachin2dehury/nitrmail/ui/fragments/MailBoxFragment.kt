@@ -46,9 +46,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
-
         _binding = FragmentMailBoxBinding.bind(view)
+
+        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()

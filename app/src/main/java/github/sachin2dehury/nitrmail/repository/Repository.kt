@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
+import android.util.Log
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -9,6 +10,8 @@ import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -21,6 +24,13 @@ class Repository @Inject constructor(
     private val networkBoundResource: NetworkBoundResource,
 ) {
 
+    private suspend fun getHtml(id: String): Document = withContext(Dispatchers.IO) {
+        val url =
+            Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + id + "&xim=1&auth=co"
+        Log.w("Test", url)
+        return@withContext Jsoup.connect(url).header("Cookie", basicAuthInterceptor.token).get()
+    }
+
     fun getParsedMailItem(
         id: String
     ): Flow<Resource<Mail>> {
@@ -29,10 +39,12 @@ class Repository @Inject constructor(
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItem(id)
+//                mailApi.getMailItemHtml(id)
+                getHtml(id)
             },
             saveFetchResult = { result ->
-                mailDao.updateMail(result.string(), id)
+                val body = result.html()
+                mailDao.updateMail(body, id)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected(context)
@@ -102,6 +114,7 @@ class Repository @Inject constructor(
         dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
             if (credential != Constants.NO_CREDENTIAL) {
                 basicAuthInterceptor.credential = credential
+                result = true
             }
         }
 

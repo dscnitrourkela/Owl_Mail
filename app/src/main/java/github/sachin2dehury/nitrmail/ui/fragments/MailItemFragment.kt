@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
+import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
@@ -22,18 +24,19 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private var _binding: FragmentMailItemBinding? = null
     private val binding: FragmentMailItemBinding get() = _binding!!
 
-    lateinit var viewModel: MailItemViewModel
+    private val viewModel: MailItemViewModel by viewModels()
+
+    var token = Constants.NO_TOKEN
+
+    @Inject
+    lateinit var mailViewClient: MailViewClient
 
     private val args: MailItemFragmentArgs by navArgs()
-
-    private var token = Constants.NO_TOKEN
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         MailItemViewModel.id = args.id
-
-        viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
 
         _binding = FragmentMailItemBinding.bind(view)
 
@@ -73,13 +76,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
-                            loadDataWithBaseURL(
-                                Constants.BASE_URL + Constants.MESSAGE_URL,
-                                mail.html,
-                                "text/html",
-                                "utf-8",
-                                null
-                            )
+                            setInitialScale(160)
+//                            webViewClient = mailViewClient
+                            loadDataWithBaseURL(null, mail.html, "text/html", "utf-8", null)
                         }
                     }
                 }

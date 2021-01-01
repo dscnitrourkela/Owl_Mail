@@ -16,7 +16,6 @@
         android:maxLines="1"
         android:textColor="@color/sender"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textViewMailSubject"
         app:layout_constraintEnd_toStartOf="@+id/textViewDate"
         app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
@@ -32,7 +31,6 @@
         android:maxLines="1"
         android:textColor="@color/subject"
         android:textSize="14sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
         app:layout_constraintStart_toEndOf="@+id/imageViewSender"
@@ -63,8 +61,8 @@
         android:gravity="end"
         android:textSize="12sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewSenderEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textViewSenderEmail"
         tools:text="Date" />
 
     <ImageView

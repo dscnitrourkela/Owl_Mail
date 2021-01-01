@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -28,15 +28,13 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private lateinit var toggle: ActionBarDrawerToggle
 
-    private lateinit var viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by viewModels()
 
     @Inject
     lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
