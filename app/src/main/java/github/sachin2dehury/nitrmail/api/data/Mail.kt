@@ -15,8 +15,8 @@ data class Mail(
     @SerializedName("f") val flag: String = "",
     @SerializedName("fr") val body: String = "",
     @SerializedName("l") val folder: String = "",
-//    2 inbox 3 trash 4 junk 5 sent 6 draft 7 contacts 10 calendar
     @SerializedName("su") val subject: String = "",
-
+//    2 inbox 3 trash 4 junk 5 sent 6 draft 7 contacts 10 calendar
+    var html: String = "",
     var box: String = "",
 )

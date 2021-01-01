@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.viewmodels
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -13,7 +14,11 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData(Constants.SENT_URL)
+    init {
+        Log.w("Test", javaClass.simpleName)
+    }
+
+    private val _request = MutableLiveData(Constants.JUNK_URL)
     val request: LiveData<String> = _request
 
     var lastSync = Constants.NO_LAST_SYNC
@@ -21,21 +26,40 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _forceUpdate = MutableLiveData(false)
 
     private val _mails = _forceUpdate.switchMap {
-        repository.getMails(request.value!!, lastSync).asLiveData(viewModelScope.coroutineContext)
+        repository.getMails(request.value!!, Constants.UPDATE_QUERY + lastSync)
+            .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
     }
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
-    fun saveLastSync() = viewModelScope.launch {
-        repository.saveLastSync(request.value!!, System.currentTimeMillis())
+    private val _search = MutableLiveData<Event<Resource<List<Mail>>>>()
+
+    val search: LiveData<Event<Resource<List<Mail>>>> = _search
+
+    fun saveLastSync(lastSync: Long) = viewModelScope.launch {
+        repository.saveLastSync(request.value!!, lastSync)
     }
 
-    fun readLastSync() = viewModelScope.launch { repository.readLastSync(request.value!!) }
+    fun readLastSync() = viewModelScope.launch {
+        repository.readLastSync(request.value!!)
+    }
 
     fun logOut() = viewModelScope.launch { repository.logOut() }
 
-    fun syncAllMails() = _forceUpdate.postValue(true)
+    fun syncAllMails() {
+        _forceUpdate.postValue(true)
+        lastSync = System.currentTimeMillis()
+    }
 
     fun setRequest(string: String) = _request.postValue(string)
+
+    fun searchMails(search: String) {
+        _search.postValue(
+            repository.getMails(request.value!!, search)
+                .asLiveData(viewModelScope.coroutineContext).switchMap {
+                    MutableLiveData(Event(it))
+                }.value
+        )
+    }
 }

@@ -1,108 +1,78 @@
 package github.sachin2dehury.nitrmail.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.AndroidEntryPoint
-import github.sachin2dehury.nitrmail.R
-import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.others.Constants
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import github.sachin2dehury.nitrmail.others.InternetChecker
+import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.repository.Repository
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SyncService : Service() {
 
+    init {
+        Log.w("Test", "Created")
+    }
+
     @Inject
-    lateinit var mailApi: MailApi
+    lateinit var repository: Repository
 
-    private var lastSync = Constants.NO_LAST_SYNC
+    @Inject
+    lateinit var internetChecker: InternetChecker
 
-    private lateinit var notificationManager: NotificationManagerCompat
+    @Inject
+    lateinit var notificationExt: NotificationExt
 
-    private fun setupNotificationManager(): NotificationManagerCompat {
-        notificationManager = NotificationManagerCompat.from(applicationContext)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                Constants.NOTIFICATION_TAG,
-                Constants.NOTIFICATION_CHANNEL,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            notificationChannel.apply {
-                enableLights(true)
-                lightColor = Color.WHITE
-                enableVibration(false)
-            }
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-        return notificationManager
-    }
-
-    private fun makeNotification(notify: String, info: String) {
-        val notification =
-            NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL).apply {
-                priority = NotificationCompat.PRIORITY_HIGH
-                setStyle(NotificationCompat.InboxStyle(this))
-                setSmallIcon(R.mipmap.ic_launcher)
-                setContentTitle("New Mail From $notify")
-                setContentInfo(info)
-            }
-        notificationManager.notify(12927, notification.build())
-    }
-
-    private fun makeNetworkCalls() = GlobalScope.launch {
-        while (true) {
-            getNewMails()
-//            delay(3600000L)
-            delay(2000L)
-            Log.w("Test", "BG SERVICE")
-        }
-    }
-
-    private suspend fun getNewMails() {
-        val result = mailApi.getMails(Constants.JUNK_URL, Constants.UPDATE_QUERY + lastSync)
-        result.body()?.mails?.let { list ->
-            if (list.isNotEmpty()) {
-                list.forEach { mail ->
-                    makeNotification(mail.senders.first().name, mail.subject)
-                }
-            }
-        }
-        lastSync = System.currentTimeMillis()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        setupNotificationManager()
-        makeNetworkCalls()
-
-    }
+    override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        lastSync = intent?.getLongExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-            ?: Constants.NO_LAST_SYNC
+        startSyncService()
 
-        makeNotification("Test", "Test")
-
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
-    override fun onTaskRemoved(rootIntent: Intent) {
+    override fun onTaskRemoved(rootIntent: Intent?) {
         val restartServiceIntent = Intent(applicationContext, this.javaClass)
         restartServiceIntent.setPackage(packageName)
         startService(restartServiceIntent)
         super.onTaskRemoved(rootIntent)
     }
 
-    override fun onBind(p0: Intent?): IBinder? = null
+    private fun startSyncService() = GlobalScope.launch {
+        val lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
+        while (true) {
+            syncMails(lastSync)
+            Log.w("Test", "Sync Mail")
+//            delay(Constants.SYNC_DELAY_TIME)
+            delay(5000L)
+        }
+    }
+
+    private fun syncMails(lastSync: Long) {
+        val currentTime = System.currentTimeMillis()
+        val response = repository.getMails(Constants.JUNK_URL, Constants.UPDATE_QUERY + lastSync)
+            .asLiveData(GlobalScope.coroutineContext).value
+
+        response?.let { result ->
+            if (result.status == Status.SUCCESS) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    repository.saveLastSync(Constants.JUNK_URL, currentTime)
+                }
+                if (internetChecker.isInternetConnected(applicationContext)) {
+                    result.data?.let { mails ->
+                        mails.forEach { mail ->
+                            notificationExt.notify(mail.senders.last().name, mail.subject)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

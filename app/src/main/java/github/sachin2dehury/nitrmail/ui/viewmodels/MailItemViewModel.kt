@@ -2,9 +2,9 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.parser.data.ParsedMail
 import github.sachin2dehury.nitrmail.repository.Repository
 
 class MailItemViewModel @ViewModelInject constructor(
@@ -22,7 +22,9 @@ class MailItemViewModel @ViewModelInject constructor(
             MutableLiveData(Event(it))
         }
     }
-    val parsedMail: LiveData<Event<Resource<ParsedMail>>> = _parsedMail
+    val parsedMail: LiveData<Event<Resource<Mail>>> = _parsedMail
 
     fun syncParsedMails() = _forceUpdate.postValue(true)
+
+    fun getToken() = repository.getToken()
 }

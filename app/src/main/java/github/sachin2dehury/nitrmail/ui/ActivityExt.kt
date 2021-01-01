@@ -7,4 +7,8 @@ interface ActivityExt {
     fun showSnackbar(message: String)
 
     fun toggleDrawer(isEnabled: Boolean)
+
+    fun hideKeyBoard()
+
+    fun unregisterSync()
 }

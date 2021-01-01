@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -30,30 +31,44 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(false)
-            toggleActionBar(false)
-        }
-
-        isLoggedIn()
-
-        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-
-        subscribeToObservers()
-
         _binding = FragmentAuthBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
             getCredential()
             viewModel.login(credential)
+            (activity as ActivityExt).hideKeyBoard()
         }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.login(credential)
+        }
+
+        isLoggedIn()
+
+        (activity as ActivityExt).apply {
+            toggleDrawer(false)
+            toggleActionBar(false)
+        }
+
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        subscribeToObservers()
     }
 
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
-            findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+            redirectFragment()
         }
+    }
+
+    private fun redirectFragment() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.authFragment, true)
+            .build()
+        findNavController().navigate(
+            AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
+            navOptions
+        )
     }
 
     private fun getCredential() {
@@ -68,11 +83,11 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         lifecycleScope.launch {
-                            viewModel.saveLogInCredential(credential)
+                            viewModel.saveLogInCredential()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")
-                        findNavController().navigate(R.id.action_authFragment_to_mailBoxFragment)
+                        redirectFragment()
                     }
                     Status.ERROR -> {
                         binding.swipeRefreshLayout.isRefreshing = false

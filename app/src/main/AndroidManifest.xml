@@ -27,6 +27,14 @@
 
         <service
             android:name=".services.SyncService"
-            android:enabled="true" />
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver android:name=".services.SyncBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

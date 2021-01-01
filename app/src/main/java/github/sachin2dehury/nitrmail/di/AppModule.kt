@@ -10,12 +10,14 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
+import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.api.database.MailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.NetworkBoundResource
-import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDatabase
+import github.sachin2dehury.nitrmail.services.NotificationExt
+import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -46,6 +48,10 @@ object AppModule {
         .build()
         .create(MailApi::class.java)
 
+    @Singleton
+    @Provides
+    fun provideMailViewClient(okHttpClient: OkHttpClient) = MailViewClient(okHttpClient)
+
     @Provides
     @Singleton
     fun provideMailBoxAdapter() = MailBoxAdapter()
@@ -63,21 +69,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideParsedMailDatabase(
-        @ApplicationContext context: Context
-    ) = Room.databaseBuilder(
-        context,
-        ParsedMailDatabase::class.java,
-        Constants.PARSED_MAIL_DATABASE_NAME
-    ).fallbackToDestructiveMigration().build()
-
-    @Singleton
-    @Provides
-    fun provideParsedMailDao(parsedMailDatabase: ParsedMailDatabase) =
-        parsedMailDatabase.getParsedMailDao()
-
-    @Singleton
-    @Provides
     fun provideDataStore(
         @ApplicationContext context: Context
     ) = DataStoreExt(context)
@@ -89,4 +80,13 @@ object AppModule {
     @Singleton
     @Provides
     fun provideInternetChecker() = InternetChecker()
+
+    @Singleton
+    @Provides
+    fun provideNotificationExt(@ApplicationContext context: Context) = NotificationExt(context)
+
+    @Singleton
+    @Provides
+    fun provideSyncBroadcastReceiver() = SyncBroadcastReceiver()
+
 }

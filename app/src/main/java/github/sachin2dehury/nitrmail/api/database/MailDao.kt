@@ -17,5 +17,11 @@ interface MailDao {
     fun getMails(box: String): Flow<List<Mail>>
 
     @Query("DELETE FROM mails")
-    suspend fun deleteMails()
+    suspend fun deleteAllMails()
+
+    @Query("SELECT * FROM mails WHERE id= :id")
+    fun getMailItem(id: String): Flow<Mail>
+
+    @Query("UPDATE mails SET html = :html WHERE id = :id")
+    suspend fun updateMail(html: String, id: String)
 }

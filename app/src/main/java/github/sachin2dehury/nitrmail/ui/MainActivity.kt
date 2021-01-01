@@ -1,24 +1,23 @@
 package github.sachin2dehury.nitrmail.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
-import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.services.SyncService
+import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -29,18 +28,13 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private lateinit var toggle: ActionBarDrawerToggle
 
-    private lateinit var viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by viewModels()
 
-    @SuppressLint("RtlHardcoded")
+    @Inject
+    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val intent = Intent(this, SyncService::class.java).apply {
-            putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-        }
-        stopService(intent)
-        Log.w("Test", "Stopped service")
-        startService(intent)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,9 +47,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         binding.navView.setCheckedItem(R.id.inbox)
 
-        viewModel = ViewModelProvider(this).get(MailBoxViewModel::class.java)
-
         drawerOptionMenu()
+
     }
 
     private fun drawerOptionMenu() {
@@ -66,7 +59,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
                 R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
                 R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
-//                R.id.all -> viewModel.setRequest("")
             }
             binding.navView.setCheckedItem(it)
             binding.drawerLayout.closeDrawer(Gravity.LEFT)
@@ -74,28 +66,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.app_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
             return true
-        }
-        when (item.itemId) {
-            R.id.logOut -> {
-                viewModel.logOut()
-                showSnackbar("Successfully logged out.")
-                binding.root.findNavController().navigate(R.id.globalActionToAuthFragment)
-            }
-            R.id.darkMode -> {
-                val intent = Intent(this, SyncService::class.java).apply {
-                    putExtra(Constants.KEY_LAST_SYNC, Constants.NO_LAST_SYNC)
-                }
-                startService(intent)
-                showSnackbar("Will be done. XD")
-            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -119,8 +92,21 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
+    override fun hideKeyBoard() {
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+            binding.root.windowToken,
+            0
+        )
+    }
+
+    override fun unregisterSync() {
+        unregisterReceiver(syncBroadcastReceiver)
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         _binding = null
+        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
+//        registerReceiver(syncBroadcastReceiver, intentFilter)
+        super.onDestroy()
     }
 }

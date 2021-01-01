@@ -16,16 +16,37 @@
             tools:ignore="WebViewLayout">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewSender"
+                android:id="@+id/textViewSenderName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
+                android:layout_marginEnd="4dp"
+                android:ellipsize="end"
                 android:gravity="start"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+                android:maxLines="1"
+                android:textColor="@color/sender"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
                 app:layout_constraintStart_toEndOf="@+id/imageViewSender"
                 app:layout_constraintTop_toTopOf="@+id/imageViewSender"
-                tools:text="Sender" />
+                tools:text="Sender Name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewSenderEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:maxLines="1"
+                android:textColor="@color/sender"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
+                app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+                app:layout_constraintStart_toEndOf="@+id/imageViewSender"
+                tools:text="Sender Email" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewMailSubject"
@@ -33,8 +54,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:gravity="start"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textStyle="normal"
+                android:textColor="@color/subject"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -55,19 +77,31 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/message"
+                android:textSize="12sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
-                app:layout_constraintEnd_toEndOf="@+id/textViewSender"
+                app:layout_constraintEnd_toEndOf="@+id/textViewSenderName"
                 tools:text="Date" />
 
             <WebView
                 android:id="@+id/webView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_margin="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageViewSender" />
+
+            <ImageView
+                android:id="@+id/imageViewAttachment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+                app:layout_constraintTop_toTopOf="@+id/textViewSenderName"
+                app:srcCompat="@drawable/ic_baseline_attachment_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

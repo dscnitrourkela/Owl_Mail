@@ -2,28 +2,34 @@ package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
+import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
-    lateinit var viewModel: MailItemViewModel
-
     private var _binding: FragmentMailItemBinding? = null
     private val binding: FragmentMailItemBinding get() = _binding!!
+
+    private val viewModel: MailItemViewModel by viewModels()
+
+    var token = Constants.NO_TOKEN
+
+    @Inject
+    lateinit var mailViewClient: MailViewClient
 
     private val args: MailItemFragmentArgs by navArgs()
 
@@ -32,17 +38,22 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         MailItemViewModel.id = args.id
 
+        _binding = FragmentMailItemBinding.bind(view)
+
         (activity as ActivityExt).apply {
             toggleDrawer(false)
             toggleActionBar(true)
         }
 
-        _binding = FragmentMailItemBinding.bind(view)
+        subscribeToObservers()
 
-        viewModel = ViewModelProvider(requireActivity()).get(MailItemViewModel::class.java)
+        token = viewModel.getToken()
 
         viewModel.syncParsedMails()
-        subscribeToObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.syncParsedMails()
+        }
     }
 
     @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")
@@ -51,18 +62,23 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mail ->
-                    Log.w("Test", "$mail")
                     binding.apply {
                         textViewDate.text =
-                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.date)
+                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
                         textViewMailSubject.text = mail.subject
-                        textViewSender.text = mail.from.email
+                        textViewSenderName.text =
+                            if (mail.flag.contains('s')) mail.senders.first().name else mail.senders.last().name
+                        textViewSenderEmail.text =
+                            if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+                        if (mail.flag.contains('a')) {
+                            imageViewAttachment.isVisible = true
+                        }
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
-                            val body =
-                                if (mail.bodyText.length > mail.bodyHtml.length) mail.bodyText else mail.bodyHtml
-                            loadDataWithBaseURL(null, body, "text/html", "utf-8", null)
+                            setInitialScale(160)
+//                            webViewClient = mailViewClient
+                            loadDataWithBaseURL(null, mail.html, "text/html", "utf-8", null)
                         }
                     }
                 }
@@ -85,8 +101,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             }
         })
     }
-
-    fun backPressed() = binding.root.findNavController().popBackStack()
 
     override fun onDestroy() {
         super.onDestroy()

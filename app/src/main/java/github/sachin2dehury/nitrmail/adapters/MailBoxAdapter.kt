@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +39,8 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
 
     private val differ = AsyncListDiffer(this, diffCallback)
 
+    var list: List<Mail> = emptyList()
+
     var mails: List<Mail>
         get() = differ.currentList
         set(value) = differ.submitList(value)
@@ -55,13 +58,23 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSender.text = mail.senders.last().email
-            if (mail.flag.contains("u")) {
-                textViewSender.typeface = Typeface.DEFAULT_BOLD
+            textViewSenderEmail.text =
+                if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+            if (mail.flag.contains('u')) {
+                textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
                 textViewDate.typeface = Typeface.DEFAULT_BOLD
                 textViewMailBody.typeface = Typeface.DEFAULT_BOLD
             }
+            if (mail.flag.contains('f')) {
+                imageViewStared.isVisible = true
+            }
+            if (mail.flag.contains('a')) {
+                imageViewAttachment.isVisible = true
+            }
+//            if (mail.flag.contains('r')) {
+//                imageViewReply.isVisible = true
+//            }
         }
         holder.itemView.setOnClickListener {
             onItemClickListener?.let { click ->
@@ -84,12 +97,16 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
                 val search = value.toString()
                 val filterResults = FilterResults()
                 filterResults.values = if (search.isEmpty()) {
-                    mails
+                    list
                 } else {
-                    mails.filter {
-                        it.senders.first().email.contains(search, true)
-                                || it.body.contains(search, true)
-                                || it.subject.contains(search, true)
+                    list.filter { mail ->
+                        (if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email).contains(
+                            search,
+                            true
+                        )
+                                || mail.body.contains(search, true)
+                                || mail.subject.contains(search, true)
+                                || mail.html.contains(search, true)
                     }
                 }
                 return filterResults

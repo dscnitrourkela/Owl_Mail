@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_mailBoxFragment_to_mail_item_Fragment"
             app:destination="@id/mailItemFragment" />
+        <action
+            android:id="@+id/action_mailBoxFragment_to_authFragment"
+            app:destination="@id/authFragment" />
     </fragment>
     <fragment
         android:id="@+id/mailItemFragment"
@@ -28,9 +31,5 @@
             android:name="id"
             app:argType="string" />
     </fragment>
-
-    <action
-        android:id="@+id/globalActionToAuthFragment"
-        app:destination="@id/authFragment" />
 
 </navigation>

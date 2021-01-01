@@ -1,17 +1,17 @@
 package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
+import android.util.Log
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.others.*
-import github.sachin2dehury.nitrmail.parser.data.ParsedMail
-import github.sachin2dehury.nitrmail.parser.parsedmails.ParsedMailDao
-import github.sachin2dehury.nitrmail.parser.util.MailParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -22,25 +22,29 @@ class Repository @Inject constructor(
     private val mailApi: MailApi,
     private val mailDao: MailDao,
     private val networkBoundResource: NetworkBoundResource,
-    private val parsedMailDao: ParsedMailDao
 ) {
+
+    private suspend fun getHtml(id: String): Document = withContext(Dispatchers.IO) {
+        val url =
+            Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + id + "&xim=1&auth=co"
+        Log.w("Test", url)
+        return@withContext Jsoup.connect(url).header("Cookie", basicAuthInterceptor.token).get()
+    }
 
     fun getParsedMailItem(
         id: String
-    ): Flow<Resource<ParsedMail>> {
+    ): Flow<Resource<Mail>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
-                parsedMailDao.getMailItem(id)
+                mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItem(id)
+//                mailApi.getMailItemHtml(id)
+                getHtml(id)
             },
             saveFetchResult = { result ->
-                result.string().byteInputStream().let {
-                    val parsedMail = MailParser().parse(it)
-                    parsedMail.id = id
-                    parsedMailDao.insertMail(parsedMail)
-                }
+                val body = result.getElementById("iframeBody").toString()
+                mailDao.updateMail(body, id)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected(context)
@@ -48,13 +52,13 @@ class Repository @Inject constructor(
         )
     }
 
-    fun getMails(request: String, lastSync: Long): Flow<Resource<List<Mail>>> {
+    fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(request)
             },
             fetch = {
-                mailApi.getMails(request, Constants.UPDATE_QUERY + lastSync)
+                mailApi.getMails(request, search)
             },
             saveFetchResult = { response ->
                 response.body()?.mails?.let { mails ->
@@ -70,9 +74,9 @@ class Repository @Inject constructor(
         )
     }
 
-    private suspend fun deleteAllMails() = mailDao.deleteMails()
+    private suspend fun deleteAllMails() = mailDao.deleteAllMails()
 
-    private suspend fun deleteAllParsedMails() = mailDao.deleteMails()
+    private suspend fun deleteAllParsedMails() = mailDao.deleteAllMails()
 
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
         basicAuthInterceptor.credential = credential
@@ -82,7 +86,7 @@ class Repository @Inject constructor(
             if (response.isSuccessful && response.code() == 200) {
                 Resource.success(response.body()?.mails)
             } else {
-                Resource.error(response.message() ?: response.message(), null)
+                Resource.error(response.message(), null)
             }
         } catch (e: Exception) {
             Resource.error(
@@ -96,7 +100,8 @@ class Repository @Inject constructor(
         deleteAllMails()
         deleteAllParsedMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
-        saveLogInCredential(Constants.NO_CREDENTIAL)
+        basicAuthInterceptor.token = Constants.NO_TOKEN
+        saveLogInCredential()
         saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
@@ -105,17 +110,27 @@ class Repository @Inject constructor(
     }
 
     suspend fun isLoggedIn(): Boolean {
+        var result = false
         dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
             if (credential != Constants.NO_CREDENTIAL) {
                 basicAuthInterceptor.credential = credential
-                return true
+                result = true
             }
         }
-        return false
+
+        dataStore.readCredential(Constants.KEY_TOKEN)?.let { token ->
+            if (token != Constants.NO_TOKEN) {
+                basicAuthInterceptor.token = token
+                result = true
+            }
+        }
+        return result
     }
 
-    suspend fun saveLogInCredential(credential: String) =
-        dataStore.saveCredential(Constants.KEY_CREDENTIAL, credential)
+    suspend fun saveLogInCredential() {
+        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
+        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+    }
 
     suspend fun readLastSync(request: String) =
         dataStore.readCredential(Constants.KEY_LAST_SYNC + request)?.toLong()
@@ -124,4 +139,6 @@ class Repository @Inject constructor(
     suspend fun saveLastSync(request: String, lastSync: Long) = dataStore.saveCredential(
         Constants.KEY_LAST_SYNC + request, lastSync.toString()
     )
+
+    fun getToken() = basicAuthInterceptor.token
 }
