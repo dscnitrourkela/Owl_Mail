@@ -1,7 +1,6 @@
 package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
-import android.util.Log
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -29,7 +28,7 @@ class Repository @Inject constructor(
     private suspend fun getHtml(id: String): Document = withContext(Dispatchers.IO) {
         val url =
             Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + id + "&xim=1&auth=co"
-        Log.w("Test", url)
+        debugLog(url)
         return@withContext Jsoup.connect(url).header("Cookie", basicAuthInterceptor.token).get()
     }
 
@@ -41,13 +40,13 @@ class Repository @Inject constructor(
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItem(id)
+                mailApi.getMailItemHtml(id)
 //                getHtml(id)
             },
             saveFetchResult = { result ->
-                val body = result.string()
-//                val body = result.getElementsByClass("MsgBody").toString()
-                Log.w("Test", result.toString())
+//                val body = result.string()
+                val body = Jsoup.parse(result.string()).getElementsByClass(Constants.MESSAGE_BODY)
+                    .toString()
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -57,7 +56,6 @@ class Repository @Inject constructor(
     }
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
-        Log.w("Test", "Syncing")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(request)
@@ -103,7 +101,6 @@ class Repository @Inject constructor(
             readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
                 if (credential != Constants.NO_CREDENTIAL) {
                     basicAuthInterceptor.credential = credential
-                    result = true
                 }
             }
             readCredential(Constants.KEY_TOKEN)?.let { token ->

@@ -75,7 +75,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
-                            webViewClient = mailViewClient
+//                            webViewClient = mailViewClient
                             loadDataWithBaseURL(
                                 Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
                                 mail.html,

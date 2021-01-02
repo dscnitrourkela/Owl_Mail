@@ -75,6 +75,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         return super.onOptionsItemSelected(item)
     }
 
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
+    }
+
     override fun toggleDrawer(isEnabled: Boolean) {
         val lockMode =
             if (isEnabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED

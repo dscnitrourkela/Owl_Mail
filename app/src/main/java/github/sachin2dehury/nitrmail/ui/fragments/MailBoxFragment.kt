@@ -87,7 +87,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLogInCredential()
                             viewModel.lastSync = System.currentTimeMillis() - 5000
                             viewModel.saveLastSync()
                         }

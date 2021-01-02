@@ -3,12 +3,12 @@ package github.sachin2dehury.nitrmail.services
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import github.sachin2dehury.nitrmail.others.debugLog
 
 class SyncBroadcastReceiver : BroadcastReceiver() {
 
     init {
-        Log.w("Test", "Created SyncBroadcastReceiver")
+        debugLog("Created SyncBroadcastReceiver")
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -17,6 +17,6 @@ class SyncBroadcastReceiver : BroadcastReceiver() {
             Intent.ACTION_SCREEN_ON -> context?.startService(syncIntent)
             Intent.ACTION_SCREEN_OFF -> context?.stopService(syncIntent)
         }
-        Log.w("Test", "Running SyncBroadcastReceiver")
+        debugLog("Running SyncBroadcastReceiver")
     }
 }
