@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -16,6 +17,7 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
@@ -45,12 +47,13 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.navView.setCheckedItem(R.id.inbox)
-
         drawerOptionMenu()
+
+        binding.navView.setCheckedItem(R.id.inbox)
 
     }
 
+    @SuppressLint("RtlHardcoded")
     private fun drawerOptionMenu() {
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -71,6 +74,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
     }
 
     override fun toggleDrawer(isEnabled: Boolean) {
@@ -106,7 +115,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onDestroy() {
         _binding = null
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-//        registerReceiver(syncBroadcastReceiver, intentFilter)
+        registerReceiver(syncBroadcastReceiver, intentFilter)
+        val syncIntent = Intent(this, SyncService::class.java)
+        startService(syncIntent)
         super.onDestroy()
     }
 }

@@ -1,7 +1,6 @@
 package github.sachin2dehury.nitrmail.repository
 
 import android.app.Application
-import android.util.Log
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -10,8 +9,6 @@ import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -24,13 +21,6 @@ class Repository @Inject constructor(
     private val networkBoundResource: NetworkBoundResource,
 ) {
 
-    private suspend fun getHtml(id: String): Document = withContext(Dispatchers.IO) {
-        val url =
-            Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + id + "&xim=1&auth=co"
-        Log.w("Test", url)
-        return@withContext Jsoup.connect(url).header("Cookie", basicAuthInterceptor.token).get()
-    }
-
     fun getParsedMailItem(
         id: String
     ): Flow<Resource<Mail>> {
@@ -39,11 +29,10 @@ class Repository @Inject constructor(
                 mailDao.getMailItem(id)
             },
             fetch = {
-//                mailApi.getMailItemHtml(id)
-                getHtml(id)
+                mailApi.getMailItemHtml(id)
             },
             saveFetchResult = { result ->
-                val body = result.getElementById("iframeBody").toString()
+                val body = result.string()
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -74,10 +63,6 @@ class Repository @Inject constructor(
         )
     }
 
-    private suspend fun deleteAllMails() = mailDao.deleteAllMails()
-
-    private suspend fun deleteAllParsedMails() = mailDao.deleteAllMails()
-
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
         basicAuthInterceptor.credential = credential
         try {
@@ -96,35 +81,34 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun logOut() {
-        deleteAllMails()
-        deleteAllParsedMails()
-        basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
-        basicAuthInterceptor.token = Constants.NO_TOKEN
-        saveLogInCredential()
-        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
-    }
-
     suspend fun isLoggedIn(): Boolean {
         var result = false
-        dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
-            if (credential != Constants.NO_CREDENTIAL) {
-                basicAuthInterceptor.credential = credential
-                result = true
+        dataStore.apply {
+            readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
+                if (credential != Constants.NO_CREDENTIAL) {
+                    basicAuthInterceptor.credential = credential
+                }
             }
-        }
-
-        dataStore.readCredential(Constants.KEY_TOKEN)?.let { token ->
-            if (token != Constants.NO_TOKEN) {
-                basicAuthInterceptor.token = token
-                result = true
+            readCredential(Constants.KEY_TOKEN)?.let { token ->
+                if (token != Constants.NO_TOKEN) {
+                    basicAuthInterceptor.token = token
+                    result = true
+                }
             }
         }
         return result
+    }
+
+    suspend fun logOut() {
+//        mailDao.deleteAllMails()
+        basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
+        basicAuthInterceptor.token = Constants.NO_TOKEN
+        saveLogInCredential()
+//        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
     suspend fun saveLogInCredential() {
@@ -139,6 +123,9 @@ class Repository @Inject constructor(
     suspend fun saveLastSync(request: String, lastSync: Long) = dataStore.saveCredential(
         Constants.KEY_LAST_SYNC + request, lastSync.toString()
     )
+
+    suspend fun syncMails(lastSync: Long) =
+        mailApi.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
 
     fun getToken() = basicAuthInterceptor.token
 }

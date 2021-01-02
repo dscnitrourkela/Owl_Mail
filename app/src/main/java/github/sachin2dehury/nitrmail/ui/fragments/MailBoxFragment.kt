@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -7,7 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,9 +16,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -28,9 +29,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private val viewModel: MailBoxViewModel by viewModels()
-
-    var lastSync = Constants.NO_LAST_SYNC
+    private lateinit var viewModel: MailBoxViewModel
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -47,6 +46,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentMailBoxBinding.bind(view)
+
+        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()
@@ -86,7 +87,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLastSync(lastSync)
+                            viewModel.lastSync = System.currentTimeMillis() - 5000
+                            viewModel.saveLastSync()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -142,15 +144,15 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             R.id.logOut -> {
                 viewModel.logOut()
                 (requireActivity() as ActivityExt).apply {
-                    unregisterSync()
+//                    unregisterSync()
                     showSnackbar("Successfully logged out.")
                 }
                 binding.root.findNavController()
                     .navigate(R.id.action_mailBoxFragment_to_authFragment)
             }
             R.id.darkMode -> {
-//                val syncIntent = Intent(context, SyncService::class.java)
-//                requireContext().stopService(syncIntent)
+                val syncIntent = Intent(context, SyncService::class.java)
+                requireContext().startService(syncIntent)
                 (requireActivity() as ActivityExt).showSnackbar("Will be done. XD")
             }
         }
