@@ -138,5 +138,8 @@ class Repository @Inject constructor(
         Constants.KEY_LAST_SYNC + request, lastSync.toString()
     )
 
+    suspend fun syncMails(lastSync: Long) =
+        mailApi.getMails(Constants.JUNK_URL, Constants.UPDATE_QUERY + lastSync)
+
     fun getToken() = basicAuthInterceptor.token
 }
