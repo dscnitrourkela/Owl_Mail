@@ -6,7 +6,6 @@ import android.os.IBinder
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
-import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -49,9 +48,9 @@ class SyncService : Service() {
         notificationExt.notify("Test", "Test")
         while (true) {
             syncMails()
-            debugLog("Running Sync")
-            delay(10000L)
-//            delay(Constants.SYNC_DELAY_TIME)
+//            debugLog("Running Sync")
+//            delay(10000L)
+            delay(Constants.SYNC_DELAY_TIME)
         }
     }
 

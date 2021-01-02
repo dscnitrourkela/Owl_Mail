@@ -9,14 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
-import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
@@ -25,9 +23,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private val binding: FragmentMailItemBinding get() = _binding!!
 
     private val viewModel: MailItemViewModel by viewModels()
-
-    @Inject
-    lateinit var mailViewClient: MailViewClient
 
     private val args: MailItemFragmentArgs by navArgs()
 
@@ -44,8 +39,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         }
 
         subscribeToObservers()
-
-        mailViewClient.token = viewModel.getToken()
 
         viewModel.syncParsedMails()
 
@@ -75,7 +68,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
-//                            webViewClient = mailViewClient
                             loadDataWithBaseURL(
 //                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
                                 null,
