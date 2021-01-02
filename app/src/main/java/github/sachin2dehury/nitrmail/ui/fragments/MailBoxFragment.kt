@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.services.SyncService
@@ -31,8 +30,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
     private lateinit var viewModel: MailBoxViewModel
-
-    private var lastSync = Constants.NO_LAST_SYNC
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -57,7 +54,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            lastSync = System.currentTimeMillis()
             viewModel.syncAllMails()
         }
 
@@ -91,9 +87,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.lastSync = lastSync
-                            viewModel.saveLastSync(lastSync)
                             viewModel.saveLogInCredential()
+                            viewModel.lastSync = System.currentTimeMillis() - 5000
+                            viewModel.saveLastSync()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -114,7 +110,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
-                    lastSync = System.currentTimeMillis()
                     viewModel.syncAllMails()
                 }
             }

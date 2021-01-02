@@ -46,9 +46,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.navView.setCheckedItem(R.id.inbox)
-
         drawerOptionMenu()
+
+        binding.navView.setCheckedItem(R.id.inbox)
 
     }
 

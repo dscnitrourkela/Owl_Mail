@@ -20,7 +20,7 @@ interface MailApi {
     suspend fun getMails(
         @Path("request") request: String,
         @Query("query") search: String,
-        @Query("auth") token: String = Constants.AUTH_SET_COOKIE
+        @Query("auth") token: String = Constants.AUTH_COOKIE
     ): Response<Mails>
 
     @GET(Constants.HOME_URL)

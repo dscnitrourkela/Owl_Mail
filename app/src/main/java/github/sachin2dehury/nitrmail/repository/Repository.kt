@@ -57,6 +57,7 @@ class Repository @Inject constructor(
     }
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
+        Log.w("Test", "Syncing")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(request)
@@ -78,8 +79,6 @@ class Repository @Inject constructor(
         )
     }
 
-    private suspend fun deleteAllMails() = mailDao.deleteAllMails()
-
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
         basicAuthInterceptor.credential = credential
         try {
@@ -96,18 +95,6 @@ class Repository @Inject constructor(
                     ?: "Couldn't connect to the servers. Check your internet connection", null
             )
         }
-    }
-
-    suspend fun logOut() {
-        deleteAllMails()
-        basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
-        basicAuthInterceptor.token = Constants.NO_TOKEN
-        saveLogInCredential()
-        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
     suspend fun isLoggedIn(): Boolean {
@@ -127,6 +114,18 @@ class Repository @Inject constructor(
             }
         }
         return result
+    }
+
+    suspend fun logOut() {
+        mailDao.deleteAllMails()
+        basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
+        basicAuthInterceptor.token = Constants.NO_TOKEN
+        saveLogInCredential()
+        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
     suspend fun saveLogInCredential() {
