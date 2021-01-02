@@ -25,15 +25,16 @@ object Constants {
 
     const val AUTH_COOKIE = "co"
     const val AUTH_SET_COOKIE = "sc"
+    const val AUTH_QUERY = "qp"
 
     const val DATABASE_NAME = "MAIL_DB"
     const val PARSED_MAIL_DATABASE_NAME = "PARSED_MAIL_DB"
 
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"
+    const val NO_CREDENTIAL = "NO_CREDENTIAL"
     const val KEY_TOKEN = "KEY_TOKEN"
     const val NO_TOKEN = "NO_TOKEN"
-    const val NO_CREDENTIAL = "NO_CREDENTIAL"
     const val KEY_LAST_SYNC = "KEY_LAST_SYNC"
     const val NO_LAST_SYNC = 0L
 

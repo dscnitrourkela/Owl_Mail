@@ -11,20 +11,9 @@ class BasicAuthInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        var response = makeRequest(chain)
+        val response = makeRequest(chain)
 
-        if (response.code == 401) {
-            token = Constants.NO_TOKEN
-            response = makeRequest(chain)
-        }
-
-        try {
-            getToken(response)
-        } catch (e: Exception) {
-            token = Constants.NO_TOKEN
-            response = makeRequest(chain)
-            getToken(response)
-        }
+        getToken(response)
 
         return response
     }

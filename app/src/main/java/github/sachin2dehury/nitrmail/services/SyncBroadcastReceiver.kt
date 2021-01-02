@@ -8,7 +8,7 @@ import android.util.Log
 class SyncBroadcastReceiver : BroadcastReceiver() {
 
     init {
-        Log.w("Test", "Created")
+        Log.w("Test", "Created SyncBroadcastReceiver")
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -17,6 +17,6 @@ class SyncBroadcastReceiver : BroadcastReceiver() {
             Intent.ACTION_SCREEN_ON -> context?.startService(syncIntent)
             Intent.ACTION_SCREEN_OFF -> context?.stopService(syncIntent)
         }
-        Log.w("Test", "Running")
+        Log.w("Test", "Running SyncBroadcastReceiver")
     }
 }

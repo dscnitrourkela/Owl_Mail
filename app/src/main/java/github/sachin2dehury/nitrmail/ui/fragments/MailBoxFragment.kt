@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -15,9 +16,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -29,8 +30,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
     private val viewModel: MailBoxViewModel by viewModels()
-
-    var lastSync = Constants.NO_LAST_SYNC
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -86,7 +85,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLastSync(lastSync)
+                            viewModel.saveLastSync()
+                            viewModel.saveLogInCredential()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -107,6 +107,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
+                    viewModel.lastSync = System.currentTimeMillis()
                     viewModel.syncAllMails()
                 }
             }
@@ -149,8 +150,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                     .navigate(R.id.action_mailBoxFragment_to_authFragment)
             }
             R.id.darkMode -> {
-//                val syncIntent = Intent(context, SyncService::class.java)
-//                requireContext().stopService(syncIntent)
+                val syncIntent = Intent(context, SyncService::class.java)
+                requireContext().startService(syncIntent)
                 (requireActivity() as ActivityExt).showSnackbar("Will be done. XD")
             }
         }

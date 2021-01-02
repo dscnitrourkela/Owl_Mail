@@ -17,7 +17,7 @@ import javax.inject.Inject
 class SyncService : Service() {
 
     init {
-        Log.w("Test", "Created")
+        Log.w("Test", "Created SyncService")
     }
 
     @Inject
@@ -48,10 +48,11 @@ class SyncService : Service() {
     private fun startSyncService() = GlobalScope.launch {
         val lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
         while (true) {
-            syncMails(lastSync)
+            notificationExt.notify("Test", "Test")
+//            syncMails(lastSync)
             Log.w("Test", "Sync Mail")
 //            delay(Constants.SYNC_DELAY_TIME)
-            delay(5000L)
+            delay(10000L)
         }
     }
 

@@ -13,7 +13,9 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class Repository @Inject constructor(
     private val basicAuthInterceptor: BasicAuthInterceptor,
     private val context: Application,
@@ -39,11 +41,13 @@ class Repository @Inject constructor(
                 mailDao.getMailItem(id)
             },
             fetch = {
-//                mailApi.getMailItemHtml(id)
-                getHtml(id)
+                mailApi.getMailItem(id)
+//                getHtml(id)
             },
             saveFetchResult = { result ->
-                val body = result.getElementById("iframeBody").toString()
+                val body = result.string()
+//                val body = result.getElementsByClass("MsgBody").toString()
+                Log.w("Test", result.toString())
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -76,8 +80,6 @@ class Repository @Inject constructor(
 
     private suspend fun deleteAllMails() = mailDao.deleteAllMails()
 
-    private suspend fun deleteAllParsedMails() = mailDao.deleteAllMails()
-
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
         basicAuthInterceptor.credential = credential
         try {
@@ -98,7 +100,6 @@ class Repository @Inject constructor(
 
     suspend fun logOut() {
         deleteAllMails()
-        deleteAllParsedMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveLogInCredential()
@@ -111,17 +112,18 @@ class Repository @Inject constructor(
 
     suspend fun isLoggedIn(): Boolean {
         var result = false
-        dataStore.readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
-            if (credential != Constants.NO_CREDENTIAL) {
-                basicAuthInterceptor.credential = credential
-                result = true
+        dataStore.apply {
+            readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
+                if (credential != Constants.NO_CREDENTIAL) {
+                    basicAuthInterceptor.credential = credential
+                    result = true
+                }
             }
-        }
-
-        dataStore.readCredential(Constants.KEY_TOKEN)?.let { token ->
-            if (token != Constants.NO_TOKEN) {
-                basicAuthInterceptor.token = token
-                result = true
+            readCredential(Constants.KEY_TOKEN)?.let { token ->
+                if (token != Constants.NO_TOKEN) {
+                    basicAuthInterceptor.token = token
+                    result = true
+                }
             }
         }
         return result

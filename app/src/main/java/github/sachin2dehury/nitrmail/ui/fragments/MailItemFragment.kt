@@ -26,8 +26,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val viewModel: MailItemViewModel by viewModels()
 
-    var token = Constants.NO_TOKEN
-
     @Inject
     lateinit var mailViewClient: MailViewClient
 
@@ -47,7 +45,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         subscribeToObservers()
 
-        token = viewModel.getToken()
+        mailViewClient.token = viewModel.getToken()
 
         viewModel.syncParsedMails()
 
@@ -77,8 +75,14 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
-//                            webViewClient = mailViewClient
-                            loadDataWithBaseURL(null, mail.html, "text/html", "utf-8", null)
+                            webViewClient = mailViewClient
+                            loadDataWithBaseURL(
+                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
+                                mail.html,
+                                "text/html",
+                                "utf-8",
+                                null
+                            )
                         }
                     }
                 }

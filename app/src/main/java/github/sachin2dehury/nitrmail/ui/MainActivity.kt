@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     }
 
+    @SuppressLint("RtlHardcoded")
     private fun drawerOptionMenu() {
         binding.navView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -106,7 +108,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onDestroy() {
         _binding = null
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-//        registerReceiver(syncBroadcastReceiver, intentFilter)
+        registerReceiver(syncBroadcastReceiver, intentFilter)
         super.onDestroy()
     }
 }
