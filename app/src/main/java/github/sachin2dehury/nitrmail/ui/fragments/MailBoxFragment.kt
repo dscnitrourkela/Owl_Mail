@@ -144,7 +144,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             R.id.logOut -> {
                 viewModel.logOut()
                 (requireActivity() as ActivityExt).apply {
-                    unregisterSync()
+//                    unregisterSync()
                     showSnackbar("Successfully logged out.")
                 }
                 binding.root.findNavController()

@@ -13,7 +13,7 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _request = MutableLiveData(Constants.JUNK_URL)
+    private val _request = MutableLiveData(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
     var lastSync = Constants.NO_LAST_SYNC

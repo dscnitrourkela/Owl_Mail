@@ -77,7 +77,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             setInitialScale(160)
 //                            webViewClient = mailViewClient
                             loadDataWithBaseURL(
-                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
+//                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
+                                null,
                                 mail.html,
                                 "text/html",
                                 "utf-8",

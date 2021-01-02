@@ -17,6 +17,7 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
@@ -115,6 +116,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         _binding = null
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
         registerReceiver(syncBroadcastReceiver, intentFilter)
+        val syncIntent = Intent(this, SyncService::class.java)
+        startService(syncIntent)
         super.onDestroy()
     }
 }

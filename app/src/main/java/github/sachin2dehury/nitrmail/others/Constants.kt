@@ -4,7 +4,7 @@ object Constants {
 
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
-    const val MESSAGE_URL = "h/message"
+    const val MESSAGE_URL = "h/imessage"
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
@@ -23,8 +23,6 @@ object Constants {
     const val TASKS_URL = "tasks.json"
 
     const val UPDATE_QUERY = "after:"
-
-    const val MESSAGE_BODY = "MsgBody"
 
     const val AUTH_COOKIE = "co"
     const val AUTH_SET_COOKIE = "sc"
