@@ -1,5 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.viewmodels
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -12,6 +13,10 @@ import kotlinx.coroutines.launch
 class MailBoxViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
+
+    init {
+        Log.w("Test", javaClass.simpleName)
+    }
 
     private val _request = MutableLiveData(Constants.JUNK_URL)
     val request: LiveData<String> = _request
@@ -32,12 +37,14 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
-    fun saveLastSync() = viewModelScope.launch {
+    fun saveLastSync(lastSync: Long) = viewModelScope.launch {
         repository.saveLastSync(request.value!!, lastSync)
+        Log.w("Test Save", "${request.value} $lastSync")
     }
 
     fun readLastSync() = viewModelScope.launch {
         lastSync = repository.readLastSync(request.value!!)
+        Log.w("Test Read", "${request.value} $lastSync")
     }
 
     fun logOut() = viewModelScope.launch { repository.logOut() }

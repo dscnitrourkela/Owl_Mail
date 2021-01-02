@@ -8,7 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.services.SyncService
@@ -29,7 +30,9 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private val viewModel: MailBoxViewModel by viewModels()
+    private lateinit var viewModel: MailBoxViewModel
+
+    private var lastSync = Constants.NO_LAST_SYNC
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -47,11 +50,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         _binding = FragmentMailBoxBinding.bind(view)
 
+        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
+
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
+            lastSync = System.currentTimeMillis()
             viewModel.syncAllMails()
         }
 
@@ -85,7 +91,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         if (internetChecker.isInternetConnected(requireContext())) {
-                            viewModel.saveLastSync()
+                            viewModel.lastSync = lastSync
+                            viewModel.saveLastSync(lastSync)
                             viewModel.saveLogInCredential()
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
@@ -107,7 +114,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
                 viewModel.readLastSync().invokeOnCompletion {
-                    viewModel.lastSync = System.currentTimeMillis()
+                    lastSync = System.currentTimeMillis()
                     viewModel.syncAllMails()
                 }
             }
