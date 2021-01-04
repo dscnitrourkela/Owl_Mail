@@ -137,10 +137,9 @@ class Repository @Inject constructor(
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
-        val table = Jsoup.parse(parsedMail).getElementById("iframeBody")?.getElementsByTag("table")
+        return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
+            ?.getElementsByTag("table")
             .toString()
-        debugLog(table)
-        return@withContext table
     }
 
     private fun getBox(request: String) = when (request) {
