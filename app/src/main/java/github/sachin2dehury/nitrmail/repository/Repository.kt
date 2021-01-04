@@ -29,10 +29,20 @@ class Repository @Inject constructor(
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItemHtml(id)
+                mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id, "1")
             },
             saveFetchResult = { result ->
                 val body = result.string()
+//                val response =
+//                    mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
+//                val parsedMail = Jsoup.parse(response)
+//                var attachments = 0
+//                try {
+//                    attachments = parsedMail.getElementsByClass("MsgHdrAttAnchor").text()
+//                        .substringBefore(" attachment").toInt()
+//                } catch (e: Exception) {
+//                    debugLog(e.message.toString())
+//                }
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -42,9 +52,10 @@ class Repository @Inject constructor(
     }
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
+        val box = getBox(request)
         return networkBoundResource.makeNetworkRequest(
             query = {
-                mailDao.getMails(request)
+                mailDao.getMails(box)
             },
             fetch = {
                 mailApi.getMails(request, search)
@@ -52,7 +63,6 @@ class Repository @Inject constructor(
             saveFetchResult = { response ->
                 response.body()?.mails?.let { mails ->
                     mails.forEach {
-                        it.box = request
                         mailDao.insertMail(it)
                     }
                 }
@@ -128,4 +138,13 @@ class Repository @Inject constructor(
         mailApi.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
 
     fun getToken() = basicAuthInterceptor.token
+
+    private fun getBox(request: String) = when (request) {
+        Constants.INBOX_URL -> 2
+        Constants.TRASH_URL -> 3
+        Constants.JUNK_URL -> 4
+        Constants.SENT_URL -> 5
+        Constants.DRAFT_URL -> 6
+        else -> 0
+    }.toString()
 }

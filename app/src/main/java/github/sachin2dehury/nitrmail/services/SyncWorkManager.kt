@@ -39,7 +39,7 @@ class SyncWorkManager(context: Context, workerParams: WorkerParameters) :
                 if (internetChecker.isInternetConnected(applicationContext)) {
                     result.data?.let { mails ->
                         mails.forEach { mail ->
-                            notificationExt.notify(mail.senders.last().name, mail.subject)
+                            notificationExt.notify(mail.addresses.last().name, mail.subject)
                         }
                     }
                 }

@@ -10,13 +10,16 @@ data class Mail(
     @PrimaryKey(autoGenerate = false)
     @SerializedName("id") val id: String = "",
 
+    @SerializedName("cid") val conversationId: String = "",
     @SerializedName("d") val time: Long = 0,
-    @SerializedName("e") val senders: List<Sender> = emptyList(),
+    @SerializedName("e") val addresses: List<Address> = emptyList(),
     @SerializedName("f") val flag: String = "",
     @SerializedName("fr") val body: String = "",
-    @SerializedName("l") val folder: String = "",
+    @SerializedName("l") val box: String = "",
+//    @SerializedName("rev") val rev: Int = 0,
+    @SerializedName("s") val size: Int = 0,
     @SerializedName("su") val subject: String = "",
-//    2 inbox 3 trash 4 junk 5 sent 6 draft 7 contacts 10 calendar
+
     var html: String = "",
-    var box: String = "",
+//    var attachments: Int = 0,
 )

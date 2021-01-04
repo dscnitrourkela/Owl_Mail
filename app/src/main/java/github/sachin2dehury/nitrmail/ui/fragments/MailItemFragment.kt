@@ -1,6 +1,8 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -45,6 +47,16 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
         }
+
+        binding.buttonViewAttachment.setOnClickListener {
+            val token = viewModel.getToken().substringAfter('=')
+            val url =
+                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=qp&zauthtoken=$token"
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(url)
+                requireContext().startActivity(this)
+            }
+        }
     }
 
     @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")
@@ -53,23 +65,26 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mail ->
+                    val sender =
+                        if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
                     binding.apply {
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
                         textViewMailSubject.text = mail.subject
                         textViewSenderName.text =
-                            if (mail.flag.contains('s')) mail.senders.first().name else mail.senders.last().name
-                        textViewSenderEmail.text =
-                            if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+                            if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                                '@'
+                            )
+                        textViewSenderEmail.text = sender.email
                         if (mail.flag.contains('a')) {
                             imageViewAttachment.isVisible = true
+                            buttonViewAttachment.isVisible = true
                         }
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
                             loadDataWithBaseURL(
-//                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
                                 null,
                                 mail.html,
                                 "text/html",

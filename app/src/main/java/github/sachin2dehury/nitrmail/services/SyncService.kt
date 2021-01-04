@@ -66,7 +66,11 @@ class SyncService : Service() {
 //                }
                 lastSync = currentTime
                 result.mails.forEach { mail ->
-                    notificationExt.notify(mail.senders.last().name, mail.subject)
+                    val sender =
+                        if (mail.addresses.last().name.isNotEmpty()) mail.addresses.last().name else mail.addresses.last().email.substringBefore(
+                            '@'
+                        )
+                    notificationExt.notify(sender, mail.subject)
                 }
             }
         }
