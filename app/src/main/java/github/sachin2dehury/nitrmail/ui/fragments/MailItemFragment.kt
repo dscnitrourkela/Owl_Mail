@@ -66,6 +66,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             imageViewAttachment.isVisible = true
                         }
                         webView.apply {
+                            isVerticalScrollBarEnabled = false
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)

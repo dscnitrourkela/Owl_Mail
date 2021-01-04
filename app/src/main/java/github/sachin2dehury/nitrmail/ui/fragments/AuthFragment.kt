@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -45,7 +46,12 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         isLoggedIn()
 
-        (activity as ActivityExt).toggleActionBar(false)
+        (activity as ActivityExt).apply {
+            inAppUpdate()
+            toggleActionBar(false)
+            toggleDrawer(false)
+            inAppReview()
+        }
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -56,6 +62,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         if (viewModel.isLoggedIn()) {
             redirectFragment()
         }
+        binding.imageViewSplash.isVisible = false
     }
 
     private fun redirectFragment() {
