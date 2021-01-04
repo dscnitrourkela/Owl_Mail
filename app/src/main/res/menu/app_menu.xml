@@ -11,6 +11,6 @@
         android:id="@+id/darkMode"
         android:icon="@drawable/ic_baseline_dark_mode_24"
         android:orderInCategory="2"
-        android:title="Start Service"
+        android:title="Stop Service"
         app:showAsAction="never" />
 </menu>

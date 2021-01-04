@@ -16,4 +16,5 @@
     <string name="enter_roll">Enter Roll</string>
     <string name="enter_password">Enter Password</string>
     <string name="attachments">Attachments</string>
+    <string name="compose">Compose</string>
 </resources>

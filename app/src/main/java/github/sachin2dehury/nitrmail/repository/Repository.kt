@@ -150,4 +150,6 @@ class Repository @Inject constructor(
         Constants.DRAFT_URL -> 6
         else -> 0
     }.toString()
+
+    fun getToken() = basicAuthInterceptor.token
 }

@@ -15,12 +15,11 @@ class MailItemViewModel @ViewModelInject constructor(
     val id: LiveData<String> = _id
 
     private val _hasAttachments = MutableLiveData(false)
-    val hasAttachments: LiveData<Boolean> = _hasAttachments
 
     private val _forceUpdate = MutableLiveData(false)
 
     private val _parsedMail = _forceUpdate.switchMap {
-        repository.getParsedMailItem(id.value!!, hasAttachments.value!!)
+        repository.getParsedMailItem(id.value!!, _hasAttachments.value!!)
             .asLiveData(viewModelScope.coroutineContext)
             .switchMap {
                 MutableLiveData(Event(it))

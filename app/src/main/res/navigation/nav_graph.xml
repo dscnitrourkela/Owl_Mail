@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_mailBoxFragment_to_authFragment"
             app:destination="@id/authFragment" />
+        <action
+            android:id="@+id/action_mailBoxFragment_to_composeFragment"
+            app:destination="@id/composeFragment" />
     </fragment>
     <fragment
         android:id="@+id/mailItemFragment"
@@ -34,5 +37,9 @@
             android:name="hasAttachments"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/composeFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.ComposeFragment"
+        android:label="ComposeFragment" />
 
 </navigation>

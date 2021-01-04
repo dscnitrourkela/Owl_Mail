@@ -2,7 +2,6 @@ package github.sachin2dehury.nitrmail.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
@@ -16,9 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -31,8 +29,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private val viewModel: MailBoxViewModel by viewModels()
 
-    @Inject
-    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
+//    @Inject
+//    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,15 +106,26 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun unregisterSync() {
-        unregisterReceiver(syncBroadcastReceiver)
+//        unregisterReceiver(syncBroadcastReceiver)
+    }
+
+    override fun registerSync() {
+//        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
+//        registerReceiver(syncBroadcastReceiver, intentFilter)
+    }
+
+    override fun startSync() {
+        val syncIntent = Intent(this, SyncService::class.java)
+        startService(syncIntent)
+    }
+
+    override fun stopSync() {
+        val syncIntent = Intent(this, SyncService::class.java)
+        stopService(syncIntent)
     }
 
     override fun onDestroy() {
         _binding = null
-        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-        registerReceiver(syncBroadcastReceiver, intentFilter)
-//        val syncIntent = Intent(this, SyncService::class.java)
-//        startService(syncIntent)
         super.onDestroy()
     }
 }
