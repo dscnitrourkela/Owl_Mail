@@ -23,15 +23,16 @@ interface MailApi {
         @Query("auth") token: String = Constants.AUTH_COOKIE
     ): Response<Mails>
 
-    @GET(Constants.HOME_URL)
-    suspend fun getMailItem(
-        @Query("id") mailId: String,
-        @Query("part") part: String = "1",
-        @Query("auth") token: String = Constants.AUTH_COOKIE
-    ): ResponseBody
+//    @GET(Constants.HOME_URL)
+//    suspend fun getMailItem(
+//        @Query("id") mailId: String,
+//        @Query("part") part: String = "1",
+//        @Query("auth") token: String = Constants.AUTH_COOKIE
+//    ): ResponseBody
 
-    @GET(Constants.MESSAGE_URL)
-    suspend fun getMailItemHtml(
+    @GET("{request}")
+    suspend fun getMailItemBody(
+        @Path("request") request: String,
         @Query("id") mailId: String,
         @Query("xim") loadImage: String = "1",
         @Query("auth") token: String = Constants.AUTH_COOKIE,

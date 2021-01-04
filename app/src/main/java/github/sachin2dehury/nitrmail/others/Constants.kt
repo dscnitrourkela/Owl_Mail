@@ -1,10 +1,14 @@
 package github.sachin2dehury.nitrmail.others
 
+import com.google.android.play.core.install.model.AppUpdateType
+
 object Constants {
 
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
-    const val MESSAGE_URL = "h/imessage"
+    const val I_MESSAGE_URL = "h/imessage"
+    const val MESSAGE_URL = "h/message"
+    const val COMPOSE_URL = "m/zmain?st=newmail" // h/?action=compose
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
@@ -29,7 +33,6 @@ object Constants {
     const val AUTH_QUERY = "qp"
 
     const val DATABASE_NAME = "MAIL_DB"
-    const val PARSED_MAIL_DATABASE_NAME = "PARSED_MAIL_DB"
 
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
 
@@ -44,4 +47,6 @@ object Constants {
     const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
     const val DATE_FORMAT_MONTH = "dd-MM"
     const val DATE_FORMAT_DATE = "dd-MM HH:mm"
+
+    const val APP_UPDATE_TYPE = AppUpdateType.IMMEDIATE
 }

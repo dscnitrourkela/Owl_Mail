@@ -7,6 +7,8 @@ import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MailBoxViewModel @ViewModelInject constructor(
@@ -16,7 +18,7 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _request = MutableLiveData(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
-    var lastSync = Constants.NO_LAST_SYNC
+    var lastSync = System.currentTimeMillis()
 
     private val _forceUpdate = MutableLiveData(false)
 
@@ -40,7 +42,7 @@ class MailBoxViewModel @ViewModelInject constructor(
         lastSync = repository.readLastSync(request.value!!)
     }
 
-    fun logOut() = viewModelScope.launch { repository.logOut() }
+    fun logOut() = CoroutineScope(Dispatchers.IO).launch { repository.logOut() }
 
     fun syncAllMails() = _forceUpdate.postValue(true)
 

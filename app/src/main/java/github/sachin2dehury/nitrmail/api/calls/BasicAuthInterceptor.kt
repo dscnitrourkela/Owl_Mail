@@ -11,17 +11,19 @@ class BasicAuthInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        val response = makeRequest(chain)
+        var response = makeRequest(chain)
 
-        getToken(response)
+        if (response.code == 401) {
+            response.close()
+            token = Constants.NO_TOKEN
+            response = makeRequest(chain)
+        }
 
-        return response
-    }
-
-    private fun getToken(response: Response) {
-        if (token == Constants.NO_TOKEN) {
+        if (token == Constants.NO_TOKEN && response.headers("Set-Cookie").isNotEmpty()) {
             token = response.headers("Set-Cookie").first().substringBefore(';')
         }
+
+        return response
     }
 
     private fun makeRequest(chain: Interceptor.Chain): Response {
@@ -34,7 +36,7 @@ class BasicAuthInterceptor : Interceptor {
                 .build()
         } else {
             request.newBuilder()
-                .addHeader("Cookie", token)
+                .header("Cookie", token)
                 .build()
         }
 

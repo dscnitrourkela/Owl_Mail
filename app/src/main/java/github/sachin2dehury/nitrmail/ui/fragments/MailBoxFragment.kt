@@ -1,6 +1,5 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,7 +17,6 @@ import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
-import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -57,16 +55,21 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             viewModel.syncAllMails()
         }
 
+        binding.floatingActionButtonCompose.setOnClickListener {
+            findNavController().navigate(R.id.action_mailBoxFragment_to_composeFragment)
+        }
+
         (activity as ActivityExt).apply {
             toggleDrawer(true)
             toggleActionBar(true)
+            startSync()
         }
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
         findNavController().navigate(
             MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(
-                it.id
+                it.id, it.flag.contains('a')
             )
         )
     }
@@ -142,18 +145,20 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logOut -> {
-                viewModel.logOut()
                 (requireActivity() as ActivityExt).apply {
 //                    unregisterSync()
+                    stopSync()
                     showSnackbar("Successfully logged out.")
                 }
+                viewModel.logOut()
                 binding.root.findNavController()
                     .navigate(R.id.action_mailBoxFragment_to_authFragment)
             }
             R.id.darkMode -> {
-                val syncIntent = Intent(context, SyncService::class.java)
-                requireContext().startService(syncIntent)
-                (requireActivity() as ActivityExt).showSnackbar("Will be done. XD")
+                (requireActivity() as ActivityExt).apply {
+                    showSnackbar("Stopping Sync Services")
+                    stopSync()
+                }
             }
         }
         return super.onOptionsItemSelected(item)

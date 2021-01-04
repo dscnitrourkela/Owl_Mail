@@ -9,6 +9,7 @@ import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -22,17 +23,22 @@ class Repository @Inject constructor(
 ) {
 
     fun getParsedMailItem(
-        id: String
+        id: String,
+        hasAttachments: Boolean
     ): Flow<Resource<Mail>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItemHtml(id)
+                mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
             },
             saveFetchResult = { result ->
-                val body = result.string()
+                var body = result.string()
+                if (hasAttachments) {
+                    val attachments = getAttachments(id)
+                    body = "$body<br><br>$attachments"
+                }
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -42,9 +48,10 @@ class Repository @Inject constructor(
     }
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
+        val box = getBox(request)
         return networkBoundResource.makeNetworkRequest(
             query = {
-                mailDao.getMails(request)
+                mailDao.getMails(box)
             },
             fetch = {
                 mailApi.getMails(request, search)
@@ -52,7 +59,6 @@ class Repository @Inject constructor(
             saveFetchResult = { response ->
                 response.body()?.mails?.let { mails ->
                     mails.forEach {
-                        it.box = request
                         mailDao.insertMail(it)
                     }
                 }
@@ -69,6 +75,7 @@ class Repository @Inject constructor(
             val response =
                 mailApi.login(Constants.UPDATE_QUERY + System.currentTimeMillis())
             if (response.isSuccessful && response.code() == 200) {
+                saveLogInCredential()
                 Resource.success(response.body()?.mails)
             } else {
                 Resource.error(response.message(), null)
@@ -87,6 +94,7 @@ class Repository @Inject constructor(
             readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
                 if (credential != Constants.NO_CREDENTIAL) {
                     basicAuthInterceptor.credential = credential
+                    result = true
                 }
             }
             readCredential(Constants.KEY_TOKEN)?.let { token ->
@@ -111,11 +119,6 @@ class Repository @Inject constructor(
 //        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
-    suspend fun saveLogInCredential() {
-        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
-        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
-    }
-
     suspend fun readLastSync(request: String) =
         dataStore.readCredential(Constants.KEY_LAST_SYNC + request)?.toLong()
             ?: Constants.NO_LAST_SYNC
@@ -126,6 +129,27 @@ class Repository @Inject constructor(
 
     suspend fun syncMails(lastSync: Long) =
         mailApi.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
+
+    private suspend fun saveLogInCredential() {
+        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
+        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+    }
+
+    private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
+        val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
+        return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
+            ?.getElementsByTag("table")
+            .toString()
+    }
+
+    private fun getBox(request: String) = when (request) {
+        Constants.INBOX_URL -> 2
+        Constants.TRASH_URL -> 3
+        Constants.JUNK_URL -> 4
+        Constants.SENT_URL -> 5
+        Constants.DRAFT_URL -> 6
+        else -> 0
+    }.toString()
 
     fun getToken() = basicAuthInterceptor.token
 }

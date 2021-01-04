@@ -62,7 +62,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Mail Subject" />
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewSender"
                 android:layout_width="?android:attr/listPreferredItemHeightSmall"
                 android:layout_height="?android:attr/listPreferredItemHeightSmall"
@@ -94,7 +94,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageViewSender" />
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewAttachment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

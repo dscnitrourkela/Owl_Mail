@@ -29,8 +29,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        MailItemViewModel.id = args.id
-
         _binding = FragmentMailItemBinding.bind(view)
 
         (activity as ActivityExt).apply {
@@ -40,7 +38,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         subscribeToObservers()
 
-        viewModel.syncParsedMails()
+        viewModel.setId(args.id, args.hasAttachments)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
@@ -53,14 +51,17 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mail ->
+                    val sender =
+                        if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
                     binding.apply {
                         textViewDate.text =
                             SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
                         textViewMailSubject.text = mail.subject
                         textViewSenderName.text =
-                            if (mail.flag.contains('s')) mail.senders.first().name else mail.senders.last().name
-                        textViewSenderEmail.text =
-                            if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+                            if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                                '@'
+                            )
+                        textViewSenderEmail.text = sender.email
                         if (mail.flag.contains('a')) {
                             imageViewAttachment.isVisible = true
                         }
@@ -69,8 +70,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
                             loadDataWithBaseURL(
-//                                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=co",
-                                null,
+                                Constants.BASE_URL,
                                 mail.html,
                                 "text/html",
                                 "utf-8",
@@ -96,6 +96,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     }
                 }
             }
+        })
+        viewModel.id.observe(viewLifecycleOwner, {
+            viewModel.syncParsedMails()
         })
     }
 

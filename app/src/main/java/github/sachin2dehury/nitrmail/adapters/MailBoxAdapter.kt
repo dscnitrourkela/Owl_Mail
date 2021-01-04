@@ -54,12 +54,15 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
     override fun onBindViewHolder(holder: MailBoxViewHolder, position: Int) {
         val mail = mails[position]
         val binding = ListMailItemBinding.bind(holder.itemView)
+        val sender =
+            if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
         binding.apply {
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
             textViewSenderEmail.text =
-                if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email
+                if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+
             if (mail.flag.contains('u')) {
                 textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
@@ -100,7 +103,7 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
                     list
                 } else {
                     list.filter { mail ->
-                        (if (mail.flag.contains('s')) mail.senders.first().email else mail.senders.last().email).contains(
+                        (if (mail.flag.contains('s')) mail.addresses.first().email else mail.addresses.last().email).contains(
                             search,
                             true
                         )
