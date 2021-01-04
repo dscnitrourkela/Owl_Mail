@@ -16,7 +16,7 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _request = MutableLiveData(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
-    var lastSync = Constants.NO_LAST_SYNC
+    var lastSync = System.currentTimeMillis()
 
     private val _forceUpdate = MutableLiveData(false)
 
