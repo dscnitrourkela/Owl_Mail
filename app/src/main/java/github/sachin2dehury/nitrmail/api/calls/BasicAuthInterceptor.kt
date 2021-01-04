@@ -13,7 +13,7 @@ class BasicAuthInterceptor : Interceptor {
 
         var response = makeRequest(chain)
 
-        if (response.code == 401) {
+        if (response.body?.string().toString().contains("must authenticate", true)) {
             response.close()
             token = Constants.NO_TOKEN
             response = makeRequest(chain)

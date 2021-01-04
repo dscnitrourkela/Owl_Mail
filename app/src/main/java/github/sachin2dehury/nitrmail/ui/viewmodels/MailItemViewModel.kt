@@ -11,23 +11,23 @@ class MailItemViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _id = MutableLiveData("")
+    private val _id = MutableLiveData<String>()
     val id: LiveData<String> = _id
 
     private val _hasAttachments = MutableLiveData(false)
 
-    private val _forceUpdate = MutableLiveData(false)
-
-    private val _parsedMail = _forceUpdate.switchMap {
-        repository.getParsedMailItem(id.value!!, _hasAttachments.value!!)
-            .asLiveData(viewModelScope.coroutineContext)
-            .switchMap {
-                MutableLiveData(Event(it))
-            }
-    }
+    private val _parsedMail = MutableLiveData<Event<Resource<Mail>>>()
     val parsedMail: LiveData<Event<Resource<Mail>>> = _parsedMail
 
-    fun syncParsedMails() = _forceUpdate.postValue(true)
+    fun syncParsedMails() {
+        _parsedMail.postValue(
+            repository.getParsedMailItem(id.value!!, _hasAttachments.value!!)
+                .asLiveData(viewModelScope.coroutineContext)
+                .switchMap {
+                    MutableLiveData(Event(it))
+                }.value
+        )
+    }
 
     fun setId(id: String, hasAttachments: Boolean) {
         _id.postValue(id)

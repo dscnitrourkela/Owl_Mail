@@ -8,7 +8,7 @@
         android:id="@+id/imageViewNavDrawer"
         android:layout_width="match_parent"
         android:layout_height="216dp"
-        android:background="@drawable/gradient"
+        android:background="@drawable/gradient_pink"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

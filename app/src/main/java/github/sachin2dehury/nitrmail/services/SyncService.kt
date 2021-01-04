@@ -26,7 +26,7 @@ class SyncService : Service() {
 
     private var lastSync = System.currentTimeMillis()
 
-    override fun onBind(p0: Intent?): IBinder? = null
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 

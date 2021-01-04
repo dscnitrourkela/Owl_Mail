@@ -82,7 +82,7 @@ class Repository @Inject constructor(
             }
         } catch (e: Exception) {
             Resource.error(
-                e.localizedMessage
+                e.message
                     ?: "Couldn't connect to the servers. Check your internet connection", null
             )
         }

@@ -18,6 +18,7 @@ import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 import okhttp3.Credentials
+import java.util.*
 
 @AndroidEntryPoint
 class AuthFragment : Fragment(R.layout.fragment_auth) {
@@ -76,7 +77,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     }
 
     private fun getCredential() {
-        val roll = binding.editTextUserRoll.text.toString()
+        val roll = binding.editTextUserRoll.text.toString().toLowerCase(Locale.ROOT)
         val password = binding.editTextUserPassword.text.toString()
         credential = Credentials.basic(roll, password)
     }
