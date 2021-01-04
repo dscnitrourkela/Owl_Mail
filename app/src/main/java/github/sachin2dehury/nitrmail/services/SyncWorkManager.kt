@@ -51,7 +51,7 @@ class SyncWorkManager(context: Context, workerParams: WorkerParameters) :
 
     override fun doWork(): Result {
         var result = Result.failure()
-        var lastSync = Constants.NO_LAST_SYNC
+        var lastSync = System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
             lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
         }.invokeOnCompletion {

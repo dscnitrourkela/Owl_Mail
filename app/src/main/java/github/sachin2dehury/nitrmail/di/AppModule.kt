@@ -11,10 +11,7 @@ import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.database.MailDatabase
-import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.others.DataStoreExt
-import github.sachin2dehury.nitrmail.others.InternetChecker
-import github.sachin2dehury.nitrmail.others.NetworkBoundResource
+import github.sachin2dehury.nitrmail.others.*
 import github.sachin2dehury.nitrmail.services.NotificationExt
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import okhttp3.OkHttpClient
@@ -83,5 +80,13 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSyncBroadcastReceiver() = SyncBroadcastReceiver()
+
+    @Singleton
+    @Provides
+    fun providePlayCoreExt(@ApplicationContext context: Context) = PlayCoreExt(context)
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAnalyticsExt() = FirebaseAnalyticsExt()
 
 }

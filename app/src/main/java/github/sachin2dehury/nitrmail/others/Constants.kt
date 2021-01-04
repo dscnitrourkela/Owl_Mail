@@ -1,5 +1,7 @@
 package github.sachin2dehury.nitrmail.others
 
+import com.google.android.play.core.install.model.AppUpdateType
+
 object Constants {
 
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
@@ -45,4 +47,6 @@ object Constants {
     const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
     const val DATE_FORMAT_MONTH = "dd-MM"
     const val DATE_FORMAT_DATE = "dd-MM HH:mm"
+
+    const val APP_UPDATE_TYPE = AppUpdateType.IMMEDIATE
 }

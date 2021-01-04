@@ -108,15 +108,15 @@ class Repository @Inject constructor(
     }
 
     suspend fun logOut() {
-        mailDao.deleteAllMails()
+//        mailDao.deleteAllMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveLogInCredential()
-        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+//        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
     suspend fun readLastSync(request: String) =
