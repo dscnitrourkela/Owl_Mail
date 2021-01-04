@@ -15,8 +15,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.PlayCoreExt
 import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -28,6 +30,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     private lateinit var toggle: ActionBarDrawerToggle
 
     private val viewModel: MailBoxViewModel by viewModels()
+
+    @Inject
+    lateinit var playCoreExt: PlayCoreExt
 
 //    @Inject
 //    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
@@ -47,6 +52,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         drawerOptionMenu()
 
         binding.navView.setCheckedItem(R.id.inbox)
+
+        playCoreExt.inAppReview()
 
     }
 
