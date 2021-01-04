@@ -9,6 +9,7 @@ import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class Repository @Inject constructor(
@@ -22,27 +23,22 @@ class Repository @Inject constructor(
 ) {
 
     fun getParsedMailItem(
-        id: String
+        id: String,
+        hasAttachments: Boolean
     ): Flow<Resource<Mail>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id, "1")
+                mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
             },
             saveFetchResult = { result ->
-                val body = result.string()
-//                val response =
-//                    mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
-//                val parsedMail = Jsoup.parse(response)
-//                var attachments = 0
-//                try {
-//                    attachments = parsedMail.getElementsByClass("MsgHdrAttAnchor").text()
-//                        .substringBefore(" attachment").toInt()
-//                } catch (e: Exception) {
-//                    debugLog(e.message.toString())
-//                }
+                var body = result.string()
+                if (hasAttachments) {
+                    val attachments = getAttachments(id)
+                    body = "$body<br><br>$attachments"
+                }
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
@@ -79,6 +75,7 @@ class Repository @Inject constructor(
             val response =
                 mailApi.login(Constants.UPDATE_QUERY + System.currentTimeMillis())
             if (response.isSuccessful && response.code() == 200) {
+                saveLogInCredential()
                 Resource.success(response.body()?.mails)
             } else {
                 Resource.error(response.message(), null)
@@ -97,6 +94,7 @@ class Repository @Inject constructor(
             readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
                 if (credential != Constants.NO_CREDENTIAL) {
                     basicAuthInterceptor.credential = credential
+                    result = true
                 }
             }
             readCredential(Constants.KEY_TOKEN)?.let { token ->
@@ -110,20 +108,15 @@ class Repository @Inject constructor(
     }
 
     suspend fun logOut() {
-//        mailDao.deleteAllMails()
+        mailDao.deleteAllMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveLogInCredential()
-//        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
-    }
-
-    suspend fun saveLogInCredential() {
-        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
-        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 
     suspend fun readLastSync(request: String) =
@@ -137,7 +130,18 @@ class Repository @Inject constructor(
     suspend fun syncMails(lastSync: Long) =
         mailApi.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
 
-    fun getToken() = basicAuthInterceptor.token
+    private suspend fun saveLogInCredential() {
+        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
+        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+    }
+
+    private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
+        val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
+        val table = Jsoup.parse(parsedMail).getElementById("iframeBody")?.getElementsByTag("table")
+            .toString()
+        debugLog(table)
+        return@withContext table
+    }
 
     private fun getBox(request: String) = when (request) {
         Constants.INBOX_URL -> 2

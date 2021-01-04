@@ -94,24 +94,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageViewSender" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonViewAttachment"
-                style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/attachments"
-                android:visibility="gone"
-                app:cornerRadius="25dp"
-                app:icon="@drawable/ic_baseline_attachment_24"
-                app:iconGravity="start"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/webView" />
-
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewAttachment"
                 android:layout_width="wrap_content"

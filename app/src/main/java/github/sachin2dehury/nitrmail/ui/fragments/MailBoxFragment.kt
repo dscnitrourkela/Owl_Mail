@@ -66,7 +66,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
         findNavController().navigate(
             MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(
-                it.id
+                it.id, it.flag.contains('a')
             )
         )
     }

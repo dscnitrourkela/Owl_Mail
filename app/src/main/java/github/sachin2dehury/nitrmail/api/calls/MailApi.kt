@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface MailApi {
 
-    @GET(Constants.HOME_URL + Constants.INBOX_URL)
+    @GET(Constants.HOME_URL + Constants.DRAFT_URL)
     suspend fun login(
         @Query("query") sync: String,
         @Query("auth") token: String = Constants.AUTH_SET_COOKIE
@@ -20,7 +20,7 @@ interface MailApi {
     suspend fun getMails(
         @Path("request") request: String,
         @Query("query") search: String,
-        @Query("auth") token: String = Constants.AUTH_SET_COOKIE
+        @Query("auth") token: String = Constants.AUTH_COOKIE
     ): Response<Mails>
 
 //    @GET(Constants.HOME_URL)
@@ -34,7 +34,7 @@ interface MailApi {
     suspend fun getMailItemBody(
         @Path("request") request: String,
         @Query("id") mailId: String,
-        @Query("xim") loadImage: String,
+        @Query("xim") loadImage: String = "1",
         @Query("auth") token: String = Constants.AUTH_COOKIE,
     ): ResponseBody
 

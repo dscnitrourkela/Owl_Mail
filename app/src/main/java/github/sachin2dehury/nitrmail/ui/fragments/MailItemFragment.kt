@@ -1,8 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -31,8 +29,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        MailItemViewModel.id = args.id
-
         _binding = FragmentMailItemBinding.bind(view)
 
         (activity as ActivityExt).apply {
@@ -42,20 +38,10 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         subscribeToObservers()
 
-        viewModel.syncParsedMails()
+        viewModel.setId(args.id, args.hasAttachments)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
-        }
-
-        binding.buttonViewAttachment.setOnClickListener {
-            val token = viewModel.getToken().substringAfter('=')
-            val url =
-                Constants.BASE_URL + Constants.MESSAGE_URL + "?id=" + MailItemViewModel.id + "&xim=1&auth=qp&zauthtoken=$token"
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
-                requireContext().startActivity(this)
-            }
         }
     }
 
@@ -78,14 +64,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         textViewSenderEmail.text = sender.email
                         if (mail.flag.contains('a')) {
                             imageViewAttachment.isVisible = true
-                            buttonViewAttachment.isVisible = true
                         }
                         webView.apply {
                             settings.javaScriptEnabled = true
                             settings.loadsImagesAutomatically = true
                             setInitialScale(160)
                             loadDataWithBaseURL(
-                                null,
+                                Constants.BASE_URL,
                                 mail.html,
                                 "text/html",
                                 "utf-8",
@@ -111,6 +96,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     }
                 }
             }
+        })
+        viewModel.id.observe(viewLifecycleOwner, {
+            viewModel.syncParsedMails()
         })
     }
 

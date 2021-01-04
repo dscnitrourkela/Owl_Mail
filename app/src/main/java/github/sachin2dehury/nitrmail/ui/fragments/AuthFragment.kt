@@ -79,7 +79,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
-                        viewModel.saveLogInCredential()
                         binding.swipeRefreshLayout.isRefreshing = false
                         (activity as ActivityExt).showSnackbar("Successfully logged in")
                         redirectFragment()

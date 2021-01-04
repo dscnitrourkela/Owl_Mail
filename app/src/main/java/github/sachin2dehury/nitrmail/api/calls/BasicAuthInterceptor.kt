@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.api.calls
 
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.debugLog
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -19,9 +20,11 @@ class BasicAuthInterceptor : Interceptor {
             response = makeRequest(chain)
         }
 
-        if (response.headers("Set-Cookie").isNotEmpty()) {
+        if (token == Constants.NO_TOKEN && response.headers("Set-Cookie").isNotEmpty()) {
             token = response.headers("Set-Cookie").first().substringBefore(';')
         }
+
+        debugLog(token.length.toString())
 
         return response
     }

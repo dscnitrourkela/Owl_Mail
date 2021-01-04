@@ -30,6 +30,9 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <argument
+            android:name="hasAttachments"
+            app:argType="boolean" />
     </fragment>
 
 </navigation>
