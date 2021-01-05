@@ -21,5 +21,4 @@ data class Mail(
     @SerializedName("su") val subject: String = "",
 
     var html: String = "",
-//    var attachments: Int = 0,
 )

@@ -26,6 +26,7 @@ class Repository @Inject constructor(
         id: String,
         hasAttachments: Boolean
     ): Flow<Resource<Mail>> {
+        debugLog("getParsedMailItem : $id $hasAttachments")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMailItem(id)
@@ -49,6 +50,7 @@ class Repository @Inject constructor(
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
         val box = getBox(request)
+        debugLog("getMails : $request $box $search")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(box)
@@ -70,6 +72,7 @@ class Repository @Inject constructor(
     }
 
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
+        debugLog("login : $credential")
         basicAuthInterceptor.credential = credential
         try {
             val response =
@@ -104,6 +107,7 @@ class Repository @Inject constructor(
                 }
             }
         }
+        debugLog("isLoggedIn : $result")
         return result
     }
 
@@ -117,6 +121,7 @@ class Repository @Inject constructor(
 //        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
 //        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
 //        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+        debugLog("logOut : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
     }
 
     suspend fun readLastSync(request: String) =
@@ -133,9 +138,11 @@ class Repository @Inject constructor(
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
         dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
+        debugLog("saveLogInCredential : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
     }
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
+        debugLog("getAttachments : $id")
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
         return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
             ?.getElementsByTag("table")

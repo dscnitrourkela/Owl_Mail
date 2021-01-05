@@ -3,6 +3,7 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -107,13 +108,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
             }
         })
-        viewModel.request.observe(viewLifecycleOwner, { request ->
-            request?.let {
-                viewModel.readLastSync().invokeOnCompletion {
-                    viewModel.syncAllMails()
-                }
-            }
-        })
         viewModel.search.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
@@ -138,6 +132,18 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
             }
         })
+        viewModel.request.observe(viewLifecycleOwner, { request ->
+            request?.let {
+                viewModel.readLastSync().invokeOnCompletion {
+                    viewModel.syncAllMails()
+                }
+            }
+        })
+        viewModel.searchQuery.observe(viewLifecycleOwner, { searchQuery ->
+            searchQuery?.let {
+                viewModel.syncSearchMails()
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -154,7 +160,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 binding.swipeRefreshLayout.isRefreshing = true
-                viewModel.searchMails(query)
+                viewModel.setSearchQuery(query)
                 return true
             }
 
@@ -164,6 +170,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             }
         })
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logOut -> findNavController()
+                .navigate(R.id.action_mailBoxFragment_to_authFragment)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

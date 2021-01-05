@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentComposeBinding
+import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.ComposeViewModel
 
@@ -35,7 +36,7 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
         binding.webView.apply {
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
-//            loadUrl(Constants.HOME_URL + Constants.COMPOSE_URL, header)
+            loadUrl(Constants.HOME_URL + Constants.COMPOSE_URL, header)
         }
     }
 }

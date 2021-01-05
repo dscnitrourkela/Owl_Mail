@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -92,8 +91,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 stopSync()
                 showSnackbar("Successfully logged out.")
                 viewModel.logOut()
-                binding.root.findNavController()
-                    .navigate(R.id.action_mailBoxFragment_to_authFragment)
             }
             R.id.darkMode -> {
                 showSnackbar("Stopping Sync Services")

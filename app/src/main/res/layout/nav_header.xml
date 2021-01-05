@@ -6,10 +6,9 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewNavDrawer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="216dp"
         android:background="@drawable/gradient_pink"
-        app:layout_constraintBottom_toBottomOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
