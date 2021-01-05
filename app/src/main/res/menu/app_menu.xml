@@ -8,9 +8,9 @@
         android:title="@string/logout"
         app:showAsAction="never" />
     <item
-        android:id="@+id/darkMode"
+        android:id="@+id/switchTheme"
         android:icon="@drawable/ic_baseline_dark_mode_24"
         android:orderInCategory="2"
-        android:title="Stop Service"
+        android:title="@string/switch_theme"
         app:showAsAction="never" />
 </menu>

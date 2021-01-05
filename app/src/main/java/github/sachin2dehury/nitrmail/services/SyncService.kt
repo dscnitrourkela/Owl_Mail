@@ -6,6 +6,7 @@ import android.os.IBinder
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.InternetChecker
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -43,7 +44,7 @@ class SyncService : Service() {
     }
 
     private fun startSyncService() = GlobalScope.launch {
-        lastSync = repository.readLastSync(Constants.KEY_LAST_SYNC)
+        debugLog("startSyncService : $lastSync")
         while (true) {
             syncMails()
             delay(Constants.SYNC_DELAY_TIME)
@@ -51,7 +52,7 @@ class SyncService : Service() {
     }
 
     private suspend fun syncMails() {
-        val currentTime = System.currentTimeMillis() - 1000
+        val currentTime = System.currentTimeMillis()
         val response = repository.syncMails(lastSync)
         if (response.isSuccessful && response.code() == 200) {
             response.body()?.let { result ->

@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -38,8 +39,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private val viewModel: MailBoxViewModel by viewModels()
 
-//    private val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-
 //    @Inject
 //    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
 
@@ -58,6 +57,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         drawerOptionMenu()
 
         binding.navView.setCheckedItem(R.id.inbox)
+
+        inAppUpdate()
     }
 
     @SuppressLint("RtlHardcoded")
@@ -92,7 +93,16 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 showSnackbar("Successfully logged out.")
                 viewModel.logOut()
             }
-            R.id.darkMode -> {
+            R.id.switchTheme -> {
+                when (AppCompatDelegate.getDefaultNightMode()) {
+                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
                 showSnackbar("Stopping Sync Services")
                 stopSync()
             }

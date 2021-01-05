@@ -6,6 +6,7 @@ import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,8 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     fun readLastSync() = viewModelScope.launch {
         _lastSync.postValue(repository.readLastSync(request.value!!))
+        debugLog("readLastSync ViewModel : ${_lastSync.value}")
+
     }
 
     fun logOut() = CoroutineScope(Dispatchers.IO).launch { repository.logOut() }

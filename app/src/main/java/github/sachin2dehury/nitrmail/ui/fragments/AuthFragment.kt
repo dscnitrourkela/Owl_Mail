@@ -35,6 +35,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         _binding = FragmentAuthBinding.bind(view)
 
+        binding.swipeRefreshLayout.isVisible = false
+
         binding.buttonLogin.setOnClickListener {
             getCredential()
             viewModel.login(credential)
@@ -62,8 +64,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun isLoggedIn() = lifecycleScope.launch {
         if (viewModel.isLoggedIn()) {
             redirectFragment()
+        } else {
+            binding.swipeRefreshLayout.isVisible = true
         }
-        binding.imageViewSplash.isVisible = false
     }
 
     private fun redirectFragment() {
