@@ -17,6 +17,7 @@ import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -84,6 +85,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mails ->
+                    debugLog(result.toString())
                     mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
                 }
