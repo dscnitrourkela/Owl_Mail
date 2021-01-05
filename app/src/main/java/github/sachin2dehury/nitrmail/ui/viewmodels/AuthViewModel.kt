@@ -4,10 +4,11 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthViewModel @ViewModelInject constructor(
@@ -23,7 +24,7 @@ class AuthViewModel @ViewModelInject constructor(
             _loginStatus.postValue(Resource.error("Please fill out all the fields", null))
             return
         }
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val result = repository.login(credential)
             _loginStatus.postValue(result)
         }

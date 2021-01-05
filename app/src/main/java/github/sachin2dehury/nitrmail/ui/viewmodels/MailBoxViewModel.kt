@@ -46,14 +46,14 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
-    fun saveLastSync() = viewModelScope.launch {
+    fun saveLastSync() = CoroutineScope(Dispatchers.IO).launch {
         repository.saveLastSync(request.value!!, _lastSync.value!!)
+        debugLog("saveLastSync ViewModel : ${_lastSync.value}")
     }
 
-    fun readLastSync() = viewModelScope.launch {
+    fun readLastSync() = CoroutineScope(Dispatchers.IO).launch {
         _lastSync.postValue(repository.readLastSync(request.value!!))
         debugLog("readLastSync ViewModel : ${_lastSync.value}")
-
     }
 
     fun logOut() = CoroutineScope(Dispatchers.IO).launch { repository.logOut() }

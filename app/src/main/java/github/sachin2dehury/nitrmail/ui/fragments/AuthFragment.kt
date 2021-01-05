@@ -3,6 +3,8 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -66,6 +68,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             redirectFragment()
         } else {
             binding.swipeRefreshLayout.isVisible = true
+            showKeyBoard()
         }
     }
 
@@ -76,6 +79,13 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         findNavController().navigate(
             AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
             navOptions
+        )
+    }
+
+    private fun showKeyBoard() {
+        (requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
+            binding.editTextUserRoll,
+            0
         )
     }
 

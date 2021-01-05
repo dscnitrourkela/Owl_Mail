@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -146,8 +147,19 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
     }
 
+    private fun redirectFragment() {
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.mailBoxFragment, true)
+            .build()
+        findNavController().navigate(
+            MailBoxFragmentDirections.actionMailBoxFragmentToAuthFragment(),
+            navOptions
+        )
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
+        inflater.inflate(R.menu.logout_menu, menu)
         val searchAction = menu.findItem(R.id.searchBar).actionView
         val searchView = searchAction as SearchView
         searchView.queryHint = "Search"
@@ -174,8 +186,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.logOut -> findNavController()
-                .navigate(R.id.action_mailBoxFragment_to_authFragment)
+            R.id.logOut -> redirectFragment()
         }
         return super.onOptionsItemSelected(item)
     }

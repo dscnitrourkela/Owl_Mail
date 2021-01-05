@@ -2,12 +2,10 @@ package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
@@ -103,14 +101,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         viewModel.id.observe(viewLifecycleOwner, {
             viewModel.syncParsedMails()
         })
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.logOut -> findNavController()
-                .navigate(R.id.action_mailBoxFragment_to_authFragment)
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {
