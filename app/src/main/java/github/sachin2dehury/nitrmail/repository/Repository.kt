@@ -161,8 +161,7 @@ class Repository @Inject constructor(
         val token = getToken().substringAfter('=')
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
         return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
-            ?.getElementsByTag("table")
-            .toString().replace("auth=co", "auth=qp&zauthtoken=$token")
+            ?.getElementsByTag("table").toString().replace("auth=co", "auth=qp&zauthtoken=$token")
     }
 
     private fun getBox(request: String) = when (request) {
