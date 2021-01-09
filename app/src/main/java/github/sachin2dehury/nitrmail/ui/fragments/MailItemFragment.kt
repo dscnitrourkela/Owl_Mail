@@ -65,6 +65,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         if (mail.flag.contains('a')) {
                             imageViewAttachment.isVisible = true
                         }
+                        if (mail.body.isEmpty()) {
+                            (activity as ActivityExt).showSnackbar("This mail has no content")
+                        }
                         webView.apply {
                             isVerticalScrollBarEnabled = false
                             settings.javaScriptEnabled = true

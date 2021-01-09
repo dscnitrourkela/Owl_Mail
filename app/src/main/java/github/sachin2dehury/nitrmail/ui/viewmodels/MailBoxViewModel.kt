@@ -62,7 +62,7 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     fun syncSearchMails() = _forceUpdateSearch.postValue(true)
 
-    fun setRequest(string: String) = _request.postValue(string)
+    fun setRequest(request: String) = _request.postValue(request)
 
     fun setLastSync(lastSync: Long) = _lastSync.postValue(lastSync)
 

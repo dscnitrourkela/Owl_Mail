@@ -1,20 +1,21 @@
 package github.sachin2dehury.nitrmail.repository
 
-import android.app.Application
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
 import github.sachin2dehury.nitrmail.api.data.Mail
+import github.sachin2dehury.nitrmail.api.data.Mails
 import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import org.jsoup.Jsoup
+import retrofit2.Response
 import javax.inject.Inject
 
 class Repository @Inject constructor(
     private val basicAuthInterceptor: BasicAuthInterceptor,
-    private val context: Application,
     private val dataStore: DataStoreExt,
     private val internetChecker: InternetChecker,
     private val mailApi: MailApi,
@@ -34,13 +35,8 @@ class Repository @Inject constructor(
             fetch = {
                 mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
             },
-            saveFetchResult = { result ->
-                val attachments = getAttachments(id)
-                var body = result.string()
-                if (hasAttachments) {
-                    body = "$body<br><br>$attachments"
-                }
-                mailDao.updateMail(body, id)
+            saveFetchResult = { response ->
+                updateMailBody(response, id, hasAttachments)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected()
@@ -59,12 +55,7 @@ class Repository @Inject constructor(
                 mailApi.getMails(request, search)
             },
             saveFetchResult = { response ->
-                response.body()?.mails?.let { mails ->
-                    mails.forEach {
-                        mailDao.insertMail(it)
-                    }
-                }
-                debugLog("getMails : Return $request $search")
+                insertMails(response)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected()
@@ -140,6 +131,29 @@ class Repository @Inject constructor(
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
         dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
         debugLog("saveLogInCredential : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
+    }
+
+    private suspend fun insertMails(response: Response<Mails>) {
+        response.body()?.mails?.let { mails ->
+            mails.forEach { mail ->
+                mailDao.insertMail(mail)
+            }
+        }
+    }
+
+    private suspend fun updateMailBody(
+        response: ResponseBody,
+        id: String,
+        hasAttachments: Boolean
+    ) {
+        debugLog("updateMailBody : $id")
+        val attachments = getAttachments(id)
+        var body = response.string()
+        if (hasAttachments) {
+            body = "$body<br><br>$attachments"
+        }
+        mailDao.updateMail(body, id)
+        debugLog("updateMailBody : Returned $id")
     }
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
