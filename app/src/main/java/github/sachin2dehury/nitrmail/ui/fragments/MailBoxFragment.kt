@@ -17,7 +17,6 @@ import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
-import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -85,13 +84,12 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             it?.let { event ->
                 val result = event.peekContent()
                 result.data?.let { mails ->
-                    debugLog(result.toString())
                     mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        if (internetChecker.isInternetConnected(requireContext())) {
+                        if (internetChecker.isInternetConnected()) {
                             viewModel.setLastSync(System.currentTimeMillis())
                             viewModel.saveLastSync()
                         }
@@ -175,7 +173,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             override fun onQueryTextSubmit(query: String): Boolean {
                 binding.swipeRefreshLayout.isRefreshing = true
                 viewModel.setSearchQuery(query)
-                return true
+                return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {

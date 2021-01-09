@@ -74,7 +74,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideInternetChecker() = InternetChecker()
+    fun provideInternetChecker(@ApplicationContext context: Context) = InternetChecker(context)
 
     @Singleton
     @Provides

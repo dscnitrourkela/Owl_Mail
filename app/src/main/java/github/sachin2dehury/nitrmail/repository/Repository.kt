@@ -35,15 +35,15 @@ class Repository @Inject constructor(
                 mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
             },
             saveFetchResult = { result ->
+                val attachments = getAttachments(id)
                 var body = result.string()
                 if (hasAttachments) {
-                    val attachments = getAttachments(id)
                     body = "$body<br><br>$attachments"
                 }
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {
-                internetChecker.isInternetConnected(context)
+                internetChecker.isInternetConnected()
             },
         )
     }
@@ -64,9 +64,10 @@ class Repository @Inject constructor(
                         mailDao.insertMail(it)
                     }
                 }
+                debugLog("getMails : Return $request $search")
             },
             shouldFetch = {
-                internetChecker.isInternetConnected(context)
+                internetChecker.isInternetConnected()
             },
         )
     }
@@ -112,15 +113,15 @@ class Repository @Inject constructor(
     }
 
     suspend fun logOut() {
-//        mailDao.deleteAllMails()
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveLogInCredential()
-//        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-//        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+        mailDao.deleteAllMails()
         debugLog("logOut : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
     }
 
@@ -143,10 +144,11 @@ class Repository @Inject constructor(
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
         debugLog("getAttachments : $id")
+        val token = getToken().substringAfter('=')
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
         return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
             ?.getElementsByTag("table")
-            .toString()
+            .toString().replace("auth=co", "auth=qp&zauthtoken=$token")
     }
 
     private fun getBox(request: String) = when (request) {

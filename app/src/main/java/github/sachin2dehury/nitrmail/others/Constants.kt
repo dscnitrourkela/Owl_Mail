@@ -6,7 +6,7 @@ object Constants {
     const val HOME_URL = "home/~/"
     const val I_MESSAGE_URL = "h/imessage"
     const val MESSAGE_URL = "h/message"
-    const val COMPOSE_URL = "m/zmain?st=newmail" // h/?action=compose
+    const val COMPOSE_URL = "h/?action=compose"    //"m/zmain?st=newmail"
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
