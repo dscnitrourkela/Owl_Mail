@@ -24,9 +24,18 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _searchQuery = MutableLiveData(Constants.UPDATE_QUERY + System.currentTimeMillis())
     val searchQuery: LiveData<String> = _searchQuery
 
+    private val _forceUpdateSearch = MutableLiveData(false)
+
+    private val _search = _forceUpdateSearch.switchMap {
+        repository.getMails(request.value!!, searchQuery.value!!)
+            .asLiveData(viewModelScope.coroutineContext)
+    }.switchMap {
+        MutableLiveData(Event(it))
+    }
+
     private val _forceUpdate = MutableLiveData(false)
 
-    private val _forceUpdateSearch = MutableLiveData(false)
+    val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
     private val _mails = _forceUpdate.switchMap {
         repository.getMails(request.value!!, Constants.UPDATE_QUERY + _lastSync.value!!)
@@ -36,15 +45,6 @@ class MailBoxViewModel @ViewModelInject constructor(
     }
 
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
-
-    private val _search = _forceUpdateSearch.switchMap {
-        repository.getMails(request.value!!, searchQuery.value!!)
-            .asLiveData(viewModelScope.coroutineContext)
-    }.switchMap {
-        MutableLiveData(Event(it))
-    }
-
-    val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
     fun saveLastSync() = viewModelScope.launch {
         repository.saveLastSync(request.value!!, _lastSync.value!!)

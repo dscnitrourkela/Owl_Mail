@@ -86,13 +86,13 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 result.data?.let { mails ->
                     mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
+                    if (internetChecker.isInternetConnected()) {
+                        viewModel.setLastSync(System.currentTimeMillis())
+                        viewModel.saveLastSync()
+                    }
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        if (internetChecker.isInternetConnected()) {
-                            viewModel.setLastSync(System.currentTimeMillis())
-                            viewModel.saveLastSync()
-                        }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
