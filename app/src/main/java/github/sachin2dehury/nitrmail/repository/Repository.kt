@@ -12,9 +12,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Response
-import javax.inject.Inject
 
-class Repository @Inject constructor(
+class Repository(
     private val basicAuthInterceptor: BasicAuthInterceptor,
     private val dataStore: DataStoreExt,
     private val internetChecker: InternetChecker,
@@ -120,12 +119,13 @@ class Repository @Inject constructor(
         dataStore.readCredential(Constants.KEY_LAST_SYNC + request)?.toLong()
             ?: Constants.NO_LAST_SYNC
 
-    suspend fun saveLastSync(request: String, lastSync: Long) = dataStore.saveCredential(
-        Constants.KEY_LAST_SYNC + request, lastSync.toString()
-    )
-
-    suspend fun syncMails(lastSync: Long) =
-        mailApi.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync)
+    suspend fun saveLastSync(request: String, lastSync: Long) {
+        if (internetChecker.isInternetConnected()) {
+            dataStore.saveCredential(
+                Constants.KEY_LAST_SYNC + request, lastSync.toString()
+            )
+        }
+    }
 
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
@@ -147,21 +147,22 @@ class Repository @Inject constructor(
         hasAttachments: Boolean
     ) {
         debugLog("updateMailBody : $id")
+        val token = getToken().substringAfter('=')
         val attachments = getAttachments(id)
         var body = response.string()
         if (hasAttachments) {
             body = "$body<br><br>$attachments"
         }
+        body.replace("auth=co", "auth=qp&zauthtoken=$token")
         mailDao.updateMail(body, id)
         debugLog("updateMailBody : Returned $id")
     }
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
         debugLog("getAttachments : $id")
-        val token = getToken().substringAfter('=')
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
         return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
-            ?.getElementsByTag("table").toString().replace("auth=co", "auth=qp&zauthtoken=$token")
+            ?.getElementsByTag("table").toString()
     }
 
     private fun getBox(request: String) = when (request) {

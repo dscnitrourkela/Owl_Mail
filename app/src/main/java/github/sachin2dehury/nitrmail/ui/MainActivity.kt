@@ -90,8 +90,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             R.id.logOut -> {
 //                unregisterSync()
                 stopSync()
-                showSnackbar("Successfully logged out.")
                 viewModel.logOut()
+                showSnackbar("Successfully logged out.")
             }
             R.id.switchTheme -> {
                 when (AppCompatDelegate.getDefaultNightMode()) {

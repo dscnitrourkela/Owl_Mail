@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,7 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
@@ -27,25 +26,21 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private lateinit var viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by activityViewModels()
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
-    @Inject
-    lateinit var internetChecker: InternetChecker
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        viewModel.readLastSync()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentMailBoxBinding.bind(view)
-
-        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()
@@ -62,7 +57,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         (activity as ActivityExt).apply {
             toggleDrawer(true)
             toggleActionBar(true)
-            startSync()
         }
     }
 
@@ -86,13 +80,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 result.data?.let { mails ->
                     mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
-                    if (internetChecker.isInternetConnected()) {
-                        viewModel.setLastSync(System.currentTimeMillis())
-                        viewModel.saveLastSync()
-                    }
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
+                        viewModel.apply {
+                            if (isLastSyncChanged()) {
+                                saveLastSync()
+                            }
+                        }
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
@@ -135,14 +130,23 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
         viewModel.request.observe(viewLifecycleOwner, { request ->
             request?.let {
-                viewModel.readLastSync().invokeOnCompletion {
-                    viewModel.syncAllMails()
+                viewModel.apply {
+                    setLastSync()
+                    readLastSync().invokeOnCompletion {
+                        if (shouldSyncAllMails()) {
+                            syncAllMails()
+                        }
+                    }
                 }
             }
         })
         viewModel.searchQuery.observe(viewLifecycleOwner, { searchQuery ->
             searchQuery?.let {
-                viewModel.syncSearchMails()
+                viewModel.apply {
+                    if (shouldSyncSearchMails()) {
+                        syncSearchMails()
+                    }
+                }
             }
         })
     }
@@ -193,6 +197,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onDestroy() {
         super.onDestroy()
+        (requireActivity() as ActivityExt).startSync()
         _binding = null
     }
 }

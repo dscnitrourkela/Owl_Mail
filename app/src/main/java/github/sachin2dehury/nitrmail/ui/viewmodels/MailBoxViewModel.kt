@@ -8,8 +8,6 @@ import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MailBoxViewModel @ViewModelInject constructor(
@@ -19,27 +17,32 @@ class MailBoxViewModel @ViewModelInject constructor(
     private val _request = MutableLiveData(Constants.INBOX_URL)
     val request: LiveData<String> = _request
 
-    private val _lastSync = MutableLiveData(System.currentTimeMillis())
+    private val _currentTime = MutableLiveData(System.currentTimeMillis())
 
-    private val _searchQuery = MutableLiveData(Constants.UPDATE_QUERY + System.currentTimeMillis())
+    private val _lastSync = MutableLiveData(_currentTime.value)
+
+    private val _searchQuery = MutableLiveData(Constants.NO_CREDENTIAL)
+
     val searchQuery: LiveData<String> = _searchQuery
+
+    private val _forceUpdate = MutableLiveData(false)
 
     private val _forceUpdateSearch = MutableLiveData(false)
 
     private val _search = _forceUpdateSearch.switchMap {
-        repository.getMails(request.value!!, searchQuery.value!!)
+        debugLog("Search Called : ${searchQuery.value} $it")
+        repository.getMails(request.value!!, _searchQuery.value!!)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
     }
-
-    private val _forceUpdate = MutableLiveData(false)
 
     val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
     private val _mails = _forceUpdate.switchMap {
         repository.getMails(request.value!!, Constants.UPDATE_QUERY + _lastSync.value!!)
             .asLiveData(viewModelScope.coroutineContext)
+
     }.switchMap {
         MutableLiveData(Event(it))
     }
@@ -47,8 +50,8 @@ class MailBoxViewModel @ViewModelInject constructor(
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
     fun saveLastSync() = viewModelScope.launch {
-        repository.saveLastSync(request.value!!, _lastSync.value!!)
-        debugLog("saveLastSync ViewModel : ${request.value} ${_lastSync.value}")
+        repository.saveLastSync(request.value!!, _currentTime.value!!)
+        debugLog("saveLastSync ViewModel : ${request.value} ${_currentTime.value}")
     }
 
     fun readLastSync() = viewModelScope.launch {
@@ -56,7 +59,7 @@ class MailBoxViewModel @ViewModelInject constructor(
         debugLog("readLastSync ViewModel : ${request.value} ${_lastSync.value}")
     }
 
-    fun logOut() = CoroutineScope(Dispatchers.IO).launch { repository.logOut() }
+    fun logOut() = viewModelScope.launch { repository.logOut() }
 
     fun syncAllMails() = _forceUpdate.postValue(true)
 
@@ -64,7 +67,14 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     fun setRequest(request: String) = _request.postValue(request)
 
-    fun setLastSync(lastSync: Long) = _lastSync.postValue(lastSync)
+    fun setLastSync() = _currentTime.postValue(System.currentTimeMillis())
 
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
+
+    fun isLastSyncChanged() = _lastSync.value != _currentTime.value
+
+    fun shouldSyncAllMails() = _forceUpdate.value!! || isLastSyncChanged()
+
+    fun shouldSyncSearchMails() =
+        _forceUpdateSearch.value!! || searchQuery.value != Constants.NO_CREDENTIAL
 }

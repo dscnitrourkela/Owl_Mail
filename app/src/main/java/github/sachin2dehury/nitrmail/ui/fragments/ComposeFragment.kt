@@ -31,12 +31,12 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
             toggleActionBar(true)
         }
 
-        val header = mapOf("Cookie" to viewModel.token)
+        val token = viewModel.token
 
         binding.webView.apply {
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
-            loadUrl(Constants.HOME_URL + Constants.COMPOSE_URL, header)
+            loadUrl(Constants.HOME_URL + Constants.COMPOSE_URL + "&auth=qp&zauthtokrn=$token")
         }
     }
 }
