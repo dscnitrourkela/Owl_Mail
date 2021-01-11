@@ -34,11 +34,13 @@ class Repository @Inject constructor(
                 mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
             },
             saveFetchResult = { result ->
+                val token = getToken().substringAfter('=')
+                val attachments = getAttachments(id)
                 var body = result.string()
                 if (hasAttachments) {
-                    val attachments = getAttachments(id)
                     body = "$body<br><br>$attachments"
                 }
+                body.replace("auth=co", "auth=qp&zauthtoken=$token")
                 mailDao.updateMail(body, id)
             },
             shouldFetch = {

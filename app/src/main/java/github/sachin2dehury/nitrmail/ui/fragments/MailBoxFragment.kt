@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +27,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private lateinit var viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by activityViewModels()
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -44,8 +44,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentMailBoxBinding.bind(view)
-
-        viewModel = ViewModelProvider(requireActivity()).get(MailBoxViewModel::class.java)
 
         setupAdapter()
         setupRecyclerView()

@@ -4,21 +4,29 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.others.PlayCoreExt
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -30,9 +38,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     private lateinit var toggle: ActionBarDrawerToggle
 
     private val viewModel: MailBoxViewModel by viewModels()
-
-    @Inject
-    lateinit var playCoreExt: PlayCoreExt
 
 //    @Inject
 //    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
@@ -53,8 +58,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         binding.navView.setCheckedItem(R.id.inbox)
 
-        playCoreExt.inAppReview()
-
+        inAppUpdate()
     }
 
     @SuppressLint("RtlHardcoded")
@@ -73,13 +77,38 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.app_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) {
             return true
         }
+        when (item.itemId) {
+            R.id.logOut -> {
+//                unregisterSync()
+                stopSync()
+                showSnackbar("Successfully logged out.")
+                viewModel.logOut()
+            }
+            R.id.darkMode -> {
+                when (AppCompatDelegate.getDefaultNightMode()) {
+                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+                showSnackbar("Stopping Sync Services")
+                stopSync()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -129,6 +158,47 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun stopSync() {
         val syncIntent = Intent(this, SyncService::class.java)
         stopService(syncIntent)
+    }
+
+    override fun inAppReview() {
+        val reviewManager = ReviewManagerFactory.create(this)
+        val request = reviewManager.requestReviewFlow()
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val reviewInfo = task.result
+                val flow = reviewManager.launchReviewFlow(this, reviewInfo)
+                flow.addOnCompleteListener {
+                    debugLog("Successful Review")
+                }
+            } else {
+                debugLog(task.exception.toString())
+            }
+        }
+    }
+
+    override fun inAppUpdate() {
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfo = appUpdateManager.appUpdateInfo
+        appUpdateInfo.addOnSuccessListener {
+            doUpdate(appUpdateManager, appUpdateInfo)
+        }
+    }
+
+    private fun doUpdate(
+        appUpdateManager: AppUpdateManager,
+        task: Task<AppUpdateInfo>
+    ) {
+        if ((task.result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE || task.result.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) && task.result.isUpdateTypeAllowed(
+                AppUpdateType.IMMEDIATE
+            )
+        ) {
+            appUpdateManager.startUpdateFlowForResult(
+                task.result,
+                AppUpdateType.IMMEDIATE,
+                this,
+                1000
+            )
+        }
     }
 
     override fun onDestroy() {
