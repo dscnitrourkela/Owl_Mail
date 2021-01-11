@@ -27,7 +27,6 @@ class Repository(
         id: String,
         hasAttachments: Boolean
     ): Flow<Resource<Mail>> {
-        debugLog("getParsedMailItem : $id $hasAttachments")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMailItem(id)
@@ -46,7 +45,6 @@ class Repository(
 
     fun getMails(request: String, search: String): Flow<Resource<List<Mail>>> {
         val box = getBox(request)
-        debugLog("getMails : $request $box $search")
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMails(box)
@@ -64,7 +62,6 @@ class Repository(
     }
 
     suspend fun login(credential: String) = withContext(Dispatchers.IO) {
-        debugLog("login : $credential")
         basicAuthInterceptor.credential = credential
         try {
             val response =
@@ -99,7 +96,6 @@ class Repository(
                 }
             }
         }
-        debugLog("isLoggedIn : $result")
         return result
     }
 
@@ -113,7 +109,6 @@ class Repository(
         saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
         mailDao.deleteAllMails()
-        debugLog("logOut : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
     }
 
     suspend fun readLastSync(request: String) =
@@ -131,7 +126,6 @@ class Repository(
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
         dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
-        debugLog("saveLogInCredential : ${basicAuthInterceptor.token} ${basicAuthInterceptor.credential}")
     }
 
     private suspend fun insertMails(response: Response<Mails>) {
@@ -147,23 +141,23 @@ class Repository(
         id: String,
         hasAttachments: Boolean
     ) {
-        debugLog("updateMailBody : $id")
         val token = getToken().substringAfter('=')
-        val attachments = getAttachments(id)
         var body = response.string()
         if (hasAttachments) {
+            val attachments = getAttachments(id)
             body = "$body<br><br>$attachments"
         }
-        body.replace("auth=co", "auth=qp&zauthtoken=$token")
+        body.replace(
+            "${Constants.AUTH}=${Constants.AUTH_COOKIE}",
+            "${Constants.AUTH}=${Constants.AUTH_QUERY}&${Constants.AUTH_TOKEN_QUERY}=$token"
+        )
         mailDao.updateMail(body, id)
-        debugLog("updateMailBody : Returned $id")
     }
 
     private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
-        debugLog("getAttachments : $id")
         val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
-        return@withContext Jsoup.parse(parsedMail).getElementById("iframeBody")
-            ?.getElementsByTag("table").toString()
+        return@withContext Jsoup.parse(parsedMail).getElementById(Constants.FRAME_BODY)
+            ?.getElementsByTag(Constants.TABLE).toString()
     }
 
     private fun getBox(request: String) = when (request) {

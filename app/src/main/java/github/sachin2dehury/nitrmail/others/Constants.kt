@@ -31,6 +31,9 @@ object Constants {
     const val AUTH_QUERY = "qp"
     const val AUTH_TOKEN_QUERY = "zauthtoken"
 
+    const val FRAME_BODY = "iframeBody"
+    const val TABLE = "table"
+
     const val DATABASE_NAME = "MAIL_DB"
 
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
