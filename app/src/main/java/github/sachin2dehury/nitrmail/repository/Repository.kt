@@ -13,6 +13,7 @@ import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Response
 
+@Suppress("BlockingMethodInNonBlockingContext")
 class Repository(
     private val basicAuthInterceptor: BasicAuthInterceptor,
     private val dataStore: DataStoreExt,

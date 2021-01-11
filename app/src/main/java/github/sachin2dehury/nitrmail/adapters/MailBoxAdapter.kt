@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,8 @@ import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
+class MailBoxAdapter(private val context: Context) :
+    RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
 
     class MailBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -33,6 +35,8 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
     }
 
     private var onItemClickListener: ((Mail) -> Unit)? = null
+
+    private val colors = context.resources.getIntArray(R.array.colors)
 
     @SuppressLint("SimpleDateFormat")
     private val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
@@ -57,12 +61,12 @@ class MailBoxAdapter : RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(),
         val sender =
             if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
         binding.apply {
+            imageViewSender.setColorFilter(colors.random())
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
             textViewSenderEmail.text =
                 if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
-
             if (mail.flag.contains('u')) {
                 textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD

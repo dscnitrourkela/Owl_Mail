@@ -171,12 +171,12 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             override fun onQueryTextSubmit(query: String): Boolean {
                 binding.swipeRefreshLayout.isRefreshing = true
                 viewModel.setSearchQuery(query)
-                return false
+                return true
             }
 
             override fun onQueryTextChange(query: String): Boolean {
                 mailBoxAdapter.filter.filter(query)
-                return false
+                return true
             }
         })
         super.onCreateOptionsMenu(menu, inflater)

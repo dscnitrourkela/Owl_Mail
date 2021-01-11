@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                     AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_YES
                     )
-                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    else -> AppCompatDelegate.MODE_NIGHT_NO
                 }
                 showSnackbar("Stopping Sync Services")
                 stopSync()
