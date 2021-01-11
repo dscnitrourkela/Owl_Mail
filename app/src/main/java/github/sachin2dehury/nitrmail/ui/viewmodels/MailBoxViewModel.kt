@@ -29,20 +29,13 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     private val _forceUpdateSearch = MutableLiveData(false)
 
-    private val _search = _forceUpdateSearch.switchMap {
-        debugLog("Search Called : ${searchQuery.value} $it")
-        repository.getMails(request.value!!, _searchQuery.value!!)
-            .asLiveData(viewModelScope.coroutineContext)
-    }.switchMap {
-        MutableLiveData(Event(it))
-    }
+    private val _search = MutableLiveData<Event<Resource<List<Mail>>>>()
 
     val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
     private val _mails = _forceUpdate.switchMap {
         repository.getMails(request.value!!, Constants.UPDATE_QUERY + _lastSync.value!!)
             .asLiveData(viewModelScope.coroutineContext)
-
     }.switchMap {
         MutableLiveData(Event(it))
     }
@@ -63,7 +56,15 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     fun syncAllMails() = _forceUpdate.postValue(true)
 
-    fun syncSearchMails() = _forceUpdateSearch.postValue(true)
+    fun syncSearchMails() {
+//        _forceUpdateSearch.postValue(true)
+        _search.postValue(
+            repository.getMails(request.value!!, _searchQuery.value!!)
+                .asLiveData(viewModelScope.coroutineContext).switchMap {
+                    MutableLiveData(Event(it))
+                }.value
+        )
+    }
 
     fun setRequest(request: String) = _request.postValue(request)
 
@@ -72,9 +73,4 @@ class MailBoxViewModel @ViewModelInject constructor(
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
 
     fun isLastSyncChanged() = _lastSync.value != _currentTime.value
-
-    fun shouldSyncAllMails() = _forceUpdate.value!! || isLastSyncChanged()
-
-    fun shouldSyncSearchMails() =
-        _forceUpdateSearch.value!! || searchQuery.value != Constants.NO_CREDENTIAL
 }

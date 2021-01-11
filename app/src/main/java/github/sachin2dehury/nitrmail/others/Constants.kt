@@ -12,9 +12,8 @@ object Constants {
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
     const val SYNC_DELAY_TIME = 3600000L
-    const val SYNC_WORK_MANAGER = "SYNC_WORK_MANAGER"
 
-    const val INBOX_URL = "inbox.json"
+    const val INBOX_URL = "inbox.json"//inbox&fmt=json
     const val SENT_URL = "sent.json"
     const val DRAFT_URL = "drafts.json"
     const val JUNK_URL = "junk.json"
@@ -26,9 +25,11 @@ object Constants {
 
     const val UPDATE_QUERY = "after:"
 
+    const val AUTH = "auth"
     const val AUTH_COOKIE = "co"
     const val AUTH_SET_COOKIE = "sc"
     const val AUTH_QUERY = "qp"
+    const val AUTH_TOKEN_QUERY = "zauthtoken"
 
     const val DATABASE_NAME = "MAIL_DB"
 

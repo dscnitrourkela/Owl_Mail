@@ -5,8 +5,8 @@ import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ServiceComponent::class)
 object AppModule {
 
     @Singleton

@@ -133,20 +133,14 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 viewModel.apply {
                     setLastSync()
                     readLastSync().invokeOnCompletion {
-                        if (shouldSyncAllMails()) {
-                            syncAllMails()
-                        }
+                        syncAllMails()
                     }
                 }
             }
         })
         viewModel.searchQuery.observe(viewLifecycleOwner, { searchQuery ->
             searchQuery?.let {
-                viewModel.apply {
-                    if (shouldSyncSearchMails()) {
-                        syncSearchMails()
-                    }
-                }
+                viewModel.syncSearchMails()
             }
         })
     }

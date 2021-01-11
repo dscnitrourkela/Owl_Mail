@@ -4,11 +4,11 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
 import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
+import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.GlobalScope
@@ -31,12 +31,7 @@ class SyncService : Service() {
 
     private val _forceUpdate = MutableLiveData(false)
 
-    private val _mails = _forceUpdate.switchMap {
-        repository.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + _lastSync.value!!)
-            .asLiveData(GlobalScope.coroutineContext)
-    }.switchMap {
-        MutableLiveData(Event(it))
-    }
+    private val _mails = MutableLiveData<Event<Resource<List<Mail>>>>()
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -63,8 +58,16 @@ class SyncService : Service() {
     }
 
     private suspend fun syncMails() {
-        _currentTime.postValue(System.currentTimeMillis())
-        _forceUpdate.postValue(true)
+//        _currentTime.postValue(System.currentTimeMillis())
+//        _mails.postValue(
+//            repository.getMails(
+//                Constants.INBOX_URL,
+//                Constants.UPDATE_QUERY + _lastSync.value!!
+//            )
+//                .asLiveData(GlobalScope.coroutineContext).switchMap {
+//                    MutableLiveData(Event(it))
+//                }.value
+//        )
 //        if (response.isSuccessful && response.code() == 200) {
 //            response.body()?.let { result ->
 //                lastSync = currentTime
