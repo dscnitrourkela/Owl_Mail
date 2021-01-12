@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
-    app:cardElevation="8dp">
+    android:layout_margin=".2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -80,7 +79,21 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+            app:srcCompat="@drawable/ic_baseline_brightness_1_24" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewSender"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewSender"
+            app:layout_constraintStart_toStartOf="@+id/imageViewSender"
+            app:layout_constraintTop_toTopOf="@+id/imageViewSender"
+            app:textAllCaps="true"
+            tools:text="A" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewAttachment"

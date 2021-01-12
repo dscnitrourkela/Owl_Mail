@@ -65,7 +65,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     val sender =
                         if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
                     val dateFormat = when ((mail.time - System.currentTimeMillis())) {
-                        in 0..Constants.DAY -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
+                        in 0..Constants.DAY - 1 -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
                         in Constants.DAY..Constants.YEAR -> SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
                         else -> SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
                     }

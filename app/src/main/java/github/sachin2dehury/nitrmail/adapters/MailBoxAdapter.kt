@@ -59,18 +59,25 @@ class MailBoxAdapter(private val context: Context) :
             if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
 
         @SuppressLint("SimpleDateFormat")
-        val dateFormat = when ((mail.time - System.currentTimeMillis())) {
-            in 0..Constants.DAY -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
-            in Constants.DAY..Constants.YEAR -> SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
-            else -> SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+        val dateFormat = when {
+            (System.currentTimeMillis() - mail.time) < Constants.DAY -> {
+                SimpleDateFormat(Constants.DATE_FORMAT_DATE)
+            }
+            (System.currentTimeMillis() - mail.time) < Constants.YEAR -> {
+                SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
+            }
+            else -> {
+                SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+            }
         }
+        val name = if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
         binding.apply {
             imageViewSender.setColorFilter(colors.random())
+            textViewSender.text = name.first().toString()
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSenderEmail.text =
-                if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+            textViewSenderEmail.text = name
             if (mail.flag.contains('u')) {
                 textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD

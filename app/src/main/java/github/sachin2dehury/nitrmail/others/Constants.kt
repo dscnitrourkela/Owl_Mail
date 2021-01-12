@@ -47,8 +47,8 @@ object Constants {
     const val NO_TOKEN = "NO_TOKEN"
 
     const val DATE_FORMAT_YEAR = "dd-MM-yyyy"
-    const val DATE_FORMAT_MONTH = "dd-MM"
-    const val DATE_FORMAT_DATE = "dd-MM HH:mm"
+    const val DATE_FORMAT_MONTH = "dd MMM"
+    const val DATE_FORMAT_DATE = "hh:mm a"
 
     const val YEAR = 31556952000
     const val DAY = 86400000
