@@ -38,9 +38,6 @@ class MailBoxAdapter(private val context: Context) :
 
     private val colors = context.resources.getIntArray(R.array.colors)
 
-    @SuppressLint("SimpleDateFormat")
-    private val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
-
     private val differ = AsyncListDiffer(this, diffCallback)
 
     var list: List<Mail> = emptyList()
@@ -60,6 +57,13 @@ class MailBoxAdapter(private val context: Context) :
         val binding = ListMailItemBinding.bind(holder.itemView)
         val sender =
             if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
+
+        @SuppressLint("SimpleDateFormat")
+        val dateFormat = when ((mail.time - System.currentTimeMillis())) {
+            in 0..Constants.DAY -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
+            in Constants.DAY..Constants.YEAR -> SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
+            else -> SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+        }
         binding.apply {
             imageViewSender.setColorFilter(colors.random())
             textViewDate.text = dateFormat.format(mail.time)

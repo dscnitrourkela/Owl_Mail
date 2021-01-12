@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.nitrmail.api.calls.MailApi
+import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.api.database.MailDao
 import github.sachin2dehury.nitrmail.api.database.MailDatabase
 import github.sachin2dehury.nitrmail.others.Constants
@@ -37,6 +38,10 @@ object AppModule {
     fun provideOkHttpClient(basicAuthInterceptor: BasicAuthInterceptor) = OkHttpClient.Builder()
         .addInterceptor(basicAuthInterceptor)
         .build()
+
+    @Singleton
+    @Provides
+    fun provideMailViewClient() = MailViewClient()
 
     @Singleton
     @Provides

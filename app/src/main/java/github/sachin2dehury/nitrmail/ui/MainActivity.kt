@@ -25,8 +25,9 @@ import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.debugLog
-import github.sachin2dehury.nitrmail.services.SyncService
+import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -39,8 +40,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private val viewModel: MailBoxViewModel by viewModels()
 
-//    @Inject
-//    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
+    @Inject
+    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         when (item.itemId) {
             R.id.logOut -> {
 //                unregisterSync()
-                stopSync()
+//                stopSync()
                 viewModel.logOut()
                 showSnackbar("Successfully logged out.")
             }
@@ -101,10 +102,11 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                     AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_YES
                     )
-                    else -> AppCompatDelegate.MODE_NIGHT_NO
+                    else -> AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
                 }
-                showSnackbar("Stopping Sync Services")
-                stopSync()
+//                stopSync()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -141,24 +143,24 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         )
     }
 
-    override fun unregisterSync() {
+//    override fun unregisterSync() {
 //        unregisterReceiver(syncBroadcastReceiver)
-    }
-
-    override fun registerSync() {
+//    }
+//
+//    override fun registerSync() {
 //        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
 //        registerReceiver(syncBroadcastReceiver, intentFilter)
-    }
-
-    override fun startSync() {
-        val syncIntent = Intent(this, SyncService::class.java)
-        startService(syncIntent)
-    }
-
-    override fun stopSync() {
-        val syncIntent = Intent(this, SyncService::class.java)
-        stopService(syncIntent)
-    }
+//    }
+//
+//    override fun startSync() {
+//        val syncIntent = Intent(this, SyncService::class.java)
+//        startService(syncIntent)
+//    }
+//
+//    override fun stopSync() {
+//        val syncIntent = Intent(this, SyncService::class.java)
+//        stopService(syncIntent)
+//    }
 
     override fun inAppReview() {
         val reviewManager = ReviewManagerFactory.create(this)
@@ -203,6 +205,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     override fun onDestroy() {
         _binding = null
+        val intent = Intent(Constants.NOTIFICATION_ID)
+        sendBroadcast(intent)
         super.onDestroy()
     }
 }

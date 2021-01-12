@@ -18,6 +18,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SyncService : Service() {
 
+    init {
+        debugLog("SyncService Started")
+    }
+
     @Inject
     lateinit var repository: Repository
 
@@ -46,6 +50,12 @@ class SyncService : Service() {
         restartServiceIntent.setPackage(packageName)
         startService(restartServiceIntent)
         super.onTaskRemoved(rootIntent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val intent = Intent(Constants.NOTIFICATION_ID)
+        sendBroadcast(intent)
     }
 
     private fun startSyncService() = GlobalScope.launch {

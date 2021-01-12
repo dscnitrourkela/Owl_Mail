@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -26,6 +27,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -38,14 +40,23 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         subscribeToObservers()
 
-        viewModel.setId(args.id, args.hasAttachments)
+        viewModel.setId(args.id)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
         }
+
+        binding.webView.apply {
+            webViewClient = viewModel.getMailViewClient()
+            isVerticalScrollBarEnabled = false
+            settings.javaScriptEnabled = true
+            settings.loadsImagesAutomatically = true
+            setBackgroundColor(Color.TRANSPARENT)
+            setInitialScale(160)
+        }
     }
 
-    @SuppressLint("SimpleDateFormat", "SetJavaScriptEnabled")
+    @SuppressLint("SimpleDateFormat")
     private fun subscribeToObservers() {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
@@ -53,9 +64,14 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 result.data?.let { mail ->
                     val sender =
                         if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
+                    val dateFormat = when ((mail.time - System.currentTimeMillis())) {
+                        in 0..Constants.DAY -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
+                        in Constants.DAY..Constants.YEAR -> SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
+                        else -> SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+                    }
                     binding.apply {
                         textViewDate.text =
-                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR).format(mail.time)
+                            dateFormat.format(mail.time)
                         textViewMailSubject.text = mail.subject
                         textViewSenderName.text =
                             if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
@@ -68,19 +84,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         if (mail.body.isEmpty()) {
                             (activity as ActivityExt).showSnackbar("This mail has no content")
                         }
-                        webView.apply {
-                            isVerticalScrollBarEnabled = false
-                            settings.javaScriptEnabled = true
-                            settings.loadsImagesAutomatically = true
-                            setInitialScale(160)
-                            loadDataWithBaseURL(
-                                Constants.BASE_URL,
-                                mail.html,
-                                "text/html",
-                                "utf-8",
-                                null
-                            )
-                        }
+                        webView.loadDataWithBaseURL(
+                            Constants.BASE_URL,
+                            mail.html,
+                            "text/html",
+                            "utf-8",
+                            null
+                        )
                     }
                 }
                 when (result.status) {

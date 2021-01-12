@@ -35,6 +35,7 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
             "${Constants.HOME_URL + Constants.COMPOSE_URL}&${Constants.AUTH}=${Constants.AUTH_QUERY}&${Constants.AUTH_TOKEN_QUERY}=${viewModel.token}"
 
         binding.webView.apply {
+            webViewClient = viewModel.getMailViewClient()
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
             loadUrl(url)

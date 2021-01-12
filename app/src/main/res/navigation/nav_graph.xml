@@ -33,9 +33,6 @@
         <argument
             android:name="id"
             app:argType="string" />
-        <argument
-            android:name="hasAttachments"
-            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/composeFragment"

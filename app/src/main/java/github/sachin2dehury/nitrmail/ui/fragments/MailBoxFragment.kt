@@ -20,6 +20,7 @@ import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
@@ -62,9 +63,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
         findNavController().navigate(
-            MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(
-                it.id, it.flag.contains('a')
-            )
+            MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(it.id)
         )
     }
 
@@ -160,25 +159,27 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         inflater.inflate(R.menu.logout_menu, menu)
         val searchAction = menu.findItem(R.id.searchBar).actionView
         val searchView = searchAction as SearchView
-        searchView.queryHint = "Search"
-        searchView.isSubmitButtonEnabled = true
-        searchView.setOnCloseListener {
-            mailBoxAdapter.mails = mailBoxAdapter.list
-            binding.swipeRefreshLayout.isRefreshing = false
-            false
-        }
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                binding.swipeRefreshLayout.isRefreshing = true
-                viewModel.setSearchQuery(query)
-                return true
+        searchView.apply {
+            queryHint = "Search"
+            isSubmitButtonEnabled = true
+            setOnCloseListener {
+                mailBoxAdapter.mails = mailBoxAdapter.list
+                binding.swipeRefreshLayout.isRefreshing = false
+                false
             }
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    binding.swipeRefreshLayout.isRefreshing = true
+                    viewModel.setSearchQuery(query)
+                    return true
+                }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                mailBoxAdapter.filter.filter(query)
-                return true
-            }
-        })
+                override fun onQueryTextChange(query: String): Boolean {
+                    mailBoxAdapter.filter.filter(query)
+                    return true
+                }
+            })
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -191,7 +192,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onDestroy() {
         super.onDestroy()
-        (requireActivity() as ActivityExt).startSync()
         _binding = null
     }
 }

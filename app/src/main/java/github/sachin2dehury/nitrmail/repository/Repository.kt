@@ -25,17 +25,16 @@ class Repository(
 
     fun getParsedMailItem(
         id: String,
-        hasAttachments: Boolean
     ): Flow<Resource<Mail>> {
         return networkBoundResource.makeNetworkRequest(
             query = {
                 mailDao.getMailItem(id)
             },
             fetch = {
-                mailApi.getMailItemBody(Constants.I_MESSAGE_URL, id)
+                mailApi.getMailItemBody(Constants.MESSAGE_URL, id)
             },
             saveFetchResult = { response ->
-                updateMailBody(response, id, hasAttachments)
+                updateMailBody(response, id)
             },
             shouldFetch = {
                 internetChecker.isInternetConnected()
@@ -139,25 +138,16 @@ class Repository(
     private suspend fun updateMailBody(
         response: ResponseBody,
         id: String,
-        hasAttachments: Boolean
     ) {
         val token = getToken().substringAfter('=')
-        var body = response.string()
-        if (hasAttachments) {
-            val attachments = getAttachments(id)
-            body = "$body<br><br>$attachments"
-        }
+        val parsedMail = Jsoup.parse(response.string())
+        parsedMail.getElementsByClass("MsgHdr").remove()
+        val body = parsedMail.toString()
         body.replace(
             "${Constants.AUTH}=${Constants.AUTH_COOKIE}",
-            "${Constants.AUTH}=${Constants.AUTH_QUERY}&${Constants.AUTH_TOKEN_QUERY}=$token"
+            "${Constants.AUTH}=${Constants.AUTH_QUERY}&amp;${Constants.AUTH_TOKEN_QUERY}=$token"
         )
         mailDao.updateMail(body, id)
-    }
-
-    private suspend fun getAttachments(id: String): String = withContext(Dispatchers.IO) {
-        val parsedMail = mailApi.getMailItemBody(Constants.MESSAGE_URL, id, "0").string()
-        return@withContext Jsoup.parse(parsedMail).getElementById(Constants.FRAME_BODY)
-            ?.getElementsByTag(Constants.TABLE).toString()
     }
 
     private fun getBox(request: String) = when (request) {
