@@ -32,9 +32,17 @@
         android:id="@+id/appMenu"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_baseline_report_24"
+            android:title="@string/settings" />
+        <item
             android:id="@+id/signOut"
             android:icon="@drawable/ic_baseline_account_circle_24"
             android:title="@string/logout" />
+    </group>
+    <group
+        android:id="@+id/others"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_icons8_mail"
@@ -43,9 +51,5 @@
             android:id="@+id/privacyPolicy"
             android:icon="@drawable/ic_baseline_drafts_24"
             android:title="@string/privacy_policy" />
-        <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_baseline_report_24"
-            android:title="@string/settings" />
     </group>
 </menu>
