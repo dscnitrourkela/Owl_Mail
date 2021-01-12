@@ -1,3 +1,6 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
-class AboutFragment
+import androidx.fragment.app.Fragment
+import github.sachin2dehury.nitrmail.R
+
+class AboutFragment : Fragment(R.layout.fragment_about)

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/mailMenu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/inbox"
             android:icon="@drawable/ic_baseline_move_to_inbox_24"
@@ -25,5 +27,25 @@
             android:id="@+id/trash"
             android:icon="@drawable/ic_baseline_delete_24"
             android:title="@string/trash" />
+    </group>
+    <group
+        android:id="@+id/appMenu"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/signOut"
+            android:icon="@drawable/ic_baseline_account_circle_24"
+            android:title="@string/logout" />
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_icons8_mail"
+            android:title="@string/about_us" />
+        <item
+            android:id="@+id/privacyPolicy"
+            android:icon="@drawable/ic_baseline_drafts_24"
+            android:title="@string/privacy_policy" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_baseline_report_24"
+            android:title="@string/settings" />
     </group>
 </menu>

@@ -6,106 +6,111 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="WebViewLayout">
+            android:layout_height="match_parent">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewSenderName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="4dp"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:maxLines="1"
-                android:textColor="@color/sender"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
-                app:layout_constraintStart_toEndOf="@+id/imageViewSender"
-                app:layout_constraintTop_toTopOf="@+id/imageViewSender"
-                tools:text="Sender Name" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewSenderEmail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:maxLines="1"
-                android:textColor="@color/sender"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
-                app:layout_constraintEnd_toStartOf="@+id/textViewDate"
-                app:layout_constraintStart_toEndOf="@+id/imageViewSender"
-                tools:text="Sender Email" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewMailSubject"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:gravity="start"
-                android:textColor="@color/subject"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Mail Subject" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageViewSender"
-                android:layout_width="?android:attr/listPreferredItemHeightSmall"
-                android:layout_height="?android:attr/listPreferredItemHeightSmall"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
-                app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
-                app:srcCompat="@drawable/ic_baseline_account_circle_24" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-                android:textColor="@color/message"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
-                app:layout_constraintEnd_toEndOf="@+id/textViewSenderName"
-                tools:text="Date" />
-
-            <WebView
-                android:id="@+id/webView"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageViewSender" />
+                tools:ignore="WebViewLayout">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageViewAttachment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
-                app:layout_constraintTop_toTopOf="@+id/textViewSenderName"
-                app:srcCompat="@drawable/ic_baseline_attachment_24" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewSenderName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:maxLines="1"
+                    android:textColor="@color/sender"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
+                    app:layout_constraintStart_toEndOf="@+id/imageViewSender"
+                    app:layout_constraintTop_toTopOf="@+id/imageViewSender"
+                    tools:text="Sender Name" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewSenderEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:maxLines="1"
+                    android:textColor="@color/sender"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
+                    app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+                    app:layout_constraintStart_toEndOf="@+id/imageViewSender"
+                    tools:text="Sender Email" />
 
-    </ScrollView>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewMailSubject"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:gravity="start"
+                    android:textColor="@color/subject"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Mail Subject" />
 
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imageViewSender"
+                    android:layout_width="?android:attr/listPreferredItemHeightSmall"
+                    android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
+                    app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:textColor="@color/message"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
+                    app:layout_constraintEnd_toEndOf="@+id/textViewSenderName"
+                    tools:text="Date" />
+
+                <WebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageViewSender" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imageViewAttachment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
+                    app:layout_constraintTop_toTopOf="@+id/textViewSenderName"
+                    app:srcCompat="@drawable/ic_baseline_attachment_24" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+    </androidx.viewpager2.widget.ViewPager2>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
