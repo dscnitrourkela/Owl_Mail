@@ -12,6 +12,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewSenderEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -19,7 +20,6 @@
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
-            android:textColor="@color/sender"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/textViewMailSubject"
             app:layout_constraintEnd_toStartOf="@+id/textViewDate"
@@ -28,13 +28,13 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewMailSubject"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
-            android:textColor="@color/subject"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
@@ -44,13 +44,14 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewMailBody"
+            style="@style/Widget.MaterialComponents.TextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
-            android:textColor="@color/message"
+            android:textColor="@color/Silver"
             android:textSize="14sp"
             android:textStyle="normal"
             app:layout_constraintEnd_toEndOf="@+id/textViewMailSubject"
@@ -60,12 +61,12 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewDate"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:gravity="end"
             android:textSize="12sp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/textViewSenderEmail"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Date" />
@@ -83,10 +84,11 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textViewSender"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            style="@style/Widget.MaterialComponents.TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="@color/Silver"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
             app:layout_constraintEnd_toEndOf="@+id/imageViewSender"

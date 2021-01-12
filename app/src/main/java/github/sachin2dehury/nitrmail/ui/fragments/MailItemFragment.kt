@@ -27,6 +27,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
+//    private val colors = resources.getIntArray(R.array.colors)
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,14 +66,26 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 result.data?.let { mail ->
                     val sender =
                         if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
-                    val dateFormat = when ((mail.time - System.currentTimeMillis())) {
-                        in 0..Constants.DAY - 1 -> SimpleDateFormat(Constants.DATE_FORMAT_DATE)
-                        in Constants.DAY..Constants.YEAR -> SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
-                        else -> SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+                    val dateFormat = when {
+                        (System.currentTimeMillis() - mail.time) < Constants.DAY -> {
+                            SimpleDateFormat(Constants.DATE_FORMAT_DATE)
+                        }
+                        (System.currentTimeMillis() - mail.time) < Constants.YEAR -> {
+                            SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
+                        }
+                        else -> {
+                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
+                        }
                     }
+                    val name =
+                        if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                            '@'
+                        )
                     binding.apply {
                         textViewDate.text =
                             dateFormat.format(mail.time)
+//                        imageViewSender.setColorFilter(colors.random())
+                        textViewSender.text = name.first().toString()
                         textViewMailSubject.text = mail.subject
                         textViewSenderName.text =
                             if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
