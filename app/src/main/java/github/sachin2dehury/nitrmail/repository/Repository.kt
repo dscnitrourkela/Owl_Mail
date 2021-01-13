@@ -149,6 +149,9 @@ class Repository(
         val token = getToken().substringAfter('=')
         val parsedMail = Jsoup.parse(response.string())
         parsedMail.getElementsByClass("MsgHdr").remove()
+//        parsedMail.removeClass("MsgBody")
+//        parsedMail.removeClass("Msg")
+//        parsedMail.removeClass("ZhAppContent")
         val body = parsedMail.toString()
         body.replace(
             "${Constants.AUTH}=${Constants.AUTH_COOKIE}",

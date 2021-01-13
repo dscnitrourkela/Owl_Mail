@@ -32,7 +32,7 @@ class NotificationExt(private val context: Context) {
         }
     }
 
-    fun notify(name: String, subject: String) {
+    fun notify(title: String, subject: String) {
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 1000, intent, 0)
         val notification =
@@ -40,7 +40,7 @@ class NotificationExt(private val context: Context) {
                 priority = NotificationCompat.PRIORITY_HIGH
                 setStyle(NotificationCompat.InboxStyle(this))
                 setSmallIcon(R.mipmap.ic_launcher)
-                setContentTitle("New Mail From $name")
+                setContentTitle(title)
                 setContentInfo(subject)
                 setContentIntent(pendingIntent)
             }

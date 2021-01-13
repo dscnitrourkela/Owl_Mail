@@ -88,7 +88,7 @@ class SyncService : Service() {
                                 if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
                                     '@'
                                 )
-                            notificationExt.notify(name, mail.subject)
+                            notificationExt.notify("New Mail From $name", mail.subject)
                         }
                     }
                 }

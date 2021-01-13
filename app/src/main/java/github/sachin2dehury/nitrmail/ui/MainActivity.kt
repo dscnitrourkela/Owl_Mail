@@ -20,6 +20,8 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
@@ -64,6 +66,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         binding.navView.setCheckedItem(R.id.inbox)
 
         inAppUpdate()
+
+        Firebase.messaging.isAutoInitEnabled = true
     }
 
     @SuppressLint("RtlHardcoded")
@@ -75,6 +79,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
                 R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
                 R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
+                R.id.settings -> {
+                }
+                R.id.about -> {
+                }
+                R.id.privacyPolicy -> {
+                }
             }
             binding.navView.setCheckedItem(it)
             binding.drawerLayout.closeDrawer(Gravity.LEFT)
@@ -95,7 +105,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             R.id.logOut -> {
 //                unregisterSync()
 //                stopSync()
-                viewModel.logOut()
+                viewModel.logout()
                 showSnackbar("Successfully logged out.")
             }
             R.id.theme -> toggleTheme()

@@ -54,7 +54,7 @@ class MailBoxViewModel @ViewModelInject constructor(
         debugLog("readLastSync ViewModel : ${request.value} ${_lastSync.value}")
     }
 
-    fun logOut() = viewModelScope.launch { repository.logOut() }
+    fun logout() = viewModelScope.launch { repository.logOut() }
 
     fun syncAllMails() = _forceUpdate.postValue(true)
 

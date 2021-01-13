@@ -124,12 +124,13 @@ class MailBoxAdapter(private val context: Context) :
                         )
                                 || mail.body.contains(search, true)
                                 || mail.subject.contains(search, true)
-                                || mail.html.contains(search, true)
+                                || mail.parsedBody.contains(search, true)
                     }
                 }
                 return filterResults
             }
 
+            @Suppress("UNCHECKED_CAST")
             override fun publishResults(value: CharSequence?, filterResults: FilterResults?) {
                 mails = filterResults?.values as List<Mail>
             }

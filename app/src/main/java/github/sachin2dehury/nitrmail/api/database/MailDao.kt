@@ -22,6 +22,6 @@ interface MailDao {
     @Query("SELECT * FROM mails WHERE id = :id")
     fun getMailItem(id: String): Flow<Mail>
 
-    @Query("UPDATE mails SET html = :html WHERE id = :id")
-    suspend fun updateMail(html: String, id: String)
+    @Query("UPDATE mails SET parsedBody = :parsedBody WHERE id = :id")
+    suspend fun updateMail(parsedBody: String, id: String)
 }

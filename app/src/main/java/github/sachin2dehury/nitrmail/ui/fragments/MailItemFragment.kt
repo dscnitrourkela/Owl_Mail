@@ -1,13 +1,15 @@
 package github.sachin2dehury.nitrmail.ui.fragments
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
@@ -27,9 +29,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
-//    private val colors = resources.getIntArray(R.array.colors)
+    lateinit var colors: IntArray
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -40,6 +41,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             toggleActionBar(true)
         }
 
+        colors = resources.getIntArray(R.array.colors)
+
         subscribeToObservers()
 
         viewModel.setId(args.id)
@@ -48,13 +51,24 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             viewModel.syncParsedMails()
         }
 
+        setupWebView()
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView() {
         binding.webView.apply {
             webViewClient = viewModel.getMailViewClient()
             isVerticalScrollBarEnabled = false
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
-            setBackgroundColor(Color.TRANSPARENT)
             setInitialScale(160)
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                val darkMode = when (AppCompatDelegate.getDefaultNightMode()) {
+                    AppCompatDelegate.MODE_NIGHT_NO -> WebSettingsCompat.FORCE_DARK_OFF
+                    else -> WebSettingsCompat.FORCE_DARK_ON
+                }
+                WebSettingsCompat.setForceDark(this.settings, darkMode)
+            }
         }
     }
 
@@ -66,25 +80,15 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 result.data?.let { mail ->
                     val sender =
                         if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
-                    val dateFormat = when {
-                        (System.currentTimeMillis() - mail.time) < Constants.DAY -> {
-                            SimpleDateFormat(Constants.DATE_FORMAT_DATE)
-                        }
-                        (System.currentTimeMillis() - mail.time) < Constants.YEAR -> {
-                            SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
-                        }
-                        else -> {
-                            SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
-                        }
-                    }
+                    val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
                     val name =
                         if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
                             '@'
                         )
                     binding.apply {
+                        imageViewSender.setColorFilter(colors.random())
                         textViewDate.text =
                             dateFormat.format(mail.time)
-//                        imageViewSender.setColorFilter(colors.random())
                         textViewSender.text = name.first().toString()
                         textViewMailSubject.text = mail.subject
                         textViewSenderName.text =
@@ -100,7 +104,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         }
                         webView.loadDataWithBaseURL(
                             Constants.BASE_URL,
-                            mail.html,
+                            mail.parsedBody,
                             "text/html",
                             "utf-8",
                             null
@@ -110,6 +114,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         binding.swipeRefreshLayout.isRefreshing = false
+                        binding.webView.isVisible = true
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -118,9 +123,11 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                             }
                         }
                         binding.swipeRefreshLayout.isRefreshing = false
+                        binding.webView.isVisible = true
                     }
                     Status.LOADING -> {
                         binding.swipeRefreshLayout.isRefreshing = true
+                        binding.webView.isVisible = false
                     }
                 }
             }
