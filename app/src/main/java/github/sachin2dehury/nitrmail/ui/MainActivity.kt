@@ -20,6 +20,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +68,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         inAppUpdate()
 
-        Firebase.messaging.isAutoInitEnabled = true
+        Firebase.analytics.setAnalyticsCollectionEnabled(true)
+        Firebase.messaging.subscribeToTopic("App")
     }
 
     @SuppressLint("RtlHardcoded")

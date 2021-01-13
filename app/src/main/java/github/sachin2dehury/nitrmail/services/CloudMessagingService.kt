@@ -13,6 +13,7 @@ class CloudMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        debugLog("${message.notification}")
         message.notification.let {
             notificationExt.notify(it?.title.toString(), it?.body.toString())
         }
