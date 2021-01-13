@@ -52,4 +52,8 @@ object Constants {
 
     const val YEAR = 31556952000
     const val DAY = 86400000
+
+    const val KEY_THEME = "KEY_THEME"
+    const val LIGHT_THEME = "LIGHT_THEME"
+    const val DARK_THEME = "DARK_THEME"
 }

@@ -21,4 +21,6 @@ interface ActivityExt {
     fun inAppReview()
 
     fun inAppUpdate()
+
+    fun toggleTheme()
 }

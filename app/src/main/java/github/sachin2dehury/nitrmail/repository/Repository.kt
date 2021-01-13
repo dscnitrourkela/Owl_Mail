@@ -122,6 +122,13 @@ class Repository(
         }
     }
 
+    suspend fun saveThemeState(state: String) {
+        dataStore.saveCredential(Constants.KEY_THEME, state)
+    }
+
+    suspend fun readThemeState() =
+        dataStore.readCredential(Constants.KEY_THEME) ?: Constants.DARK_THEME
+
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
         dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)

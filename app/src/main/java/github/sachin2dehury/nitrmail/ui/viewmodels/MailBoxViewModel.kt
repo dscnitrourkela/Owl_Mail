@@ -42,6 +42,8 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
+    var themeState = Constants.DARK_THEME
+
     fun saveLastSync() = viewModelScope.launch {
         repository.saveLastSync(request.value!!, _currentTime.value!!)
         debugLog("saveLastSync ViewModel : ${request.value} ${_currentTime.value}")
@@ -73,4 +75,8 @@ class MailBoxViewModel @ViewModelInject constructor(
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
 
     fun isLastSyncChanged() = _lastSync.value != _currentTime.value
+
+    fun saveThemeState() = viewModelScope.launch { repository.saveThemeState(themeState) }
+
+    fun readThemeState() = viewModelScope.launch { themeState = repository.readThemeState() }
 }

@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel.readThemeState().invokeOnCompletion {
+            applyTheme()
+        }
+
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -94,20 +98,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 viewModel.logOut()
                 showSnackbar("Successfully logged out.")
             }
-            R.id.switchTheme -> {
-                when (AppCompatDelegate.getDefaultNightMode()) {
-                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_NO
-                    )
-                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_YES
-                    )
-                    else -> AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_YES
-                    )
-                }
-//                stopSync()
-            }
+            R.id.theme -> toggleTheme()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -200,6 +191,22 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 this,
                 1000
             )
+        }
+    }
+
+    override fun toggleTheme() {
+        viewModel.themeState = when (viewModel.themeState) {
+            Constants.LIGHT_THEME -> Constants.DARK_THEME
+            else -> Constants.LIGHT_THEME
+        }
+        applyTheme()
+        viewModel.saveThemeState()
+    }
+
+    private fun applyTheme() {
+        when (viewModel.themeState) {
+            Constants.LIGHT_THEME -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 
