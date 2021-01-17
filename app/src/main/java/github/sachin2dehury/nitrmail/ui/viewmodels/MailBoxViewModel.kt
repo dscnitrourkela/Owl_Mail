@@ -5,7 +5,6 @@ import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
-import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.launch
 
@@ -47,12 +46,10 @@ abstract class MailBoxViewModel(
 
     fun saveLastSync() = viewModelScope.launch {
         repository.saveLastSync(request, _currentTime.value!!)
-        debugLog("saveLastSync ViewModel : ${request} ${_currentTime.value}")
     }
 
     fun readLastSync() = viewModelScope.launch {
         _lastSync.postValue(repository.readLastSync(request))
-        debugLog("readLastSync ViewModel : ${request} ${_lastSync.value}")
     }
 
     fun syncAllMails() = _forceUpdate.postValue(true)
@@ -60,4 +57,6 @@ abstract class MailBoxViewModel(
     fun syncSearchMails() = _forceUpdateSearch.postValue(true)
 
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
+
+    fun setLastSync() = _currentTime.postValue(System.currentTimeMillis())
 }

@@ -30,7 +30,6 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel.readLastSync()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +75,7 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         binding.swipeRefreshLayout.isRefreshing = false
-                        viewModel.saveLastSync()
+                        viewModel.setLastSync()
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -149,6 +148,16 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             })
         }
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.saveLastSync()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.readLastSync()
     }
 
     override fun onDestroy() {
