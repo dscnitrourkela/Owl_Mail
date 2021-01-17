@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name="github.sachin2dehury.NITRMailApp"
@@ -39,7 +38,7 @@
 
         <receiver
             android:name=".services.SyncBroadcastReceiver"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:permission="android.permission.WAKE_LOCK">
             <intent-filter>
                 <action android:name="NITR Mail Notification Sync" />
             </intent-filter>

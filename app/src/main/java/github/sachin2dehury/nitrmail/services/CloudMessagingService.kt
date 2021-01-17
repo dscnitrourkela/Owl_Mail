@@ -10,10 +10,14 @@ class CloudMessagingService : FirebaseMessagingService() {
     @Inject
     lateinit var notificationExt: NotificationExt
 
+    init {
+        debugLog("Created CloudMessagingService")
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        debugLog("${message.notification}")
+        debugLog("onMessageReceived ${message.notification}")
         message.notification.let {
             notificationExt.notify(it?.title.toString(), it?.body.toString())
         }

@@ -65,6 +65,30 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun subscribeToObservers() {
+        viewModel.search.observe(viewLifecycleOwner, {
+            it?.let { event ->
+                val result = event.peekContent()
+                result.data?.let { mails ->
+                    mailBoxAdapter.mails = mails
+                }
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.ERROR -> {
+                        event.getContentIfNotHandled()?.let { errorResource ->
+                            errorResource.message?.let { message ->
+                                (activity as ActivityExt).showSnackbar(message)
+                            }
+                        }
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                    Status.LOADING -> {
+                        binding.swipeRefreshLayout.isRefreshing = true
+                    }
+                }
+            }
+        })
         viewModel.mails.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
@@ -87,30 +111,7 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                     }
                     Status.LOADING -> {
                         binding.swipeRefreshLayout.isRefreshing = true
-                    }
-                }
-            }
-        })
-        viewModel.search.observe(viewLifecycleOwner, {
-            it?.let { event ->
-                val result = event.peekContent()
-                result.data?.let { mails ->
-                    mailBoxAdapter.mails = mails
-                }
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.ERROR -> {
-                        event.getContentIfNotHandled()?.let { errorResource ->
-                            errorResource.message?.let { message ->
-                                (activity as ActivityExt).showSnackbar(message)
-                            }
-                        }
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.LOADING -> {
-                        binding.swipeRefreshLayout.isRefreshing = true
+                        binding.recyclerViewMailBox.startLayoutAnimation()
                     }
                 }
             }
@@ -150,13 +151,13 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         viewModel.saveLastSync()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         viewModel.readLastSync()
     }
 

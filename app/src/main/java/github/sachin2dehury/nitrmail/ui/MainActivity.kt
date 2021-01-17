@@ -58,13 +58,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
-        binding.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        subscribeToObservers()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        subscribeToObservers()
 
         drawerOptionMenu()
 
@@ -87,6 +83,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     private fun drawerOptionMenu() {
+        toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
         val navController = findNavController(R.id.navHostFragment)
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -105,7 +104,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.app_menu, menu)
+        menuInflater.inflate(R.menu.theme_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -114,11 +113,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             return true
         }
         when (item.itemId) {
-            R.id.logOut -> {
-//                unregisterSync()
-//                stopSync()
-                showSnackbar("Successfully logged out.")
-            }
             R.id.theme -> toggleTheme()
         }
         return super.onOptionsItemSelected(item)

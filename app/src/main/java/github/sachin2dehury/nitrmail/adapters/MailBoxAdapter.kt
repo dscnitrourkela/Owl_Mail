@@ -14,11 +14,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.data.Mail
-import github.sachin2dehury.nitrmail.databinding.ListMailItemBinding
+import github.sachin2dehury.nitrmail.databinding.MailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter(private val context: Context) :
+class MailBoxAdapter(context: Context) :
     RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
 
     class MailBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -48,13 +48,13 @@ class MailBoxAdapter(private val context: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MailBoxViewHolder {
         return MailBoxViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.list_mail_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.mail_item, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: MailBoxViewHolder, position: Int) {
         val mail = mails[position]
-        val binding = ListMailItemBinding.bind(holder.itemView)
+        val binding = MailItemBinding.bind(holder.itemView)
         val sender =
             if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
 
