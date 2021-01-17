@@ -1,30 +1,25 @@
 package github.sachin2dehury.nitrmail.services
 
+import android.annotation.SuppressLint
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import github.sachin2dehury.nitrmail.others.debugLog
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
+@AndroidEntryPoint
 class CloudMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var notificationExt: NotificationExt
 
-    init {
-        debugLog("Created CloudMessagingService")
-    }
-
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        debugLog("onMessageReceived ${message.notification}")
-        message.notification.let {
-            notificationExt.notify(it?.title.toString(), it?.body.toString())
+        message.notification.let { notification ->
+            notification?.let {
+                notificationExt.notify("${it.title}", "${it.body}")
+            }
         }
-    }
-
-    override fun onNewToken(token: String) {
-        debugLog("CloudMessages onNewToken : $token")
-        super.onNewToken(token)
     }
 }

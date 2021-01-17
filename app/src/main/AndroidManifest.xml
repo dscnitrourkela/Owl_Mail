@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="github.sachin2dehury.nitrmail">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,7 +16,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NITRMail">
+        android:theme="@style/Theme.NITRMail"
+        tools:ignore="AllowBackup">
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,14 +36,11 @@
 
         <service
             android:name=".services.SyncService"
+            android:enabled="true"
             android:exported="false" />
 
         <receiver
             android:name=".services.SyncBroadcastReceiver"
-            android:permission="android.permission.WAKE_LOCK">
-            <intent-filter>
-                <action android:name="NITR Mail Notification Sync" />
-            </intent-filter>
-        </receiver>
+            android:exported="false" />
     </application>
 </manifest>

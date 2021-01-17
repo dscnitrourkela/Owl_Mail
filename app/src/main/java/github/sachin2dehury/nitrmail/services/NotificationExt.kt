@@ -11,10 +11,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.ui.MainActivity
 
-
 class NotificationExt(private val context: Context) {
+
+    init {
+        debugLog("Created NotificationExt")
+    }
 
     private val notificationManager = NotificationManagerCompat.from(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

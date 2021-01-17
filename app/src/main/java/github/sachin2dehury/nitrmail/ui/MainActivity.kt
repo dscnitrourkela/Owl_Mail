@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -32,7 +34,9 @@ import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
+import github.sachin2dehury.nitrmail.services.SyncService
 import github.sachin2dehury.nitrmail.ui.viewmodels.ThemeViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -66,8 +70,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         inAppUpdate()
 
+        setupFirebase()
+    }
+
+    private fun setupFirebase() = lifecycleScope.launch {
         Firebase.analytics.setAnalyticsCollectionEnabled(true)
-        Firebase.messaging.subscribeToTopic("App")
+        Firebase.messaging.subscribeToTopic(Constants.TOPIC)
     }
 
     private fun subscribeToObservers() {
@@ -149,24 +157,24 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         )
     }
 
-//    override fun unregisterSync() {
-//        unregisterReceiver(syncBroadcastReceiver)
-//    }
-//
-//    override fun registerSync() {
-//        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-//        registerReceiver(syncBroadcastReceiver, intentFilter)
-//    }
-//
-//    override fun startSync() {
-//        val syncIntent = Intent(this, SyncService::class.java)
-//        startService(syncIntent)
-//    }
-//
-//    override fun stopSync() {
-//        val syncIntent = Intent(this, SyncService::class.java)
-//        stopService(syncIntent)
-//    }
+    override fun unregisterSync() {
+        unregisterReceiver(syncBroadcastReceiver)
+    }
+
+    override fun registerSync() {
+        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        registerReceiver(syncBroadcastReceiver, intentFilter)
+    }
+
+    override fun startSync() {
+        val syncIntent = Intent(this, SyncService::class.java)
+        startService(syncIntent)
+    }
+
+    override fun stopSync() {
+        val syncIntent = Intent(this, SyncService::class.java)
+        stopService(syncIntent)
+    }
 
     override fun inAppReview() {
         val reviewManager = ReviewManagerFactory.create(this)
@@ -218,8 +226,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     override fun onDestroy() {
         _binding = null
-        val intent = Intent(Constants.NOTIFICATION_ID)
-        sendBroadcast(intent)
+//        val intent = Intent(Constants.NOTIFICATION_ID)
+//        sendBroadcast(intent)
         super.onDestroy()
     }
 }

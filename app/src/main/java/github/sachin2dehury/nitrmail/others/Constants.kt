@@ -51,10 +51,12 @@ object Constants {
     const val DATE_FORMAT_DATE = "hh:mm a"
     const val DATE_FORMAT_FULL = "hh:mm a dd MMM yyyy"
 
-    const val YEAR = 31556952000
-    const val DAY = 86400000
+    const val YEAR = 31449600000L
+    const val DAY = 86400000L
 
     const val KEY_THEME = "KEY_THEME"
     const val LIGHT_THEME = "LIGHT_THEME"
     const val DARK_THEME = "DARK_THEME"
+
+    const val TOPIC = "NITR_Mail"
 }

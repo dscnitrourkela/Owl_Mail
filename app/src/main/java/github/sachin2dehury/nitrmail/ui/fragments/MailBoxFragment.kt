@@ -139,12 +139,12 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     binding.swipeRefreshLayout.isRefreshing = true
                     viewModel.setSearchQuery(query)
-                    return true
+                    return false
                 }
 
                 override fun onQueryTextChange(query: String): Boolean {
                     mailBoxAdapter.filter.filter(query)
-                    return true
+                    return false
                 }
             })
         }
@@ -154,10 +154,6 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     override fun onStop() {
         super.onStop()
         viewModel.saveLastSync()
-    }
-
-    override fun onStart() {
-        super.onStart()
         viewModel.readLastSync()
     }
 
