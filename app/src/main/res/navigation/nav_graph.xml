@@ -61,6 +61,9 @@
         tools:layout="@layout/fragment_settings" />
 
     <action
+        android:id="@+id/action_to_authFragment"
+        app:destination="@id/authFragment" />
+    <action
         android:id="@+id/action_to_inboxFragment"
         app:destination="@id/inboxFragment" />
     <action
@@ -73,8 +76,5 @@
     <action
         android:id="@+id/action_to_composeFragment"
         app:destination="@id/composeFragment" />
-    <action
-        android:id="@+id/action_to_authFragment"
-        app:destination="@id/authFragment" />
 
 </navigation>

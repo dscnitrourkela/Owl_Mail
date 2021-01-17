@@ -95,6 +95,7 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 result.data?.let { mails ->
                     mailBoxAdapter.list = mails
                     mailBoxAdapter.mails = mails
+                    binding.recyclerViewMailBox.startLayoutAnimation()
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
@@ -111,7 +112,6 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                     }
                     Status.LOADING -> {
                         binding.swipeRefreshLayout.isRefreshing = true
-                        binding.recyclerViewMailBox.startLayoutAnimation()
                     }
                 }
             }
