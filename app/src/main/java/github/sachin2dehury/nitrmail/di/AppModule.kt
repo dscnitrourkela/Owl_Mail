@@ -18,7 +18,6 @@ import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.NetworkBoundResource
 import github.sachin2dehury.nitrmail.repository.Repository
-import github.sachin2dehury.nitrmail.services.NotificationExt
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -82,10 +81,6 @@ object AppModule {
     @Singleton
     @Provides
     fun provideInternetChecker(@ApplicationContext context: Context) = InternetChecker(context)
-
-    @Singleton
-    @Provides
-    fun provideNotificationExt(@ApplicationContext context: Context) = NotificationExt(context)
 
     @Singleton
     @Provides

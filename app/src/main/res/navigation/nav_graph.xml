@@ -1,35 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/authFragment">
 
     <fragment
         android:id="@+id/authFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.AuthFragment"
-        android:label="AuthFragment">
-        <action
-            android:id="@+id/action_authFragment_to_mailBoxFragment"
-            app:destination="@id/mailBoxFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/mailBoxFragment"
-        android:name="github.sachin2dehury.nitrmail.ui.fragments.MailBoxFragment"
-        android:label="MailBoxFragment">
-        <action
-            android:id="@+id/action_mailBoxFragment_to_mail_item_Fragment"
-            app:destination="@id/mailItemFragment" />
-        <action
-            android:id="@+id/action_mailBoxFragment_to_authFragment"
-            app:destination="@id/authFragment" />
-        <action
-            android:id="@+id/action_mailBoxFragment_to_composeFragment"
-            app:destination="@id/composeFragment" />
-    </fragment>
+        android:label="NITR Mail"
+        tools:layout="@layout/fragment_auth" />
     <fragment
         android:id="@+id/mailItemFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.MailItemFragment"
-        android:label="MailItemFragment">
+        android:label="NITR Mail"
+        tools:layout="@layout/fragment_mail_item">
         <argument
             android:name="id"
             app:argType="string" />
@@ -37,6 +22,59 @@
     <fragment
         android:id="@+id/composeFragment"
         android:name="github.sachin2dehury.nitrmail.ui.fragments.ComposeFragment"
-        android:label="ComposeFragment" />
+        android:label="Compose Mail"
+        tools:layout="@layout/fragment_compose" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.AboutFragment"
+        android:label="About Us"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/draftFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.DraftFragment"
+        android:label="Draft"
+        tools:layout="@layout/fragment_mail_box" />
+    <fragment
+        android:id="@+id/inboxFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.InboxFragment"
+        android:label="Inbox"
+        tools:layout="@layout/fragment_mail_box" />
+    <fragment
+        android:id="@+id/trashFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.TrashFragment"
+        android:label="Trash"
+        tools:layout="@layout/fragment_mail_box" />
+    <fragment
+        android:id="@+id/sentFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.SentFragment"
+        android:label="Sent"
+        tools:layout="@layout/fragment_mail_box" />
+    <fragment
+        android:id="@+id/junkFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.JunkFragment"
+        android:label="Junk"
+        tools:layout="@layout/fragment_mail_box" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="github.sachin2dehury.nitrmail.ui.fragments.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <action
+        android:id="@+id/action_to_inboxFragment"
+        app:destination="@id/inboxFragment" />
+    <action
+        android:id="@+id/action_to_mail_item_Fragment"
+        app:destination="@id/mailItemFragment">
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </action>
+    <action
+        android:id="@+id/action_to_composeFragment"
+        app:destination="@id/composeFragment" />
+    <action
+        android:id="@+id/action_to_authFragment"
+        app:destination="@id/authFragment" />
 
 </navigation>

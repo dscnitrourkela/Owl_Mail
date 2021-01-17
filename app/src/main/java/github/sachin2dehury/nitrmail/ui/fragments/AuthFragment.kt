@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.nitrmail.NavGraphDirections
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.nitrmail.others.Constants
@@ -77,7 +78,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-            AuthFragmentDirections.actionAuthFragmentToMailBoxFragment(),
+            NavGraphDirections.actionToInboxFragment(),
             navOptions
         )
     }

@@ -3,15 +3,12 @@ package github.sachin2dehury.nitrmail.ui.fragments
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.nitrmail.NavGraphDirections
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
@@ -20,14 +17,12 @@ import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
-
-@AndroidEntryPoint
-class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
+abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private val viewModel: MailBoxViewModel by activityViewModels()
+    abstract val viewModel: MailBoxViewModel
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
@@ -52,7 +47,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         }
 
         binding.floatingActionButtonCompose.setOnClickListener {
-            findNavController().navigate(R.id.action_mailBoxFragment_to_composeFragment)
+            findNavController().navigate(NavGraphDirections.actionToComposeFragment())
         }
 
         (activity as ActivityExt).apply {
@@ -62,9 +57,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
-        findNavController().navigate(
-            MailBoxFragmentDirections.actionMailBoxFragmentToMailItemFragment(it.id)
-        )
+        findNavController().navigate(NavGraphDirections.actionToMailItemFragment(it.id))
     }
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
@@ -82,12 +75,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
                 when (result.status) {
                     Status.SUCCESS -> {
-                        viewModel.apply {
-                            if (isLastSyncChanged()) {
-                                saveLastSync()
-                            }
-                        }
                         binding.swipeRefreshLayout.isRefreshing = false
+                        viewModel.saveLastSync()
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -127,16 +116,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 }
             }
         })
-        viewModel.request.observe(viewLifecycleOwner, { request ->
-            request?.let {
-                viewModel.apply {
-                    setLastSync()
-                    readLastSync().invokeOnCompletion {
-                        syncAllMails()
-                    }
-                }
-            }
-        })
         viewModel.searchQuery.observe(viewLifecycleOwner, { searchQuery ->
             searchQuery?.let {
                 viewModel.syncSearchMails()
@@ -144,19 +123,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
     }
 
-    private fun redirectFragment() {
-        val navOptions = NavOptions.Builder()
-            .setPopUpTo(R.id.mailBoxFragment, true)
-            .build()
-        findNavController().navigate(
-            MailBoxFragmentDirections.actionMailBoxFragmentToAuthFragment(),
-            navOptions
-        )
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
-        inflater.inflate(R.menu.logout_menu, menu)
         val searchAction = menu.findItem(R.id.searchBar).actionView
         val searchView = searchAction as SearchView
         searchView.apply {
@@ -181,13 +149,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             })
         }
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.logOut -> redirectFragment()
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

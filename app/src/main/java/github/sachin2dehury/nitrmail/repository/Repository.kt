@@ -148,6 +148,7 @@ class Repository(
     ) {
         val token = getToken().substringAfter('=')
         val parsedMail = Jsoup.parse(response.string())
+        response.close()
         parsedMail.getElementsByClass("MsgHdr").remove()
 //        parsedMail.removeClass("MsgBody")
 //        parsedMail.removeClass("Msg")

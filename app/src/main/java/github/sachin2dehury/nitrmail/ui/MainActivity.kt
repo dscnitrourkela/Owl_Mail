@@ -1,9 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
@@ -12,6 +10,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -29,7 +32,7 @@ import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
-import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
+import github.sachin2dehury.nitrmail.ui.viewmodels.ThemeViewModel
 import javax.inject.Inject
 
 
@@ -40,8 +43,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     private val binding: ActivityMainBinding get() = _binding!!
 
     private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private val viewModel: MailBoxViewModel by viewModels()
+    private val viewModel: ThemeViewModel by viewModels()
 
     @Inject
     lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
@@ -49,12 +53,10 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.readThemeState()
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel.readThemeState().invokeOnCompletion {
-            applyTheme()
-        }
 
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
         binding.drawerLayout.addDrawerListener(toggle)
@@ -62,9 +64,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        drawerOptionMenu()
+        subscribeToObservers()
 
-        binding.navView.setCheckedItem(R.id.inbox)
+        drawerOptionMenu()
 
         inAppUpdate()
 
@@ -72,26 +74,34 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         Firebase.messaging.subscribeToTopic("App")
     }
 
-    @SuppressLint("RtlHardcoded")
-    private fun drawerOptionMenu() {
-        binding.navView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.inbox -> viewModel.setRequest(Constants.INBOX_URL)
-                R.id.sent -> viewModel.setRequest(Constants.SENT_URL)
-                R.id.draft -> viewModel.setRequest(Constants.DRAFT_URL)
-                R.id.junk -> viewModel.setRequest(Constants.JUNK_URL)
-                R.id.trash -> viewModel.setRequest(Constants.TRASH_URL)
-                R.id.settings -> {
-                }
-                R.id.about -> {
-                }
-                R.id.privacyPolicy -> {
+    private fun subscribeToObservers() {
+        viewModel.themeState.observe(this, { themeState ->
+            themeState?.let {
+                when (it) {
+                    Constants.LIGHT_THEME -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
             }
-            binding.navView.setCheckedItem(it)
-            binding.drawerLayout.closeDrawer(Gravity.LEFT)
-            true
-        }
+            viewModel.saveThemeState()
+        })
+    }
+
+    private fun drawerOptionMenu() {
+        val navController = findNavController(R.id.navHostFragment)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.inboxFragment,
+                R.id.sentFragment,
+                R.id.draftFragment,
+                R.id.junkFragment,
+                R.id.trashFragment,
+                R.id.settingsFragment,
+                R.id.aboutFragment,
+                R.id.aboutFragment
+            ), binding.drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        binding.navView.setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -107,7 +117,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             R.id.logOut -> {
 //                unregisterSync()
 //                stopSync()
-                viewModel.logout()
                 showSnackbar("Successfully logged out.")
             }
             R.id.theme -> toggleTheme()
@@ -116,8 +125,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return super.onSupportNavigateUp()
+        val navController = findNavController(R.id.navHostFragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
     override fun toggleDrawer(isEnabled: Boolean) {
@@ -207,18 +216,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun toggleTheme() {
-        viewModel.themeState = when (viewModel.themeState) {
-            Constants.LIGHT_THEME -> Constants.DARK_THEME
-            else -> Constants.LIGHT_THEME
-        }
-        applyTheme()
-        viewModel.saveThemeState()
-    }
-
-    private fun applyTheme() {
-        when (viewModel.themeState) {
-            Constants.LIGHT_THEME -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        when (viewModel.themeState.value) {
+            Constants.DARK_THEME -> viewModel.setThemeState(Constants.LIGHT_THEME)
+            else -> viewModel.setThemeState(Constants.DARK_THEME)
         }
     }
 
