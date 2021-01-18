@@ -18,7 +18,7 @@ import github.sachin2dehury.nitrmail.databinding.MailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter(context: Context) :
+class MailBoxAdapter(private val context: Context) :
     RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
 
     class MailBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -35,8 +35,6 @@ class MailBoxAdapter(context: Context) :
     }
 
     private var onItemClickListener: ((Mail) -> Unit)? = null
-
-    private val colors = context.resources.getIntArray(R.array.colors)
 
     private val differ = AsyncListDiffer(this, diffCallback)
 
@@ -71,9 +69,13 @@ class MailBoxAdapter(context: Context) :
             }
         }
         val name = if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+        val resId = context.resources.getIdentifier(
+            "ic_${name.first().toLowerCase()}",
+            "drawable",
+            context.packageName
+        )
         binding.apply {
-            imageViewSender.setColorFilter(colors.random())
-            textViewSender.text = name.first().toString()
+            imageViewSender.setImageResource(resId)
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject

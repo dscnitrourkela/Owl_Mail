@@ -1,6 +1,7 @@
 package github.sachin2dehury.nitrmail.services
 
 import android.content.Intent
+import android.text.format.DateUtils
 import androidx.lifecycle.*
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.api.data.Mail
@@ -25,9 +26,7 @@ class SyncService : LifecycleService() {
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
 
-    private val _currentTime = MutableLiveData(System.currentTimeMillis())
-
-    private val _lastSync = MutableLiveData(_currentTime.value)
+    private val _lastSync = MutableLiveData(System.currentTimeMillis())
 
     private val _mails = MutableLiveData<Event<Resource<List<Mail>>>>()
 
@@ -47,13 +46,12 @@ class SyncService : LifecycleService() {
 
     private fun startSyncService() = lifecycleScope.launch {
         debugLog("startSyncService : ${_lastSync.value}")
-        syncMails()
-//        notificationExt.notify("Test ${System.currentTimeMillis()}", "Hello boy")
+//        syncMails()
+        notificationExt.notify("Test ${System.currentTimeMillis()}", "Hello boy")
         alarmBroadcast.startBroadcast()
     }
 
     private suspend fun syncMails() {
-        _currentTime.postValue(System.currentTimeMillis())
         _lastSync.postValue(repository.readLastSync(Constants.INBOX_URL))
         _mails.postValue(
             repository.getMails(
@@ -65,7 +63,10 @@ class SyncService : LifecycleService() {
         _mails.value?.let { event ->
             val result = event.peekContent()
             if (result.status == Status.SUCCESS) {
-                repository.saveLastSync(Constants.INBOX_URL, _currentTime.value!!)
+                repository.saveLastSync(
+                    Constants.INBOX_URL,
+                    System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
+                )
                 result.data?.let { list ->
                     list.forEach { mail ->
                         if (mail.flag.contains('u')) {

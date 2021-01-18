@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.circularreveal.cardview.CircularRevealCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
+    app:cardCornerRadius="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,7 +33,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
@@ -72,29 +75,15 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewSender"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_margin="8dp"
+            android:layout_width="?android:attr/listPreferredItemHeightSmall"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_margin="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toStartOf="@id/textViewMailSubject"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_brightness_1_24" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textViewSender"
-            style="@style/Widget.MaterialComponents.TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/Silver"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
-            app:layout_constraintEnd_toEndOf="@+id/imageViewSender"
-            app:layout_constraintStart_toStartOf="@+id/imageViewSender"
-            app:layout_constraintTop_toTopOf="@+id/imageViewSender"
-            app:textAllCaps="true"
-            tools:text="A" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewAttachment"
@@ -116,5 +105,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_baseline_star_24" />
 
+        <!--        <View-->
+        <!--            android:id="@+id/divider"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="1dp"-->
+        <!--            android:background="?android:attr/listDivider"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/textViewDate"-->
+        <!--            app:layout_constraintStart_toStartOf="@id/textViewMailSubject" />-->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.circularreveal.cardview.CircularRevealCardView>
+</com.google.android.material.card.MaterialCardView>

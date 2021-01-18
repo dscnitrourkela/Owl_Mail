@@ -1,10 +1,12 @@
 package github.sachin2dehury.nitrmail.ui.viewmodels
 
+import android.text.format.DateUtils
 import androidx.lifecycle.*
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
+import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.repository.Repository
 import kotlinx.coroutines.launch
 
@@ -14,9 +16,7 @@ abstract class MailBoxViewModel(
 
     abstract val request: String
 
-    private val _currentTime = MutableLiveData(System.currentTimeMillis())
-
-    private val _lastSync = MutableLiveData(_currentTime.value)
+    private val _lastSync = MutableLiveData(System.currentTimeMillis())
 
     private val _searchQuery = MutableLiveData(Constants.NO_CREDENTIAL)
 
@@ -45,7 +45,8 @@ abstract class MailBoxViewModel(
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
     fun saveLastSync() = viewModelScope.launch {
-        repository.saveLastSync(request, _currentTime.value!!)
+        debugLog("saveLastSync viewModelScope")
+        repository.saveLastSync(request, System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS)
     }
 
     fun readLastSync() = viewModelScope.launch {
@@ -57,6 +58,4 @@ abstract class MailBoxViewModel(
     fun syncSearchMails() = _forceUpdateSearch.postValue(true)
 
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
-
-    fun setLastSync() = _currentTime.postValue(System.currentTimeMillis())
 }

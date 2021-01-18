@@ -31,9 +31,9 @@ class DataStoreExt(context: Context) {
         }
     }
 
-    suspend fun readLastSync(key: String): Long? {
+    suspend fun readLastSync(key: String): Long {
         val dataStoreKey = longPreferencesKey(key)
         val preferences = dataStore.data.first()
-        return preferences[dataStoreKey]
+        return preferences[dataStoreKey] ?: Constants.NO_LAST_SYNC
     }
 }

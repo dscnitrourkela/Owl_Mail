@@ -13,8 +13,10 @@ import androidx.webkit.WebViewFeature
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.api.calls.MailViewClient
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
+import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
@@ -31,8 +33,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
-    lateinit var colors: IntArray
-
     @Inject
     lateinit var mailViewClient: MailViewClient
 
@@ -45,8 +45,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             toggleDrawer(false)
             toggleActionBar(true)
         }
-
-        colors = resources.getIntArray(R.array.colors)
 
         subscribeToObservers()
 
@@ -61,7 +59,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
-        mailViewClient.token = viewModel.token
         binding.webView.apply {
             webViewClient = mailViewClient
             isVerticalScrollBarEnabled = false
@@ -78,47 +75,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     private fun subscribeToObservers() {
         viewModel.parsedMail.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
-                result.data?.let { mail ->
-                    val sender =
-                        if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
-                    val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
-                    val name =
-                        if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
-                            '@'
-                        )
-                    binding.apply {
-                        imageViewSender.setColorFilter(colors.random())
-                        textViewDate.text =
-                            dateFormat.format(mail.time)
-                        textViewSender.text = name.first().toString()
-                        textViewMailSubject.text = mail.subject
-                        textViewSenderName.text =
-                            if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
-                                '@'
-                            )
-                        textViewSenderEmail.text = sender.email
-                        if (mail.flag.contains('a')) {
-                            imageViewAttachment.isVisible = true
-                        }
-                        if (mail.body.isEmpty()) {
-                            (activity as ActivityExt).showSnackbar("This mail has no content")
-                        }
-                        webView.loadDataWithBaseURL(
-                            Constants.BASE_URL,
-                            mail.parsedBody,
-                            "text/html",
-                            "utf-8",
-                            null
-                        )
-                    }
-                }
                 when (result.status) {
                     Status.SUCCESS -> {
+                        setContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
                         binding.webView.isVisible = true
                     }
@@ -128,10 +91,12 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                                 (activity as ActivityExt).showSnackbar(message)
                             }
                         }
+                        setContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
                         binding.webView.isVisible = true
                     }
                     Status.LOADING -> {
+                        setContent(result)
                         binding.swipeRefreshLayout.isRefreshing = true
                         binding.webView.isVisible = false
                     }
@@ -141,6 +106,48 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         viewModel.id.observe(viewLifecycleOwner, {
             viewModel.syncParsedMails()
         })
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun setContent(result: Resource<Mail>) {
+        result.data?.let { mail ->
+            val sender =
+                if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
+            val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
+            val name =
+                if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                    '@'
+                )
+            val resId = requireContext().resources.getIdentifier(
+                "ic_${name.first().toLowerCase()}",
+                "drawable",
+                requireContext().packageName
+            )
+            binding.apply {
+                imageViewSender.setImageResource(resId)
+                textViewDate.text =
+                    dateFormat.format(mail.time)
+                textViewMailSubject.text = mail.subject
+                textViewSenderName.text =
+                    if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                        '@'
+                    )
+                textViewSenderEmail.text = sender.email
+                if (mail.flag.contains('a')) {
+                    imageViewAttachment.isVisible = true
+                }
+                if (mail.body.isEmpty()) {
+                    (activity as ActivityExt).showSnackbar("This mail has no content")
+                }
+                webView.loadDataWithBaseURL(
+                    Constants.BASE_URL,
+                    mail.parsedBody,
+                    "text/html",
+                    "utf-8",
+                    null
+                )
+            }
+        }
     }
 
     override fun onDestroy() {

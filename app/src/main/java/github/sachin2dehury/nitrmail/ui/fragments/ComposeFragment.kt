@@ -31,15 +31,13 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
         _binding = FragmentComposeBinding.bind(view)
 
-        mailViewClient.token = viewModel.token
-
         (activity as ActivityExt).apply {
             toggleDrawer(false)
             toggleActionBar(true)
         }
 
         val url =
-            "${Constants.HOME_URL + Constants.COMPOSE_URL}&${Constants.AUTH}=${Constants.AUTH_QUERY}&${Constants.AUTH_TOKEN_QUERY}=${viewModel.token}"
+            "${Constants.HOME_URL + Constants.COMPOSE_URL}&auth=qp&zauthtoken=${viewModel.token}"
 
         binding.webView.apply {
             webViewClient = mailViewClient

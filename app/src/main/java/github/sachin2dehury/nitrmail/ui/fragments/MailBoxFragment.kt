@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import github.sachin2dehury.nitrmail.NavGraphDirections
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.adapters.MailBoxAdapter
+import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailBoxViewModel
@@ -37,12 +39,19 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         _binding = FragmentMailBoxBinding.bind(view)
 
+        viewModel.readLastSync().invokeOnCompletion {
+            subscribeToObservers()
+        }
+
         setupAdapter()
         setupRecyclerView()
-        subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncAllMails()
+            viewModel.apply {
+                readLastSync().invokeOnCompletion {
+                    syncAllMails()
+                }
+            }
         }
 
         binding.floatingActionButtonCompose.setOnClickListener {
@@ -68,11 +77,9 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.search.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
-                result.data?.let { mails ->
-                    mailBoxAdapter.mails = mails
-                }
                 when (result.status) {
                     Status.SUCCESS -> {
+                        setSearchContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.ERROR -> {
@@ -81,9 +88,11 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                                 (activity as ActivityExt).showSnackbar(message)
                             }
                         }
+                        setSearchContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.LOADING -> {
+                        setSearchContent(result)
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
@@ -92,15 +101,12 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         viewModel.mails.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
-                result.data?.let { mails ->
-                    mailBoxAdapter.list = mails
-                    mailBoxAdapter.mails = mails
-                    binding.recyclerViewMailBox.startLayoutAnimation()
-                }
+                binding.recyclerViewMailBox.clearAnimation()
                 when (result.status) {
                     Status.SUCCESS -> {
+                        setContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
-                        viewModel.setLastSync()
+                        viewModel.saveLastSync()
                     }
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
@@ -108,9 +114,12 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                                 (activity as ActivityExt).showSnackbar(message)
                             }
                         }
+                        setContent(result)
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                     Status.LOADING -> {
+                        setContent(result)
+                        binding.recyclerViewMailBox.startLayoutAnimation()
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
@@ -121,6 +130,19 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
                 viewModel.syncSearchMails()
             }
         })
+    }
+
+    private fun setContent(result: Resource<List<Mail>>) {
+        result.data?.let { mails ->
+            mailBoxAdapter.list = mails
+            mailBoxAdapter.mails = mails
+        }
+    }
+
+    private fun setSearchContent(result: Resource<List<Mail>>) {
+        result.data?.let { mails ->
+            mailBoxAdapter.mails = mails
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -149,12 +171,6 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             })
         }
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.saveLastSync()
-        viewModel.readLastSync()
     }
 
     override fun onDestroy() {

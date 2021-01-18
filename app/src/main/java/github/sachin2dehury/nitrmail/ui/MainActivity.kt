@@ -51,12 +51,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.readThemeState()
-
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        subscribeToObservers()
+        viewModel.readThemeState().invokeOnCompletion {
+            subscribeToObservers()
+        }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
