@@ -13,23 +13,28 @@ class AlarmBroadcast(private val context: Context) {
         debugLog("Created AlarmBroadcast")
     }
 
-    fun broadcastSync() {
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val alarmIntent = Intent(context, SyncBroadcastReceiver::class.java).let { intent ->
+        PendingIntent.getBroadcast(context, 0, intent, 0)
+    }
+
+    fun startBroadcast() {
         val currentTime = System.currentTimeMillis()
 //        val calendar = Calendar.getInstance().apply {
 //            timeInMillis = currentTime
 //            set(Calendar.HOUR_OF_DAY, 8)
 //        }
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val alarmIntent = Intent(context, SyncBroadcastReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, 0, intent, 0)
-        }
 
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
-            currentTime,
+            currentTime + AlarmManager.INTERVAL_HOUR,
             AlarmManager.INTERVAL_HOUR,
             alarmIntent
         )
-        debugLog("broadcastSync AlarmBroadcast ${System.currentTimeMillis()}")
+        debugLog("broadcastSync AlarmBroadcast $currentTime")
+    }
+
+    fun stopBroadcast() {
+        alarmManager.cancel(alarmIntent)
     }
 }

@@ -2,19 +2,19 @@ package github.sachin2dehury.nitrmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.Event
 import github.sachin2dehury.nitrmail.others.Resource
 import github.sachin2dehury.nitrmail.repository.Repository
 
 class MailItemViewModel @ViewModelInject constructor(
-    private val repository: Repository,
-    private val mailViewClient: MailViewClient
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _id = MutableLiveData("0")
     val id: LiveData<String> = _id
+
+    val token = repository.getToken().substringAfter('=')
 
     private val _forceUpdate = MutableLiveData(false)
 
@@ -32,10 +32,5 @@ class MailItemViewModel @ViewModelInject constructor(
 
     fun setId(id: String) {
         _id.postValue(id)
-    }
-
-    fun getMailViewClient(): MailViewClient {
-        mailViewClient.token = repository.getToken().substringAfter('=')
-        return mailViewClient
     }
 }

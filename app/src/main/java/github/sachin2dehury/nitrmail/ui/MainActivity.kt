@@ -62,11 +62,11 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         drawerOptionMenu()
 
+        inAppReview()
+
         inAppUpdate()
 
         Firebase.analytics.setAnalyticsCollectionEnabled(true)
-
-        startSync()
     }
 
     private fun subscribeToObservers() {
@@ -148,11 +148,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         )
     }
 
-    override fun startSync() {
-        alarmBroadcast.broadcastSync()
-        debugLog("startSync Main Activity")
-    }
-
     override fun inAppReview() {
         val reviewManager = ReviewManagerFactory.create(this)
         val request = reviewManager.requestReviewFlow()
@@ -201,8 +196,19 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
+    override fun startSync() {
+        alarmBroadcast.startBroadcast()
+        debugLog("startSync MainActivity")
+    }
+
+    override fun stopSync() {
+        alarmBroadcast.stopBroadcast()
+        debugLog("stopSync MainActivity")
+    }
+
     override fun onDestroy() {
         _binding = null
+        startSync()
         super.onDestroy()
     }
 }

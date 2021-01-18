@@ -12,7 +12,7 @@ interface ActivityExt {
 
     fun startSync()
 
-//    fun stopSync()
+    fun stopSync()
 
     fun inAppReview()
 

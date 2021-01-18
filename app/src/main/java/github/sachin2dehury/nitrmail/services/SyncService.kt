@@ -49,7 +49,7 @@ class SyncService : LifecycleService() {
         debugLog("startSyncService : ${_lastSync.value}")
         syncMails()
 //        notificationExt.notify("Test ${System.currentTimeMillis()}", "Hello boy")
-        alarmBroadcast.broadcastSync()
+        alarmBroadcast.startBroadcast()
     }
 
     private suspend fun syncMails() {

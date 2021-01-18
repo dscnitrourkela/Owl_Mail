@@ -12,12 +12,14 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
+import github.sachin2dehury.nitrmail.api.calls.MailViewClient
 import github.sachin2dehury.nitrmail.databinding.FragmentMailItemBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.Status
 import github.sachin2dehury.nitrmail.ui.ActivityExt
 import github.sachin2dehury.nitrmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
@@ -30,6 +32,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private val args: MailItemFragmentArgs by navArgs()
 
     lateinit var colors: IntArray
+
+    @Inject
+    lateinit var mailViewClient: MailViewClient
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,8 +61,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
+        mailViewClient.token = viewModel.token
         binding.webView.apply {
-            webViewClient = viewModel.getMailViewClient()
+            webViewClient = mailViewClient
             isVerticalScrollBarEnabled = false
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
