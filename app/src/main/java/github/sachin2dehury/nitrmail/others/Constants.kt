@@ -11,9 +11,7 @@ object Constants {
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
-    const val SYNC_DELAY_TIME = 3600000L
-
-    const val INBOX_URL = "inbox.json"//inbox&fmt=json
+    const val INBOX_URL = "inbox.json"
     const val SENT_URL = "sent.json"
     const val DRAFT_URL = "drafts.json"
     const val JUNK_URL = "junk.json"
@@ -57,6 +55,4 @@ object Constants {
     const val KEY_THEME = "KEY_THEME"
     const val LIGHT_THEME = "LIGHT_THEME"
     const val DARK_THEME = "DARK_THEME"
-
-    const val TOPIC = "NITR_Mail"
 }

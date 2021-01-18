@@ -18,6 +18,7 @@ import github.sachin2dehury.nitrmail.others.DataStoreExt
 import github.sachin2dehury.nitrmail.others.InternetChecker
 import github.sachin2dehury.nitrmail.others.NetworkBoundResource
 import github.sachin2dehury.nitrmail.repository.Repository
+import github.sachin2dehury.nitrmail.services.AlarmBroadcast
 import github.sachin2dehury.nitrmail.services.NotificationExt
 import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
 import okhttp3.OkHttpClient
@@ -86,6 +87,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideNotificationExt(@ApplicationContext context: Context) = NotificationExt(context)
+
+    @Singleton
+    @Provides
+    fun provideAlarmBroadCast(@ApplicationContext context: Context) = AlarmBroadcast(context)
 
     @Singleton
     @Provides

@@ -1,22 +1,16 @@
 package github.sachin2dehury.nitrmail.services
 
-import android.app.Service
 import android.content.Intent
-import android.os.IBinder
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.api.data.Mail
 import github.sachin2dehury.nitrmail.others.*
 import github.sachin2dehury.nitrmail.repository.Repository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SyncService : Service() {
+class SyncService : LifecycleService() {
 
     init {
         debugLog("SyncService Started")
@@ -28,21 +22,20 @@ class SyncService : Service() {
     @Inject
     lateinit var notificationExt: NotificationExt
 
+    @Inject
+    lateinit var alarmBroadcast: AlarmBroadcast
+
     private val _currentTime = MutableLiveData(System.currentTimeMillis())
 
     private val _lastSync = MutableLiveData(_currentTime.value)
 
-    private val _forceUpdate = MutableLiveData(false)
-
     private val _mails = MutableLiveData<Event<Resource<List<Mail>>>>()
-
-    override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         startSyncService()
 
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -52,18 +45,11 @@ class SyncService : Service() {
         super.onTaskRemoved(rootIntent)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val intent = Intent(Constants.NOTIFICATION_ID)
-        sendBroadcast(intent)
-    }
-
-    private fun startSyncService() = GlobalScope.launch {
+    private fun startSyncService() = lifecycleScope.launch {
         debugLog("startSyncService : ${_lastSync.value}")
-        while (true) {
-            delay(Constants.SYNC_DELAY_TIME)
-            syncMails()
-        }
+        syncMails()
+//        notificationExt.notify("Test ${System.currentTimeMillis()}", "Hello boy")
+        alarmBroadcast.broadcastSync()
     }
 
     private suspend fun syncMails() {
@@ -72,7 +58,7 @@ class SyncService : Service() {
         _mails.postValue(
             repository.getMails(
                 Constants.INBOX_URL, Constants.UPDATE_QUERY + _lastSync.value!!
-            ).asLiveData(GlobalScope.coroutineContext).switchMap {
+            ).asLiveData(lifecycleScope.coroutineContext).switchMap {
                 MutableLiveData(Event(it))
             }.value
         )

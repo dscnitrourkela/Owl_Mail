@@ -111,14 +111,11 @@ class Repository(
     }
 
     suspend fun readLastSync(request: String) =
-        dataStore.readCredential(Constants.KEY_LAST_SYNC + request)?.toLong()
-            ?: Constants.NO_LAST_SYNC
+        dataStore.readLastSync(Constants.KEY_LAST_SYNC + request) ?: Constants.NO_LAST_SYNC
 
     suspend fun saveLastSync(request: String, lastSync: Long) {
         if (internetChecker.isInternetConnected()) {
-            dataStore.saveCredential(
-                Constants.KEY_LAST_SYNC + request, lastSync.toString()
-            )
+            dataStore.saveLastSync(Constants.KEY_LAST_SYNC + request, lastSync)
         }
     }
 
@@ -154,10 +151,10 @@ class Repository(
 //        parsedMail.removeClass("Msg")
 //        parsedMail.removeClass("ZhAppContent")
         val body = parsedMail.toString()
-        body.replace(
-            "${Constants.AUTH}=${Constants.AUTH_COOKIE}",
-            "${Constants.AUTH}=${Constants.AUTH_QUERY}&amp;${Constants.AUTH_TOKEN_QUERY}=$token"
-        )
+//        body.replace(
+//            "${Constants.AUTH}=${Constants.AUTH_COOKIE}",
+//            "${Constants.AUTH}=${Constants.AUTH_QUERY}&amp;${Constants.AUTH_TOKEN_QUERY}=$token"
+//        )
         mailDao.updateMail(body, id)
     }
 

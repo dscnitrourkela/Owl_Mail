@@ -1,7 +1,5 @@
 package github.sachin2dehury.nitrmail.ui
 
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,7 +9,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -27,16 +24,13 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.debugLog
-import github.sachin2dehury.nitrmail.services.SyncBroadcastReceiver
-import github.sachin2dehury.nitrmail.services.SyncService
+import github.sachin2dehury.nitrmail.services.AlarmBroadcast
 import github.sachin2dehury.nitrmail.ui.viewmodels.ThemeViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -52,7 +46,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     private val viewModel: ThemeViewModel by viewModels()
 
     @Inject
-    lateinit var syncBroadcastReceiver: SyncBroadcastReceiver
+    lateinit var alarmBroadcast: AlarmBroadcast
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,12 +64,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
         inAppUpdate()
 
-        setupFirebase()
-    }
-
-    private fun setupFirebase() = lifecycleScope.launch {
         Firebase.analytics.setAnalyticsCollectionEnabled(true)
-        Firebase.messaging.subscribeToTopic(Constants.TOPIC)
+
+        startSync()
     }
 
     private fun subscribeToObservers() {
@@ -157,23 +148,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         )
     }
 
-    override fun unregisterSync() {
-        unregisterReceiver(syncBroadcastReceiver)
-    }
-
-    override fun registerSync() {
-        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-        registerReceiver(syncBroadcastReceiver, intentFilter)
-    }
-
     override fun startSync() {
-        val syncIntent = Intent(this, SyncService::class.java)
-        startService(syncIntent)
-    }
-
-    override fun stopSync() {
-        val syncIntent = Intent(this, SyncService::class.java)
-        stopService(syncIntent)
+        alarmBroadcast.broadcastSync()
+        debugLog("startSync Main Activity")
     }
 
     override fun inAppReview() {
@@ -226,8 +203,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     override fun onDestroy() {
         _binding = null
-//        val intent = Intent(Constants.NOTIFICATION_ID)
-//        sendBroadcast(intent)
         super.onDestroy()
     }
 }

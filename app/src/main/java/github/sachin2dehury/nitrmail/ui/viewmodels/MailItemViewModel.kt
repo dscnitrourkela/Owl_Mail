@@ -35,7 +35,7 @@ class MailItemViewModel @ViewModelInject constructor(
     }
 
     fun getMailViewClient(): MailViewClient {
-        mailViewClient.token = repository.getToken()
+        mailViewClient.token = repository.getToken().substringAfter('=')
         return mailViewClient
     }
 }

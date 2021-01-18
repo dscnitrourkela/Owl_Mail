@@ -11,14 +11,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import github.sachin2dehury.nitrmail.R
 import github.sachin2dehury.nitrmail.others.Constants
-import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.ui.MainActivity
 
 class NotificationExt(private val context: Context) {
-
-    init {
-        debugLog("Created NotificationExt")
-    }
 
     private val notificationManager = NotificationManagerCompat.from(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,11 +36,11 @@ class NotificationExt(private val context: Context) {
         val pendingIntent = PendingIntent.getActivity(context, 1000, intent, 0)
         val notification =
             NotificationCompat.Builder(context, Constants.NOTIFICATION_ID).apply {
-                priority = NotificationCompat.PRIORITY_HIGH
-                setStyle(NotificationCompat.InboxStyle(this))
+                priority = NotificationCompat.PRIORITY_DEFAULT
+                setStyle(NotificationCompat.BigTextStyle())
                 setSmallIcon(R.mipmap.ic_launcher)
                 setContentTitle(title)
-                setContentInfo(subject)
+                setContentText(subject)
                 setContentIntent(pendingIntent)
             }
         notificationManager.notify(1000, notification.build())

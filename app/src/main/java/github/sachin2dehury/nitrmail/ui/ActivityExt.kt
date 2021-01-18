@@ -10,13 +10,9 @@ interface ActivityExt {
 
     fun hideKeyBoard()
 
-    fun registerSync()
-
-    fun unregisterSync()
-
     fun startSync()
 
-    fun stopSync()
+//    fun stopSync()
 
     fun inAppReview()
 
