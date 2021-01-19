@@ -132,7 +132,4 @@ dependencies {
 
     //WebKit
     implementation 'androidx.webkit:webkit:1.4.0'
-
-    //Preference
-    implementation "androidx.preference:preference-ktx:1.1.1"
 }

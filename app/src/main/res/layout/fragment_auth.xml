@@ -61,6 +61,7 @@
             app:boxCornerRadiusBottomStart="32dp"
             app:boxCornerRadiusTopEnd="32dp"
             app:boxCornerRadiusTopStart="32dp"
+            app:endIconMode="clear_text"
             app:hintAnimationEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,9 +90,7 @@
             app:hintAnimationEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutRoll"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/teal_200">
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutRoll">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextUserPassword"
