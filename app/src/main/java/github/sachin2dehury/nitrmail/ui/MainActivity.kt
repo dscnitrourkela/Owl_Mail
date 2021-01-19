@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -30,7 +31,7 @@ import github.sachin2dehury.nitrmail.databinding.ActivityMainBinding
 import github.sachin2dehury.nitrmail.others.Constants
 import github.sachin2dehury.nitrmail.others.debugLog
 import github.sachin2dehury.nitrmail.services.AlarmBroadcast
-import github.sachin2dehury.nitrmail.ui.viewmodels.ThemeViewModel
+import github.sachin2dehury.nitrmail.ui.viewmodels.SettingsViewModel
 import javax.inject.Inject
 
 
@@ -42,8 +43,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var searchView: SearchView
 
-    private val viewModel: ThemeViewModel by viewModels()
+    private val viewModel: SettingsViewModel by viewModels()
 
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
@@ -67,6 +69,14 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         inAppUpdate()
 
         Firebase.analytics.setAnalyticsCollectionEnabled(true)
+    }
+
+    override fun onBackPressed() {
+        closeSearchView()
+        if (hideKeyBoard()) {
+            return
+        }
+        super.onBackPressed()
     }
 
     private fun subscribeToObservers() {
@@ -141,12 +151,11 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         }
     }
 
-    override fun hideKeyBoard() {
+    override fun hideKeyBoard() =
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
             binding.root.windowToken,
             0
         )
-    }
 
     override fun inAppReview() {
         val reviewManager = ReviewManagerFactory.create(this)
@@ -195,6 +204,17 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             else -> viewModel.setThemeState(Constants.DARK_THEME)
         }
     }
+
+    override fun setSearchView(searchView: SearchView) {
+        this.searchView = searchView
+    }
+
+    override fun closeSearchView() {
+        if (::searchView.isInitialized) {
+            searchView.isIconified = true
+        }
+    }
+
 
     override fun startSync() {
         alarmBroadcast.startBroadcast()

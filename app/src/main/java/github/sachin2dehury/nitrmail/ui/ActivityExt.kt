@@ -1,5 +1,7 @@
 package github.sachin2dehury.nitrmail.ui
 
+import androidx.appcompat.widget.SearchView
+
 interface ActivityExt {
 
     fun toggleActionBar(isEnabled: Boolean)
@@ -8,7 +10,11 @@ interface ActivityExt {
 
     fun toggleDrawer(isEnabled: Boolean)
 
-    fun hideKeyBoard()
+    fun hideKeyBoard(): Boolean
+
+    fun setSearchView(searchView: SearchView)
+
+    fun closeSearchView()
 
     fun startSync()
 

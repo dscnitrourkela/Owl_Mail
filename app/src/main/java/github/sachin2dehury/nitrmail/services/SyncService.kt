@@ -46,8 +46,7 @@ class SyncService : LifecycleService() {
 
     private fun startSyncService() = lifecycleScope.launch {
         debugLog("startSyncService : ${_lastSync.value}")
-//        syncMails()
-        notificationExt.notify("Test ${System.currentTimeMillis()}", "Hello boy")
+        syncMails()
         alarmBroadcast.startBroadcast()
     }
 
