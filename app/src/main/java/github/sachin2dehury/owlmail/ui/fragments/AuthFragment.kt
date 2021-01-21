@@ -14,7 +14,6 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
 import okhttp3.Credentials
@@ -37,7 +36,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         binding.swipeRefreshLayout.isVisible = false
 
-        debugLog(System.currentTimeMillis().toString())
         when (viewModel.isLoggedIn) {
             true -> {
                 redirectFragment()

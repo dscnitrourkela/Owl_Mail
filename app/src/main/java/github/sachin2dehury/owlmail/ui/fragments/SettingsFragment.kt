@@ -46,8 +46,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Constants.LIGHT_THEME -> setDefaultValue(false)
             }
             setOnPreferenceChangeListener { _, _ ->
-                (requireActivity() as ActivityExt).toggleTheme()
-                false
+                when (viewModel.themeState.value) {
+                    Constants.DARK_THEME -> viewModel.setThemeState(Constants.LIGHT_THEME)
+                    else -> viewModel.setThemeState(Constants.DARK_THEME)
+                }
+                true
             }
         }
 

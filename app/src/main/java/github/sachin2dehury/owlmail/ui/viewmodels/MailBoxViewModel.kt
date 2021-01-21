@@ -16,7 +16,9 @@ class MailBoxViewModel @ViewModelInject constructor(
 
     private val _request = MutableLiveData(Constants.INBOX_URL)
 
-    private val _lastSync = _request.switchMap { MutableLiveData(repository.readLastSync(it!!)) }
+    private val _lastSync = _request.switchMap {
+        MutableLiveData(repository.readLastSync(it!!))
+    }
 
     private val _searchQuery = MutableLiveData(Constants.NO_CREDENTIAL)
 

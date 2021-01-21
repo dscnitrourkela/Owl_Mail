@@ -108,6 +108,7 @@ class Repository(
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveLogInCredential()
+        saveLastSync(Constants.KEY_SYNC_SERVICE, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
@@ -128,7 +129,7 @@ class Repository(
         dataStore.saveCredential(Constants.KEY_THEME, state)
     }
 
-    fun readThemeState() = dataStore.readCredential(Constants.KEY_THEME) ?: Constants.DARK_THEME
+    fun readThemeState() = dataStore.readCredential(Constants.KEY_THEME) ?: Constants.LIGHT_THEME
 
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
