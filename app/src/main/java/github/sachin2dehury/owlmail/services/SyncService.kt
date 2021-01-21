@@ -5,17 +5,18 @@ import android.text.format.DateUtils
 import androidx.lifecycle.*
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.api.data.Mail
-import github.sachin2dehury.owlmail.others.*
+import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.Event
+import github.sachin2dehury.owlmail.others.Status
+import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.repository.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SyncService : LifecycleService() {
-
-    init {
-        debugLog("SyncService Started")
-    }
 
     @Inject
     lateinit var repository: Repository
@@ -26,59 +27,75 @@ class SyncService : LifecycleService() {
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
 
-    private val _lastSync = MutableLiveData(System.currentTimeMillis())
+    private val _lastSync = MutableLiveData(System.currentTimeMillis()).also {
+        CoroutineScope(Dispatchers.IO).launch { it.postValue(repository.readLastSync(Constants.KEY_SYNC_SERVICE)) }
+    }
 
-    private val _mails = MutableLiveData<Event<Resource<List<Mail>>>>()
+    private val _mails = _lastSync.switchMap { lastSync ->
+        repository.getMails(
+            Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync!!
+        ).asLiveData(lifecycleScope.coroutineContext).switchMap {
+            MutableLiveData(Event(it))
+        }
+    }
+
+    private fun saveLastSync() = CoroutineScope(Dispatchers.IO).launch {
+        repository.saveLastSync(
+            Constants.KEY_SYNC_SERVICE,
+            System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
+        )
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        startSyncService()
+        if (_lastSync.value == 0L) {
+            notificationExt.notify("Syncing Mails", "")
+            startSyncService()
+        }
+        alarmBroadcast.startBroadcast()
+        debugLog("onStartCommand Finished")
 
         return super.onStartCommand(intent, flags, startId)
     }
 
-//    override fun onTaskRemoved(rootIntent: Intent?) {
-//        val restartServiceIntent = Intent(applicationContext, this.javaClass)
-//        restartServiceIntent.setPackage(packageName)
-//        startService(restartServiceIntent)
-//        super.onTaskRemoved(rootIntent)
-//    }
-
-    private fun startSyncService() = lifecycleScope.launch {
-        debugLog("startSyncService : ${_lastSync.value}")
-        syncMails()
-        alarmBroadcast.startBroadcast()
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        debugLog("onTaskRemoved")
+        val restartServiceIntent = Intent(applicationContext, this.javaClass)
+        restartServiceIntent.setPackage(packageName)
+        startService(restartServiceIntent)
+        super.onTaskRemoved(rootIntent)
     }
 
-    private suspend fun syncMails() {
-        _lastSync.postValue(repository.readLastSync(Constants.INBOX_URL))
-        _mails.postValue(
-            repository.getMails(
-                Constants.INBOX_URL, Constants.UPDATE_QUERY + _lastSync.value!!
-            ).asLiveData(lifecycleScope.coroutineContext).switchMap {
-                MutableLiveData(Event(it))
-            }.value
-        )
+    private fun startSyncService() {
+        debugLog("startSyncService : ${_lastSync.value}")
         _mails.value?.let { event ->
             val result = event.peekContent()
             if (result.status == Status.SUCCESS) {
-                repository.saveLastSync(
-                    Constants.INBOX_URL,
-                    System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
-                )
+                saveLastSync()
                 result.data?.let { list ->
-                    list.forEach { mail ->
-                        if (mail.flag.contains('u')) {
-                            val sender = mail.addresses.last()
-                            val name =
-                                if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
-                                    '@'
-                                )
-                            notificationExt.notify("New Mail From $name", mail.subject)
-                        }
-                    }
+                    sendNotification(list)
                 }
             }
         }
+        debugLog("startSyncService Ended")
+    }
+
+    private fun sendNotification(list: List<Mail>) {
+        list.forEach { mail ->
+            if (mail.flag.contains('u') && mail.time > _lastSync.value!!) {
+                val sender = mail.addresses.last()
+                val name =
+                    if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
+                        '@'
+                    )
+                notificationExt.notify("New Mail From $name", mail.subject)
+            }
+        }
+    }
+
+    override fun stopService(name: Intent?): Boolean {
+        debugLog("Stopping Sync Service")
+        alarmBroadcast.stopBroadcast()
+        return super.stopService(name)
     }
 }

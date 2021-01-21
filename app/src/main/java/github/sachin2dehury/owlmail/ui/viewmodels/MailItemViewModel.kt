@@ -11,15 +11,10 @@ class MailItemViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _id = MutableLiveData("0")
-    val id: LiveData<String> = _id
+    private val _id = MutableLiveData<String>("")
 
-    val token = repository.getToken().substringAfter('=')
-
-    private val _forceUpdate = MutableLiveData(false)
-
-    private val _parsedMail = _forceUpdate.switchMap {
-        repository.getParsedMailItem(id.value!!)
+    private val _parsedMail = _id.switchMap { id ->
+        repository.getParsedMailItem(id!!)
             .asLiveData(viewModelScope.coroutineContext)
             .switchMap {
                 MutableLiveData(Event(it))
@@ -28,9 +23,7 @@ class MailItemViewModel @ViewModelInject constructor(
 
     val parsedMail: LiveData<Event<Resource<Mail>>> = _parsedMail
 
-    fun syncParsedMails() = _forceUpdate.postValue(true)
+    fun syncParsedMails() = _id.postValue(_id.value)
 
-    fun setId(id: String) {
-        _id.postValue(id)
-    }
+    fun setId(id: String) = _id.postValue(id)
 }

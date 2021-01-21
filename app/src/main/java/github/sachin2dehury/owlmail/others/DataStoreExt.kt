@@ -5,7 +5,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.createDataStore
+import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
 class DataStoreExt(context: Context) {
 
@@ -18,11 +20,10 @@ class DataStoreExt(context: Context) {
         }
     }
 
-    suspend fun readCredential(key: String): String? {
+    fun readCredential(key: String) = flow {
         val dataStoreKey = stringPreferencesKey(key)
-        val preferences = dataStore.data.first()
-        return preferences[dataStoreKey]
-    }
+        emit(dataStore.data.first()[dataStoreKey])
+    }.asLiveData().value
 
     suspend fun saveLastSync(key: String, value: Long) {
         val dataStoreKey = longPreferencesKey(key)
@@ -31,9 +32,8 @@ class DataStoreExt(context: Context) {
         }
     }
 
-    suspend fun readLastSync(key: String): Long {
+    fun readLastSync(key: String) = flow {
         val dataStoreKey = longPreferencesKey(key)
-        val preferences = dataStore.data.first()
-        return preferences[dataStoreKey] ?: Constants.NO_LAST_SYNC
-    }
+        emit(dataStore.data.first()[dataStoreKey])
+    }.asLiveData().value ?: Constants.NO_LAST_SYNC
 }

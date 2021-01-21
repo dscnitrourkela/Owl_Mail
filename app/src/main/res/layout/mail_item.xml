@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="96dp">
+    android:layout_height="96dp"
+    app:cardCornerRadius="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -75,10 +76,21 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:layout_margin="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+            app:srcCompat="@drawable/ic_baseline_brightness_1_24" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewSender"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewSender"
+            app:layout_constraintEnd_toEndOf="@id/imageViewSender"
+            app:layout_constraintStart_toStartOf="@id/imageViewSender"
+            app:layout_constraintTop_toTopOf="@id/imageViewSender"
+            tools:text="A" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewAttachment"

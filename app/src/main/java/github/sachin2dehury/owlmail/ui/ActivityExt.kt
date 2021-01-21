@@ -25,4 +25,6 @@ interface ActivityExt {
     fun inAppUpdate()
 
     fun toggleTheme()
+
+    fun logout()
 }

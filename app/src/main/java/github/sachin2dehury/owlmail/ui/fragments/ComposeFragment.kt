@@ -22,6 +22,8 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
     private val viewModel: ComposeViewModel by activityViewModels()
 
+    private val activityExt = requireActivity() as ActivityExt
+
     @Inject
     lateinit var mailViewClient: MailViewClient
 
@@ -31,9 +33,7 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
         _binding = FragmentComposeBinding.bind(view)
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(false)
-        }
+        activityExt.toggleDrawer(false)
 
         val url =
             "${Constants.HOME_URL + Constants.COMPOSE_URL}&auth=qp&zauthtoken=${viewModel.token}"

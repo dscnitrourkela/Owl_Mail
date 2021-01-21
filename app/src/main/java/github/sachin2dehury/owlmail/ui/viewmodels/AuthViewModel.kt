@@ -15,6 +15,8 @@ class AuthViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
+    val isLoggedIn = repository.isLoggedIn()
+
     private val _loginStatus = MutableLiveData<Resource<List<Mail>>>()
     val loginStatus: LiveData<Resource<List<Mail>>> = _loginStatus
 
@@ -29,6 +31,4 @@ class AuthViewModel @ViewModelInject constructor(
             _loginStatus.postValue(result)
         }
     }
-
-    suspend fun isLoggedIn() = repository.isLoggedIn()
 }

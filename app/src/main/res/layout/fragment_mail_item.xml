@@ -70,10 +70,22 @@
                 android:id="@+id/imageViewSender"
                 android:layout_width="?android:attr/listPreferredItemHeightSmall"
                 android:layout_height="?android:attr/listPreferredItemHeightSmall"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
                 app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
                 app:srcCompat="@drawable/ic_baseline_brightness_1_24" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textViewSender"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="@id/imageViewSender"
+                app:layout_constraintEnd_toEndOf="@id/imageViewSender"
+                app:layout_constraintStart_toStartOf="@id/imageViewSender"
+                app:layout_constraintTop_toTopOf="@id/imageViewSender"
+                tools:text="A" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewDate"

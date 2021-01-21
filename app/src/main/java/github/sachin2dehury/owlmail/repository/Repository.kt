@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.repository
 
-import com.google.android.gms.common.util.Base64Utils
+import android.util.Base64
+import androidx.lifecycle.asLiveData
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.data.Mail
@@ -9,6 +10,7 @@ import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
@@ -80,24 +82,27 @@ class Repository(
         }
     }
 
-    suspend fun isLoggedIn(): Boolean {
+    fun isLoggedIn() = flow {
         var result = false
         dataStore.apply {
             readCredential(Constants.KEY_TOKEN)?.let { token ->
                 if (token != Constants.NO_TOKEN) {
+                    debugLog(System.currentTimeMillis().toString())
+                    emit(true)
                     basicAuthInterceptor.token = token
                     result = true
                 }
             }
             readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
                 if (credential != Constants.NO_CREDENTIAL) {
+                    emit(true)
                     basicAuthInterceptor.credential = credential
                     result = true
                 }
             }
         }
-        return result
-    }
+        emit(result)
+    }.asLiveData().value
 
     suspend fun logout() {
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
@@ -111,8 +116,7 @@ class Repository(
         mailDao.deleteAllMails()
     }
 
-    suspend fun readLastSync(request: String) =
-        dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
+    fun readLastSync(request: String) = dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
 
     suspend fun saveLastSync(request: String, lastSync: Long) {
         if (internetChecker.isInternetConnected()) {
@@ -124,8 +128,7 @@ class Repository(
         dataStore.saveCredential(Constants.KEY_THEME, state)
     }
 
-    suspend fun readThemeState() =
-        dataStore.readCredential(Constants.KEY_THEME) ?: Constants.DARK_THEME
+    fun readThemeState() = dataStore.readCredential(Constants.KEY_THEME) ?: Constants.DARK_THEME
 
     private suspend fun saveLogInCredential() {
         dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
@@ -148,9 +151,9 @@ class Repository(
         val parsedMail = Jsoup.parse(response.string())
         response.close()
         parsedMail.getElementsByClass("MsgHdr").remove()
-//        parsedMail.removeClass("MsgBody")
-//        parsedMail.removeClass("Msg")
-//        parsedMail.removeClass("ZhAppContent")
+        parsedMail.removeClass("MsgBody")
+        parsedMail.removeClass("Msg")
+        parsedMail.removeClass("ZhAppContent")
         var body = parsedMail.toString()
         if (body.contains("auth=co", true)) {
             body = body.replace(
@@ -172,5 +175,9 @@ class Repository(
 
     fun getToken() = basicAuthInterceptor.token
 
-    fun getUser() = Base64Utils.decode(basicAuthInterceptor.credential).toString()
+    fun getUser() = try {
+        Base64.decode(basicAuthInterceptor.credential, Base64.DEFAULT).toString()
+    } catch (e: Exception) {
+        e.message
+    }
 }

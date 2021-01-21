@@ -29,15 +29,17 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     private var _binding: FragmentMailItemBinding? = null
     private val binding: FragmentMailItemBinding get() = _binding!!
 
-    private val viewModel: MailItemViewModel by activityViewModels()
-
     private val args: MailItemFragmentArgs by navArgs()
+
+    private val viewModel: MailItemViewModel by activityViewModels()
 
     @Inject
     lateinit var mailViewClient: MailViewClient
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.setId(args.id)
 
         _binding = FragmentMailItemBinding.bind(view)
 
@@ -46,15 +48,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             toggleActionBar(true)
         }
 
-        subscribeToObservers()
+        setupWebView()
 
-        viewModel.setId(args.id)
+        subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.syncParsedMails()
         }
-
-        setupWebView()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -103,9 +103,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 }
             }
         })
-        viewModel.id.observe(viewLifecycleOwner, {
-            viewModel.syncParsedMails()
-        })
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -118,13 +115,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
                     '@'
                 )
-            val resId = requireContext().resources.getIdentifier(
-                "ic_${name.first().toLowerCase()}",
-                "drawable",
-                requireContext().packageName
-            )
             binding.apply {
-                imageViewSender.setImageResource(resId)
                 textViewDate.text =
                     dateFormat.format(mail.time)
                 textViewMailSubject.text = mail.subject

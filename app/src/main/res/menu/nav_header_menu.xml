@@ -2,9 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group android:id="@+id/mailMenu">
+    <group
+        android:id="@+id/mailMenu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/inboxFragment"
+            android:checked="true"
             android:icon="@drawable/ic_baseline_move_to_inbox_24"
             android:title="@string/inbox" />
         <item

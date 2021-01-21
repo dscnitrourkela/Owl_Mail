@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import github.sachin2dehury.owlmail.others.debugLog
 
-
 class AlarmBroadcast(private val context: Context) {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -23,7 +22,7 @@ class AlarmBroadcast(private val context: Context) {
 
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
-            currentTime,
+            currentTime + AlarmManager.INTERVAL_HOUR,
             AlarmManager.INTERVAL_HOUR,
             alarmIntent
         )
@@ -31,6 +30,7 @@ class AlarmBroadcast(private val context: Context) {
     }
 
     fun stopBroadcast() {
+        debugLog("stopBroadcast AlarmBroadcast ")
         alarmManager.cancel(alarmIntent)
     }
 }

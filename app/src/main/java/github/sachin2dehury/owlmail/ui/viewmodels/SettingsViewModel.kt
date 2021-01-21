@@ -13,17 +13,19 @@ class SettingsViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private var _themeState = MutableLiveData(Constants.DARK_THEME)
+    private var _themeState = MutableLiveData<String>(Constants.DARK_THEME).also {
+        viewModelScope.launch {
+            it.postValue(repository.readThemeState())
+        }
+    }
+
     val themeState: LiveData<String> = _themeState
 
     fun setThemeState(themeState: String) = _themeState.postValue(themeState)
 
     fun saveThemeState() = viewModelScope.launch { repository.saveThemeState(themeState.value!!) }
 
-    fun readThemeState() =
-        viewModelScope.launch { _themeState.postValue(repository.readThemeState()) }
-
     fun logout() = viewModelScope.launch { repository.logout() }
 
-    fun getUserRoll() = repository.getUser().substringBefore(':')
+    fun getUserRoll() = repository.getUser()
 }

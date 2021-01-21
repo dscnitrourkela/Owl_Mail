@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
 import android.text.format.DateUtils
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.others.Constants
@@ -9,24 +10,18 @@ import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.repository.Repository
 import kotlinx.coroutines.launch
 
-abstract class MailBoxViewModel(
+class MailBoxViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    abstract val request: String
+    private val _request = MutableLiveData(Constants.INBOX_URL)
 
-    private val _lastSync = MutableLiveData(System.currentTimeMillis())
+    private val _lastSync = _request.switchMap { MutableLiveData(repository.readLastSync(it!!)) }
 
     private val _searchQuery = MutableLiveData(Constants.NO_CREDENTIAL)
 
-    val searchQuery: LiveData<String> = _searchQuery
-
-    private val _forceUpdate = MutableLiveData(false)
-
-    private val _forceUpdateSearch = MutableLiveData(false)
-
-    private val _search = _forceUpdateSearch.switchMap {
-        repository.getMails(request, Constants.UPDATE_QUERY + _lastSync.value!!)
+    private val _search = _searchQuery.switchMap { searchQuery ->
+        repository.getMails(_request.value!!, searchQuery!!)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
@@ -34,8 +29,8 @@ abstract class MailBoxViewModel(
 
     val search: LiveData<Event<Resource<List<Mail>>>> = _search
 
-    private val _mails = _forceUpdate.switchMap {
-        repository.getMails(request, Constants.UPDATE_QUERY + _lastSync.value!!)
+    private val _mails = _lastSync.switchMap { lastSync ->
+        repository.getMails(_request.value!!, Constants.UPDATE_QUERY + lastSync!!)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
@@ -44,16 +39,15 @@ abstract class MailBoxViewModel(
     val mails: LiveData<Event<Resource<List<Mail>>>> = _mails
 
     fun saveLastSync() = viewModelScope.launch {
-        repository.saveLastSync(request, System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS)
+        repository.saveLastSync(
+            _request.value!!,
+            System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
+        )
     }
 
-    fun readLastSync() = viewModelScope.launch {
-        _lastSync.postValue(repository.readLastSync(request))
-    }
+    fun syncAllMails() = _request.postValue(_request.value)
 
-    fun syncAllMails() = _forceUpdate.postValue(true)
-
-    fun syncSearchMails() = _forceUpdateSearch.postValue(true)
+    fun setRequest(request: String) = _request.postValue(request)
 
     fun setSearchQuery(query: String) = _searchQuery.postValue(query)
 }

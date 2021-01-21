@@ -5,8 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,9 +14,9 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
+import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
-import kotlinx.coroutines.launch
 import okhttp3.Credentials
 import java.util.*
 
@@ -27,7 +26,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private var _binding: FragmentAuthBinding? = null
     private val binding: FragmentAuthBinding get() = _binding!!
 
-    private val viewModel: AuthViewModel by activityViewModels()
+    private val viewModel: AuthViewModel by viewModels()
 
     private var credential = Constants.NO_CREDENTIAL
 
@@ -37,6 +36,15 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         _binding = FragmentAuthBinding.bind(view)
 
         binding.swipeRefreshLayout.isVisible = false
+
+        debugLog(System.currentTimeMillis().toString())
+        when (viewModel.isLoggedIn) {
+            true -> {
+                redirectFragment()
+                (activity as ActivityExt).startSync()
+            }
+            else -> binding.swipeRefreshLayout.isVisible = true
+        }
 
         binding.buttonLogin.setOnClickListener {
             getCredential()
@@ -48,8 +56,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             viewModel.login(credential)
         }
 
-        isLoggedIn()
-
         (activity as ActivityExt).apply {
             toggleActionBar(false)
             toggleDrawer(false)
@@ -60,20 +66,12 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         subscribeToObservers()
     }
 
-    private fun isLoggedIn() = lifecycleScope.launch {
-        if (viewModel.isLoggedIn()) {
-            redirectFragment()
-        } else {
-            binding.swipeRefreshLayout.isVisible = true
-        }
-    }
-
     private fun redirectFragment() {
         val navOptions = NavOptions.Builder()
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-            NavGraphDirections.actionToInboxFragment(),
+            NavGraphDirections.actionToMailBoxFragment(),
             navOptions
         )
     }
