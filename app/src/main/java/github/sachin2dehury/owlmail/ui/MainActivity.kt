@@ -29,9 +29,10 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.ActivityMainBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.debugLog
-import github.sachin2dehury.owlmail.services.SyncService
+import github.sachin2dehury.owlmail.services.AlarmBroadcast
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -46,6 +47,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private val settingsViewModel: SettingsViewModel by viewModels()
     private val mailBoxViewModel: MailBoxViewModel by viewModels()
+
+    @Inject
+    lateinit var alarmBroadcast: AlarmBroadcast
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,14 +69,23 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     private fun subscribeToObservers() {
-        settingsViewModel.themeState.observe(this, { themeState ->
+        settingsViewModel.isDarkThemeEnabled.observe(this, { themeState ->
             themeState?.let {
+                debugLog("Theme Changed $it")
                 when (it) {
-                    Constants.LIGHT_THEME -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                     else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
             }
-            settingsViewModel.saveThemeState()
+        })
+        settingsViewModel.shouldSync.observe(this, { syncState ->
+            syncState?.let {
+                debugLog("Sync Changed $it")
+                when (it) {
+                    true -> alarmBroadcast.startBroadcast()
+                    else -> alarmBroadcast.stopBroadcast()
+                }
+            }
         })
     }
 
@@ -85,8 +98,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
-        binding.navView.setCheckedItem(R.id.inboxFragment)
 
         binding.navView.apply {
             setNavigationItemSelectedListener {
@@ -138,13 +149,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
             0
         )
 
-    override fun toggleTheme() {
-        when (settingsViewModel.themeState.value) {
-            Constants.DARK_THEME -> settingsViewModel.setThemeState(Constants.LIGHT_THEME)
-            else -> settingsViewModel.setThemeState(Constants.DARK_THEME)
-        }
-    }
-
     override fun setSearchView(searchView: SearchView) {
         this.searchView = searchView
     }
@@ -174,10 +178,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return super.onSupportNavigateUp()
-    }
-
-    override fun logout() {
-        settingsViewModel.logout()
     }
 
     override fun inAppReview() {
@@ -219,18 +219,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 1000
             )
         }
-    }
-
-    override fun startSync() {
-        val syncIntent = Intent(applicationContext, SyncService::class.java)
-        startService(syncIntent)
-        debugLog("startSync MainActivity")
-    }
-
-    override fun stopSync() {
-        val syncIntent = Intent(applicationContext, SyncService::class.java)
-        stopService(syncIntent)
-        debugLog("stopSync MainActivity")
     }
 
     override fun onDestroy() {

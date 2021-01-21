@@ -3,7 +3,6 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -34,27 +33,17 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         _binding = FragmentAuthBinding.bind(view)
 
-        binding.swipeRefreshLayout.isVisible = false
-
-        when (viewModel.isLoggedIn) {
-            true -> {
-                redirectFragment()
-                (activity as ActivityExt).startSync()
-            }
-            else -> binding.swipeRefreshLayout.isVisible = true
-        }
-
         binding.buttonLogin.setOnClickListener {
             getCredential()
             viewModel.login(credential)
-            (activity as ActivityExt).hideKeyBoard()
+            (requireActivity() as ActivityExt).hideKeyBoard()
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.login(credential)
         }
 
-        (activity as ActivityExt).apply {
+        (requireActivity() as ActivityExt).apply {
             toggleActionBar(false)
             toggleDrawer(false)
         }
@@ -86,12 +75,13 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 when (result.status) {
                     Status.SUCCESS -> {
                         binding.swipeRefreshLayout.isRefreshing = false
-                        (activity as ActivityExt).showSnackbar("Successfully logged in")
+                        (requireActivity() as ActivityExt).showSnackbar("Successfully logged in")
+                        viewModel.saveLogIn()
                         redirectFragment()
                     }
                     Status.ERROR -> {
                         binding.swipeRefreshLayout.isRefreshing = false
-                        (activity as ActivityExt).showSnackbar(
+                        (requireActivity() as ActivityExt).showSnackbar(
                             it.message ?: "An unknown error occurred"
                         )
                     }
@@ -99,6 +89,11 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
+            }
+        })
+        viewModel.isLoggedIn.observe(viewLifecycleOwner, {
+            when (it) {
+                true -> redirectFragment()
             }
         })
     }

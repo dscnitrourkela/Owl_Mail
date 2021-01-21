@@ -27,17 +27,11 @@ class SyncService : LifecycleService() {
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
 
-    private val _lastSync = MutableLiveData(System.currentTimeMillis()).also {
-        CoroutineScope(Dispatchers.IO).launch { it.postValue(repository.readLastSync(Constants.KEY_SYNC_SERVICE)) }
-    }
-
-    private val _mails = _lastSync.switchMap { lastSync ->
-        repository.getMails(
-            Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync!!
-        ).asLiveData(lifecycleScope.coroutineContext).switchMap {
-            MutableLiveData(Event(it))
-        }
-    }
+    private val shouldUpdate =
+        repository.readState(Constants.KEY_SHOULD_SYNC).asLiveData(lifecycleScope.coroutineContext)
+            .map {
+                it ?: false
+            }
 
     private fun saveLastSync() = CoroutineScope(Dispatchers.IO).launch {
         repository.saveLastSync(
@@ -48,41 +42,54 @@ class SyncService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        if (_lastSync.value == 0L) {
-            notificationExt.notify("Syncing Mails", "")
-            startSyncService()
+        when (shouldUpdate.value) {
+            true -> {
+                notificationExt.notify("Syncing Mails", "")
+                startSyncService()
+                alarmBroadcast.startBroadcast()
+            }
+            else -> stopSelf()
         }
-        alarmBroadcast.startBroadcast()
         debugLog("onStartCommand Finished")
 
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        debugLog("onTaskRemoved")
-        val restartServiceIntent = Intent(applicationContext, this.javaClass)
-        restartServiceIntent.setPackage(packageName)
-        startService(restartServiceIntent)
-        super.onTaskRemoved(rootIntent)
-    }
+//    override fun onTaskRemoved(rootIntent: Intent?) {
+//        debugLog("onTaskRemoved")
+//        val restartServiceIntent = Intent(applicationContext, this.javaClass)
+//        restartServiceIntent.setPackage(packageName)
+//        startService(restartServiceIntent)
+//        super.onTaskRemoved(rootIntent)
+//    }
 
     private fun startSyncService() {
-        debugLog("startSyncService : ${_lastSync.value}")
-        _mails.value?.let { event ->
+        val lastSync = repository.readLastSync(Constants.KEY_SYNC_SERVICE)
+            .asLiveData(lifecycleScope.coroutineContext).map { it ?: System.currentTimeMillis() }
+
+        val mails = shouldUpdate.switchMap {
+            repository.getMails(
+                Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync.value!!
+            ).asLiveData(lifecycleScope.coroutineContext).switchMap {
+                MutableLiveData(Event(it))
+            }
+        }
+        debugLog("startSyncService : ${lastSync.value}")
+        mails.value?.let { event ->
             val result = event.peekContent()
             if (result.status == Status.SUCCESS) {
                 saveLastSync()
                 result.data?.let { list ->
-                    sendNotification(list)
+                    sendNotification(list, lastSync.value!!)
                 }
             }
         }
         debugLog("startSyncService Ended")
     }
 
-    private fun sendNotification(list: List<Mail>) {
+    private fun sendNotification(list: List<Mail>, lastSync: Long) {
         list.forEach { mail ->
-            if (mail.flag.contains('u') && mail.time > _lastSync.value!!) {
+            if (mail.flag.contains('u') && mail.time > lastSync) {
                 val sender = mail.addresses.last()
                 val name =
                     if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(

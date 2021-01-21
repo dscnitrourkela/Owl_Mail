@@ -1,7 +1,5 @@
 package github.sachin2dehury.owlmail.repository
 
-import android.util.Base64
-import androidx.lifecycle.asLiveData
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.data.Mail
@@ -10,7 +8,6 @@ import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
@@ -69,7 +66,6 @@ class Repository(
             val response =
                 mailApi.login(Constants.UPDATE_QUERY + System.currentTimeMillis())
             if (response.isSuccessful && response.code() == 200) {
-                saveLogInCredential()
                 Resource.success(response.body()?.mails)
             } else {
                 Resource.error(response.message(), null)
@@ -82,32 +78,11 @@ class Repository(
         }
     }
 
-    fun isLoggedIn() = flow {
-        var result = false
-        dataStore.apply {
-            readCredential(Constants.KEY_TOKEN)?.let { token ->
-                if (token != Constants.NO_TOKEN) {
-                    debugLog(System.currentTimeMillis().toString())
-                    emit(true)
-                    basicAuthInterceptor.token = token
-                    result = true
-                }
-            }
-            readCredential(Constants.KEY_CREDENTIAL)?.let { credential ->
-                if (credential != Constants.NO_CREDENTIAL) {
-                    emit(true)
-                    basicAuthInterceptor.credential = credential
-                    result = true
-                }
-            }
-        }
-        emit(result)
-    }.asLiveData().value
-
     suspend fun logout() {
         basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
         basicAuthInterceptor.token = Constants.NO_TOKEN
-        saveLogInCredential()
+        saveCredential(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
+        saveCredential(Constants.KEY_TOKEN, Constants.NO_TOKEN)
         saveLastSync(Constants.KEY_SYNC_SERVICE, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
@@ -117,24 +92,22 @@ class Repository(
         mailDao.deleteAllMails()
     }
 
-    fun readLastSync(request: String) = dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
-
     suspend fun saveLastSync(request: String, lastSync: Long) {
         if (internetChecker.isInternetConnected()) {
             dataStore.saveLastSync(Constants.KEY_LAST_SYNC + request, lastSync)
         }
     }
 
-    suspend fun saveThemeState(state: String) {
-        dataStore.saveCredential(Constants.KEY_THEME, state)
-    }
+    suspend fun saveCredential(key: String, value: String) = dataStore.saveCredential(key, value)
 
-    fun readThemeState() = dataStore.readCredential(Constants.KEY_THEME) ?: Constants.LIGHT_THEME
+    suspend fun saveState(key: String, isEnabled: Boolean) =
+        dataStore.saveDarkTheme(key, isEnabled)
 
-    private suspend fun saveLogInCredential() {
-        dataStore.saveCredential(Constants.KEY_CREDENTIAL, basicAuthInterceptor.credential)
-        dataStore.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
-    }
+    fun readState(key: String) = dataStore.readDarkTheme(key)
+
+    fun readCredential(key: String) = dataStore.readCredential(key)
+
+    fun readLastSync(request: String) = dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
 
     private suspend fun insertMails(response: Response<Mails>) {
         response.body()?.mails?.let { mails ->
@@ -176,9 +149,9 @@ class Repository(
 
     fun getToken() = basicAuthInterceptor.token
 
-    fun getUser() = try {
-        Base64.decode(basicAuthInterceptor.credential, Base64.DEFAULT).toString()
-    } catch (e: Exception) {
-        e.message
-    }
+//    fun getUser() = try {
+//        Base64.decode(basicAuthInterceptor.credential, Base64.DEFAULT).toString()
+//    } catch (e: Exception) {
+//        e.message
+//    }
 }

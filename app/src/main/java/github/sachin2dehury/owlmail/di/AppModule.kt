@@ -18,6 +18,7 @@ import github.sachin2dehury.owlmail.others.DataStoreExt
 import github.sachin2dehury.owlmail.others.InternetChecker
 import github.sachin2dehury.owlmail.others.NetworkBoundResource
 import github.sachin2dehury.owlmail.repository.Repository
+import github.sachin2dehury.owlmail.services.AlarmBroadcast
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -80,6 +81,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideInternetChecker(@ApplicationContext context: Context) = InternetChecker(context)
+
+    @Singleton
+    @Provides
+    fun provideAlarmBroadCast(@ApplicationContext context: Context) = AlarmBroadcast(context)
 
     @Singleton
     @Provides

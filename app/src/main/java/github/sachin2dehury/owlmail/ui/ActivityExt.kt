@@ -16,15 +16,15 @@ interface ActivityExt {
 
     fun closeSearchView()
 
-    fun startSync()
-
-    fun stopSync()
+//    fun startSync()
+//
+//    fun stopSync()
 
     fun inAppReview()
 
     fun inAppUpdate()
 
-    fun toggleTheme()
+//    fun toggleTheme()
 
-    fun logout()
+//    fun logout()
 }

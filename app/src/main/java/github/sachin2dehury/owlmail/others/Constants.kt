@@ -44,6 +44,8 @@ object Constants {
     const val KEY_LAST_SYNC = "KEY_LAST_SYNC"
     const val KEY_TOKEN = "KEY_TOKEN"
     const val KEY_SYNC_SERVICE = "KEY_SYNC_SERVICE"
+    const val KEY_SHOULD_SYNC = "KEY_SHOULD_SYNC"
+    const val KEY_DARK_THEME = "KEY_DARK_THEME"
 
     const val NO_CREDENTIAL = "NO_CREDENTIAL"
     const val NO_LAST_SYNC = 0L
@@ -56,8 +58,4 @@ object Constants {
 
     const val YEAR = 31449600000L
     const val DAY = 86400000L
-
-    const val KEY_THEME = "KEY_THEME"
-    const val LIGHT_THEME = "LIGHT_THEME"
-    const val DARK_THEME = "DARK_THEME"
 }

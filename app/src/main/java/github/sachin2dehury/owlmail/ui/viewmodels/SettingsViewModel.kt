@@ -1,10 +1,8 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.Repository
 import kotlinx.coroutines.launch
 
@@ -12,15 +10,33 @@ class SettingsViewModel @ViewModelInject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private var _themeState = MutableLiveData(repository.readThemeState())
+    private val _forceUpdate = MutableLiveData(false)
 
-    val themeState: LiveData<String> = _themeState
+    val isDarkThemeEnabled = _forceUpdate.switchMap {
+        repository.readState(Constants.KEY_DARK_THEME)
+            .asLiveData(viewModelScope.coroutineContext).map {
+                it ?: true
+            }
+    }
 
-    fun setThemeState(themeState: String) = _themeState.postValue(themeState)
+    val shouldSync = _forceUpdate.switchMap {
+        repository.readState(Constants.KEY_SHOULD_SYNC)
+            .asLiveData(viewModelScope.coroutineContext).map {
+                it ?: false
+            }
+    }
 
-    fun saveThemeState() = viewModelScope.launch { repository.saveThemeState(themeState.value!!) }
+    fun readStates() = _forceUpdate.postValue(true)
+
+    fun saveThemeState(isDarkThemeEnabled: Boolean) = viewModelScope.launch {
+        repository.saveState(Constants.KEY_DARK_THEME, isDarkThemeEnabled)
+    }
+
+    fun saveSyncState(shouldSync: Boolean) = viewModelScope.launch {
+        repository.saveState(Constants.KEY_SHOULD_SYNC, shouldSync)
+    }
 
     fun logout() = viewModelScope.launch { repository.logout() }
 
-    fun getUserRoll() = repository.getUser()
+//    fun getUserRoll() = repository.getUser()
 }
