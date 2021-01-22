@@ -10,13 +10,13 @@
     <!--        android:layout_width="match_parent"-->
     <!--        android:layout_height="match_parent">-->
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             tools:ignore="WebViewLayout">
 
             <com.google.android.material.textview.MaterialTextView
@@ -102,7 +102,7 @@
             <WebView
                 android:id="@+id/webView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +120,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!--    </androidx.viewpager2.widget.ViewPager2>-->
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

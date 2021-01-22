@@ -57,4 +57,6 @@ class AuthViewModel @ViewModelInject constructor(
         repository.saveCredential(Constants.KEY_TOKEN, basicAuthInterceptor.token)
         repository.saveState(Constants.KEY_SHOULD_SYNC, true)
     }
+
+    fun syncState() = _loginStatus.postValue(Resource.loading(null))
 }

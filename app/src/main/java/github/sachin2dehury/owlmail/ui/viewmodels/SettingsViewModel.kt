@@ -4,6 +4,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.Repository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingsViewModel @ViewModelInject constructor(
@@ -36,7 +38,7 @@ class SettingsViewModel @ViewModelInject constructor(
         repository.saveState(Constants.KEY_SHOULD_SYNC, shouldSync)
     }
 
-    fun logout() = viewModelScope.launch { repository.logout() }
+    fun logout() = CoroutineScope(Dispatchers.IO).launch { repository.logout() }
 
 //    fun getUserRoll() = repository.getUser()
 }

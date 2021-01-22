@@ -3,6 +3,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -31,17 +32,23 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.syncState()
+
         _binding = FragmentAuthBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
+            AlertDialog.Builder(requireContext()).apply {
+                setMessage("Loading...")
+                setCancelable(false)
+            }.show()
             getCredential()
             viewModel.login(credential)
             (requireActivity() as ActivityExt).hideKeyBoard()
         }
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.login(credential)
-        }
+//        binding.swipeRefreshLayout.setOnRefreshListener {
+//            viewModel.login(credential)
+//        }
 
         (requireActivity() as ActivityExt).apply {
             toggleActionBar(false)
@@ -58,7 +65,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-            NavGraphDirections.actionToMailBoxFragment(),
+            NavGraphDirections.actionToInboxFragment(),
             navOptions
         )
     }
@@ -74,19 +81,16 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
-                        binding.swipeRefreshLayout.isRefreshing = false
                         (requireActivity() as ActivityExt).showSnackbar("Successfully logged in")
                         viewModel.saveLogIn()
                         redirectFragment()
                     }
                     Status.ERROR -> {
-                        binding.swipeRefreshLayout.isRefreshing = false
                         (requireActivity() as ActivityExt).showSnackbar(
                             it.message ?: "An unknown error occurred"
                         )
                     }
                     Status.LOADING -> {
-                        binding.swipeRefreshLayout.isRefreshing = true
                     }
                 }
             }

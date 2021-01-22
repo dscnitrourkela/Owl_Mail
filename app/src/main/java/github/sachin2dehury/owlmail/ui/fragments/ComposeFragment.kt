@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.MailViewClient
@@ -20,7 +20,7 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
     private var _binding: FragmentComposeBinding? = null
     private val binding: FragmentComposeBinding get() = _binding!!
 
-    private val viewModel: ComposeViewModel by activityViewModels()
+    private val viewModel: ComposeViewModel by viewModels()
 
     private val activityExt = requireActivity() as ActivityExt
 

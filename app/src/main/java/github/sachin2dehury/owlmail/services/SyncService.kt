@@ -27,11 +27,13 @@ class SyncService : LifecycleService() {
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
 
-    private val shouldUpdate =
-        repository.readState(Constants.KEY_SHOULD_SYNC).asLiveData(lifecycleScope.coroutineContext)
-            .map {
-                it ?: false
-            }
+    private val _forceUpdate = MutableLiveData(false)
+
+    private val shouldUpdate = _forceUpdate.switchMap {
+        repository.readState(Constants.KEY_SHOULD_SYNC).asLiveData().map {
+            it ?: false
+        }
+    }
 
     private fun saveLastSync() = CoroutineScope(Dispatchers.IO).launch {
         repository.saveLastSync(
@@ -41,36 +43,36 @@ class SyncService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         when (shouldUpdate.value) {
             true -> {
                 notificationExt.notify("Syncing Mails", "")
                 startSyncService()
-                alarmBroadcast.startBroadcast()
             }
-            else -> stopSelf()
+            else -> _forceUpdate.postValue(true)
         }
+        alarmBroadcast.startBroadcast()
         debugLog("onStartCommand Finished")
 
         return super.onStartCommand(intent, flags, startId)
     }
 
-//    override fun onTaskRemoved(rootIntent: Intent?) {
-//        debugLog("onTaskRemoved")
-//        val restartServiceIntent = Intent(applicationContext, this.javaClass)
-//        restartServiceIntent.setPackage(packageName)
-//        startService(restartServiceIntent)
-//        super.onTaskRemoved(rootIntent)
-//    }
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        debugLog("onTaskRemoved")
+        val restartServiceIntent = Intent(applicationContext, this.javaClass)
+        restartServiceIntent.setPackage(packageName)
+        startService(restartServiceIntent)
+        super.onTaskRemoved(rootIntent)
+    }
 
     private fun startSyncService() {
-        val lastSync = repository.readLastSync(Constants.KEY_SYNC_SERVICE)
-            .asLiveData(lifecycleScope.coroutineContext).map { it ?: System.currentTimeMillis() }
-
-        val mails = shouldUpdate.switchMap {
+        val lastSync = _forceUpdate.switchMap {
+            repository.readLastSync(Constants.KEY_SYNC_SERVICE)
+                .asLiveData().map { it ?: System.currentTimeMillis() }
+        }
+        val mails = lastSync.switchMap {
             repository.getMails(
                 Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync.value!!
-            ).asLiveData(lifecycleScope.coroutineContext).switchMap {
+            ).asLiveData().switchMap {
                 MutableLiveData(Event(it))
             }
         }

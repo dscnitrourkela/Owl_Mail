@@ -8,6 +8,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="theme_medium_light">#FF8C46</color>
+    <color name="theme_medium">#D27350</color>
+    <color name="theme_medium_dark">#D35400</color>
+    <color name="theme_light">#FABE9B</color>
+    <color name="theme_dark">#C8462D</color>
+    <color name="theme_dark_blue">#002E50</color>
+
     <color name="rally_yellow_300">#ffcf44</color>
     <color name="rally_yellow_500">#ffac12</color>
     <color name="rally_yellow_600">#ff8500</color>

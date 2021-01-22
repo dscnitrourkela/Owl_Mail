@@ -21,6 +21,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
+        viewModel.readStates()
+
         (activity as ActivityExt).apply {
             toggleDrawer(false)
             toggleActionBar(true)
@@ -28,6 +30,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {
+                viewModel.readStates()
                 viewModel.logout()
                 val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.settingsFragment, true)
@@ -55,5 +58,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    override fun onDestroy() {
+        viewModel.readStates()
+        super.onDestroy()
     }
 }

@@ -6,7 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
@@ -31,7 +31,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val args: MailItemFragmentArgs by navArgs()
 
-    private val viewModel: MailItemViewModel by activityViewModels()
+    private val viewModel: MailItemViewModel by viewModels()
 
     @Inject
     lateinit var mailViewClient: MailViewClient

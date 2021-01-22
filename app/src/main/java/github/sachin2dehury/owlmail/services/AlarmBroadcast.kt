@@ -22,8 +22,8 @@ class AlarmBroadcast(private val context: Context) {
 
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
-            currentTime + AlarmManager.INTERVAL_HOUR,
-            AlarmManager.INTERVAL_HOUR,
+            currentTime + AlarmManager.INTERVAL_HALF_HOUR,
+            AlarmManager.INTERVAL_HALF_HOUR,
             alarmIntent
         )
         debugLog("broadcastSync AlarmBroadcast $currentTime")

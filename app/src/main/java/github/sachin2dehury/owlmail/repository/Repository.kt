@@ -83,6 +83,7 @@ class Repository(
         basicAuthInterceptor.token = Constants.NO_TOKEN
         saveCredential(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
         saveCredential(Constants.KEY_TOKEN, Constants.NO_TOKEN)
+        saveState(Constants.KEY_SHOULD_SYNC, false)
         saveLastSync(Constants.KEY_SYNC_SERVICE, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
         saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
