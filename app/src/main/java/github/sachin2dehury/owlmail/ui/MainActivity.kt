@@ -9,6 +9,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -92,6 +93,14 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         toggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
+        binding.navView.apply {
+            setNavigationItemSelectedListener {
+                setCheckedItem(it)
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                true
+            }
+        }
 
         appBarConfiguration = AppBarConfiguration(
             setOf(

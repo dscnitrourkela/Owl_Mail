@@ -13,11 +13,11 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
-        applicationId "github.sachin2dehury.nitrmail"
+        applicationId "github.sachin2dehury.owlmail"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2
-        versionName "2.1 alpha"
+        versionCode 1
+        versionName "1.1 alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -135,4 +135,7 @@ dependencies {
 
     //Preference
     implementation "androidx.preference:preference-ktx:1.1.1"
+
+//    //Work Manager
+//    implementation "androidx.work:work-runtime-ktx:2.4.0"
 }

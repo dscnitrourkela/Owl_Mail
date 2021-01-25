@@ -90,7 +90,8 @@
         app:layout_constraintEnd_toEndOf="@id/imageViewSender"
         app:layout_constraintStart_toStartOf="@id/imageViewSender"
         app:layout_constraintTop_toTopOf="@id/imageViewSender"
-        tools:text="A" />
+        app:textAllCaps="true"
+        tools:text="a" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewAttachment"
@@ -115,7 +116,7 @@
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
-        android:layout_height="1px"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/textViewDate"

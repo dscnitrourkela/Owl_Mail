@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.text.format.DateUtils
 import github.sachin2dehury.owlmail.others.debugLog
 
 class AlarmBroadcast(private val context: Context) {
@@ -22,8 +23,8 @@ class AlarmBroadcast(private val context: Context) {
 
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
-            currentTime + AlarmManager.INTERVAL_HALF_HOUR,
-            AlarmManager.INTERVAL_HALF_HOUR,
+            currentTime + DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.MINUTE_IN_MILLIS,
             alarmIntent
         )
         debugLog("broadcastSync AlarmBroadcast $currentTime")

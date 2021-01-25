@@ -33,6 +33,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val viewModel: MailItemViewModel by viewModels()
 
+//    private lateinit var colors: IntArray
+//    private var colorsLength: Int = 0
+
     @Inject
     lateinit var mailViewClient: MailViewClient
 
@@ -40,6 +43,9 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.setId(args.id)
+
+//        colors = requireContext().resources.getIntArray(R.array.colors)
+//        colorsLength = colors.size
 
         _binding = FragmentMailItemBinding.bind(view)
 
@@ -53,7 +59,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncParsedMails()
+            viewModel.setId(args.id)
         }
     }
 
@@ -115,7 +121,30 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                 if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
                     '@'
                 )
+            var senderName = "From : "
+            var receiverName = "To : "
+            mail.addresses.forEach {
+                if (it.isReceiver.contains('f', true)) {
+                    senderName = senderName + "\n" + it.name + " : " + it.email
+                }
+                receiverName = receiverName + "\n" + it.name + " : " + it.email
+            }
+            val newValue = "$senderName\n$receiverName"
+//            val color = colors[mail.size % colorsLength]
+            val color = when (sender.email.contains("@nitrkl.ac.in", true)) {
+                true -> {
+                    try {
+                        sender.email.first().toInt()
+                        R.color.rally_green_300
+                    } catch (e: Exception) {
+                        R.color.rally_green_500
+                    }
+                }
+                else -> R.color.rally_green_700
+            }
             binding.apply {
+                textViewSender.text = name.first().toString()
+                imageViewSender.setColorFilter(color)
                 textViewDate.text =
                     dateFormat.format(mail.time)
                 textViewMailSubject.text = mail.subject
@@ -124,6 +153,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                         '@'
                     )
                 textViewSenderEmail.text = sender.email
+                textViewReceiverEmail.text = newValue
                 if (mail.flag.contains('a')) {
                     imageViewAttachment.isVisible = true
                 }
@@ -137,6 +167,14 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     "utf-8",
                     null
                 )
+                textViewSenderEmail.setOnClickListener {
+                    textViewSenderName.isVisible = false
+                    textViewReceiverEmail.isVisible = true
+                }
+                textViewReceiverEmail.setOnClickListener {
+                    textViewSenderName.isVisible = true
+                    textViewReceiverEmail.isVisible = false
+                }
             }
         }
     }

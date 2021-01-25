@@ -18,7 +18,7 @@ import github.sachin2dehury.owlmail.databinding.MailItemBinding
 import github.sachin2dehury.owlmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter(private val context: Context) :
+class MailBoxAdapter(context: Context) :
     RecyclerView.Adapter<MailBoxAdapter.MailBoxViewHolder>(), Filterable {
 
     class MailBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -37,6 +37,9 @@ class MailBoxAdapter(private val context: Context) :
     private var onItemClickListener: ((Mail) -> Unit)? = null
 
     private val differ = AsyncListDiffer(this, diffCallback)
+
+//    private val colors = context.resources.getIntArray(R.array.colors)
+//    private val colorsLength = colors.size
 
     var list: List<Mail> = emptyList()
 
@@ -69,7 +72,21 @@ class MailBoxAdapter(private val context: Context) :
             }
         }
         val name = if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+//        val color = colors[mail.size % colorsLength]
+        val color = when (sender.email.contains("@nitrkl.ac.in", true)) {
+            true -> {
+                try {
+                    sender.email.first().toInt()
+                    R.color.rally_green_300
+                } catch (e: Exception) {
+                    R.color.rally_green_500
+                }
+            }
+            else -> R.color.rally_green_700
+        }
         binding.apply {
+            textViewSender.text = name.first().toString()
+            imageViewSender.setColorFilter(color)
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject

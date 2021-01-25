@@ -3,7 +3,6 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -37,10 +36,10 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         _binding = FragmentAuthBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
-            AlertDialog.Builder(requireContext()).apply {
-                setMessage("Loading...")
-                setCancelable(false)
-            }.show()
+//            AlertDialog.Builder(requireContext()).apply {
+//                setMessage("Loading...")
+//                setCancelable(false)
+//            }.show()
             getCredential()
             viewModel.login(credential)
             (requireActivity() as ActivityExt).hideKeyBoard()

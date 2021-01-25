@@ -9,7 +9,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.databinding.FragmentComposeBinding
-import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.ComposeViewModel
 import javax.inject.Inject
@@ -22,8 +21,6 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
     private val viewModel: ComposeViewModel by viewModels()
 
-    private val activityExt = requireActivity() as ActivityExt
-
     @Inject
     lateinit var mailViewClient: MailViewClient
 
@@ -33,16 +30,16 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
         _binding = FragmentComposeBinding.bind(view)
 
-        activityExt.toggleDrawer(false)
+        (requireActivity() as ActivityExt).toggleDrawer(false)
 
-        val url =
-            "${Constants.HOME_URL + Constants.COMPOSE_URL}&auth=qp&zauthtoken=${viewModel.token}"
+        val url = "https://mail.nitrkl.ac.in/h/?action=compose"
+//            Constants.BASE_URL + Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.COMPOSE_MAIL
 
         binding.webView.apply {
             webViewClient = mailViewClient
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
-            loadUrl(url)
+            loadUrl(url, mapOf("Cookie" to viewModel.token))
         }
     }
 }

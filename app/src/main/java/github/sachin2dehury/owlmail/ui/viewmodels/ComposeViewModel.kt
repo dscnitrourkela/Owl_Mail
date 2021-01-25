@@ -2,10 +2,10 @@ package github.sachin2dehury.owlmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import github.sachin2dehury.owlmail.repository.Repository
+import github.sachin2dehury.owlmail.repository.MailRepository
 
 class ComposeViewModel @ViewModelInject constructor(
-    private val repository: Repository
+    private val mailRepository: MailRepository
 ) : ViewModel() {
-    val token = repository.getToken().substringAfter('=')
+    val token = mailRepository.getToken()
 }

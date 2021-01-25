@@ -15,11 +15,11 @@
         <item>@color/ORANGE</item>
         <item>@color/CARROT</item>
         <item>@color/PUMPKIN</item>
-        <item>@color/CLOUDS</item>
-        <item>@color/SILVER</item>
-        <item>@color/CONCRETE</item>
-        <item>@color/ASBESTOS</item>
         <item>@color/WET_ASPHALT</item>
         <item>@color/MIDNIGHT_BLUE</item>
     </integer-array>
+    <!--        <item>@color/CLOUDS</item>-->
+    <!--        <item>@color/SILVER</item>-->
+    <!--        <item>@color/CONCRETE</item>-->
+    <!--        <item>@color/ASBESTOS</item>-->
 </resources>

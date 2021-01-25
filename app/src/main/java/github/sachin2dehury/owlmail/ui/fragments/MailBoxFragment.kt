@@ -19,7 +19,6 @@ import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
-//@AndroidEntryPoint
 abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
@@ -45,7 +44,6 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            binding.recyclerViewMailBox.scheduleLayoutAnimation()
             viewModel.syncAllMails()
         }
 

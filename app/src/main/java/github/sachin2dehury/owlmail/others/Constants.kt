@@ -4,10 +4,8 @@ object Constants {
 
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
-
-    //    const val I_MESSAGE_URL = "h/imessage"
-    const val MESSAGE_URL = "h/message"
-    const val COMPOSE_URL = "h/?action=compose"    //"m/zmain?st=newmail"
+    const val MOBILE_URL = "m/zmain"
+    const val HTML_URL = "h/message"
 
     const val PRIVACY_POLICY_URL = ""
     const val NEW_FEATURES_URL = ""
@@ -25,19 +23,18 @@ object Constants {
 //    const val CONTACTS_URL = "contacts.json"
 //    const val TASKS_URL = "tasks.json"
 
+    const val AUTH_FROM_COOKIE = "?auth=co"
+    const val AUTH_SET_COOKIE = "?auth=sc"
+    const val AUTH_FROM_TOKEN = "?auth=qp&zauthtoken="
+    const val CLIENT_VIEW = "&zms=ipad&action=view"
+    const val LOAD_IMAGES = "&xim=1"
+    const val COMPOSE_MAIL = "&st=newmail&zms=ipad"
     const val UPDATE_QUERY = "after:"
 
-    const val AUTH = "auth"
-    const val AUTH_COOKIE = "co"
-    const val AUTH_SET_COOKIE = "sc"
-//    const val AUTH_QUERY = "qp"
-//    const val AUTH_TOKEN_QUERY = "zauthtoken"
-//
-//    const val FRAME_BODY = "iframeBody"
+    const val FRAME_BODY = "iframeBody"
 //    const val TABLE = "table"
 
     const val DATABASE_NAME = "MAIL_DB"
-
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
 
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"

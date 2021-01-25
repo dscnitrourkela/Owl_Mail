@@ -16,6 +16,9 @@ interface MailDao {
     @Query("SELECT * FROM mails WHERE box = :box ORDER BY time DESC")//GROUP BY conversationId
     fun getMails(box: String): Flow<List<Mail>>
 
+    @Query("SELECT * FROM mails WHERE conversationId = :conversationId ORDER BY id ASC")
+    fun getConversationMails(conversationId: String): Flow<List<Mail>>
+
     @Query("DELETE FROM mails")
     suspend fun deleteAllMails()
 

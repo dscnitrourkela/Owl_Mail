@@ -9,9 +9,10 @@ import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Event
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.others.debugLog
-import github.sachin2dehury.owlmail.repository.Repository
+import github.sachin2dehury.owlmail.repository.SyncRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class SyncService : LifecycleService() {
 
     @Inject
-    lateinit var repository: Repository
+    lateinit var syncRepository: SyncRepository
 
     @Inject
     lateinit var notificationExt: NotificationExt
@@ -27,66 +28,73 @@ class SyncService : LifecycleService() {
     @Inject
     lateinit var alarmBroadcast: AlarmBroadcast
 
-    private val _forceUpdate = MutableLiveData(false)
+    private val shouldUpdate = MutableLiveData(false)
 
-    private val shouldUpdate = _forceUpdate.switchMap {
-        repository.readState(Constants.KEY_SHOULD_SYNC).asLiveData().map {
-            it ?: false
+    private val lastSync = MutableLiveData(System.currentTimeMillis())
+
+    override fun onCreate() {
+        super.onCreate()
+        syncRepository.getAuthCredentials()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        readSavedData()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun readSavedData() = CoroutineScope(Dispatchers.IO).launch {
+        shouldUpdate.postValue(syncRepository.readState(Constants.KEY_SHOULD_SYNC).first() ?: false)
+        lastSync.postValue(
+            syncRepository.readLastSync(Constants.KEY_SYNC_SERVICE).first()
+                ?: System.currentTimeMillis()
+        )
+    }.invokeOnCompletion {
+        if (System.currentTimeMillis() - lastSync.value!! > 3600000L) {
+            startSync()
+        } else {
+            stopSelf()
+        }
+    }
+
+    private fun startSync() = shouldUpdate.value?.let {
+        when (it) {
+            true -> lastSync.value?.let {
+                notificationExt.notify("Syncing Mails", "You may have new mails")
+                syncWithServer()
+                alarmBroadcast.startBroadcast()
+                debugLog("Syncing")
+                stopSelf()
+            }
+            else -> {
+                alarmBroadcast.stopBroadcast()
+                stopSelf()
+            }
+        }
+    }
+
+    private fun syncWithServer() = lastSync.switchMap {
+        syncRepository.getMails(
+            Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync.value!!
+        ).asLiveData().switchMap {
+            MutableLiveData(Event(it))
+        }.map { response ->
+            response?.let { event ->
+                val result = event.peekContent()
+                if (result.status == Status.SUCCESS) {
+                    result.data?.let { list ->
+                        list.body()?.let { sendNotification(it.mails, lastSync.value!!) }
+                    }
+                    saveLastSync()
+                }
+            }
         }
     }
 
     private fun saveLastSync() = CoroutineScope(Dispatchers.IO).launch {
-        repository.saveLastSync(
+        syncRepository.saveLastSync(
             Constants.KEY_SYNC_SERVICE,
             System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
         )
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (shouldUpdate.value) {
-            true -> {
-                notificationExt.notify("Syncing Mails", "")
-                startSyncService()
-            }
-            else -> _forceUpdate.postValue(true)
-        }
-        alarmBroadcast.startBroadcast()
-        debugLog("onStartCommand Finished")
-
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        debugLog("onTaskRemoved")
-        val restartServiceIntent = Intent(applicationContext, this.javaClass)
-        restartServiceIntent.setPackage(packageName)
-        startService(restartServiceIntent)
-        super.onTaskRemoved(rootIntent)
-    }
-
-    private fun startSyncService() {
-        val lastSync = _forceUpdate.switchMap {
-            repository.readLastSync(Constants.KEY_SYNC_SERVICE)
-                .asLiveData().map { it ?: System.currentTimeMillis() }
-        }
-        val mails = lastSync.switchMap {
-            repository.getMails(
-                Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync.value!!
-            ).asLiveData().switchMap {
-                MutableLiveData(Event(it))
-            }
-        }
-        debugLog("startSyncService : ${lastSync.value}")
-        mails.value?.let { event ->
-            val result = event.peekContent()
-            if (result.status == Status.SUCCESS) {
-                saveLastSync()
-                result.data?.let { list ->
-                    sendNotification(list, lastSync.value!!)
-                }
-            }
-        }
-        debugLog("startSyncService Ended")
     }
 
     private fun sendNotification(list: List<Mail>, lastSync: Long) {
@@ -100,11 +108,5 @@ class SyncService : LifecycleService() {
                 notificationExt.notify("New Mail From $name", mail.subject)
             }
         }
-    }
-
-    override fun stopService(name: Intent?): Boolean {
-        debugLog("Stopping Sync Service")
-        alarmBroadcast.stopBroadcast()
-        return super.stopService(name)
     }
 }

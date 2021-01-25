@@ -36,6 +36,15 @@
         android:label="Junk"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
+        android:id="@+id/mailItemsFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.MailItemsFragment"
+        android:label="MailItemsFragment"
+        tools:layout="@layout/fragment_mail_box">
+        <argument
+            android:name="conversationId"
+            app:argType="string" />
+    </fragment>
+    <fragment
         android:id="@+id/mailItemFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.MailItemFragment"
         android:label="Owl Mail"
@@ -74,7 +83,17 @@
             app:argType="string" />
     </action>
     <action
+        android:id="@+id/action_to_mailItemsFragment"
+        app:destination="@id/mailItemsFragment">
+        <argument
+            android:name="conversationId"
+            app:argType="string" />
+    </action>
+    <action
         android:id="@+id/action_to_composeFragment"
         app:destination="@id/composeFragment" />
+    <action
+        android:id="@+id/action_to_settingsFragment"
+        app:destination="@id/settingsFragment" />
 
 </navigation>

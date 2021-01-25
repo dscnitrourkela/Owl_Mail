@@ -21,7 +21,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-        viewModel.readStates()
+        viewModel.refreshStates()
 
         (activity as ActivityExt).apply {
             toggleDrawer(false)
@@ -30,7 +30,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {
-                viewModel.readStates()
                 viewModel.logout()
                 val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.settingsFragment, true)
@@ -43,16 +42,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Theme")?.apply {
-            setDefaultValue(viewModel.isDarkThemeEnabled.value!!)
+            setDefaultValue(viewModel.isDarkThemeEnabled.value)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveThemeState(value as Boolean)
+                (requireActivity() as ActivityExt).showSnackbar("Theme will be applied on exit.")
                 true
             }
         }
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Sync")?.apply {
-            setDefaultValue(viewModel.shouldSync.value!!)
+            setDefaultValue(viewModel.shouldSync.value)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveSyncState(value as Boolean)
                 true
@@ -61,7 +61,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onDestroy() {
-        viewModel.readStates()
         super.onDestroy()
+        viewModel.refreshStates()
     }
 }
