@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NITR Mail</string>
+    <string name="app_name">Owl Mail</string>
 
     <string name="open">Open</string>
     <string name="close">Close</string>
@@ -8,12 +8,11 @@
     <string name="draft">Draft</string>
     <string name="junk">Junk</string>
     <string name="trash">Trash</string>
-    <string name="all_mails">All Mails</string>
     <string name="search">Search</string>
     <string name="logout">Log Out</string>
     <string name="switch_theme">Switch Theme</string>
     <string name="sign_in">Sign In</string>
-    <string name="enter_roll">Enter Roll</string>
+    <string name="enter_roll">Enter Institute Id</string>
     <string name="enter_password">Enter Password</string>
     <string name="attachments">Attachments</string>
     <string name="compose">Compose</string>

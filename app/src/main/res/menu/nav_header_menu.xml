@@ -2,7 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group android:id="@+id/mailMenu">
+    <group
+        android:id="@+id/mailMenu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/inboxFragment"
             android:icon="@drawable/ic_baseline_move_to_inbox_24"
@@ -33,7 +35,7 @@
     <group android:id="@+id/otherMenu">
         <item
             android:id="@+id/aboutFragment"
-            android:icon="@drawable/ic_baseline_flutter_dash_24"
+            android:icon="@drawable/ic_dsc_logo"
             android:title="@string/about_us" />
         <item
             android:id="@+id/privacyPolicy"
