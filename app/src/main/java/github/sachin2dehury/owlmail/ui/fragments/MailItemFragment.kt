@@ -125,11 +125,12 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             var receiverName = "To : "
             mail.addresses.forEach {
                 if (it.isReceiver.contains('f', true)) {
-                    senderName = senderName + "\n" + it.name + " : " + it.email
+                    senderName = senderName + it.name + "<${it.email}>\n"
                 }
-                receiverName = receiverName + "\n" + it.name + " : " + it.email
+                receiverName = receiverName + it.name + "<${it.email}>\n"
             }
-            val newValue = "$senderName\n$receiverName"
+            val date = dateFormat.format(mail.time)
+            val newValue = "$senderName$receiverName$date"
 //            val color = colors[mail.size % colorsLength]
             val color = when (sender.email.contains("@nitrkl.ac.in", true)) {
                 true -> {
@@ -145,8 +146,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             binding.apply {
                 textViewSender.text = name.first().toString()
                 imageViewSender.setColorFilter(color)
-                textViewDate.text =
-                    dateFormat.format(mail.time)
+                textViewDate.text = date
                 textViewMailSubject.text = mail.subject
                 textViewSenderName.text =
                     if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
@@ -168,11 +168,13 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     null
                 )
                 textViewSenderEmail.setOnClickListener {
-                    textViewSenderName.isVisible = false
+                    textViewDate.isVisible = false
+                    textViewSenderEmail.isVisible = false
                     textViewReceiverEmail.isVisible = true
                 }
                 textViewReceiverEmail.setOnClickListener {
-                    textViewSenderName.isVisible = true
+                    textViewDate.isVisible = true
+                    textViewSenderEmail.isVisible = true
                     textViewReceiverEmail.isVisible = false
                 }
             }

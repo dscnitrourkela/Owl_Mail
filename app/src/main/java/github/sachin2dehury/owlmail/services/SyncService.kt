@@ -46,10 +46,10 @@ class SyncService : LifecycleService() {
         shouldUpdate.postValue(syncRepository.readState(Constants.KEY_SHOULD_SYNC).first() ?: false)
         lastSync.postValue(
             syncRepository.readLastSync(Constants.KEY_SYNC_SERVICE).first()
-                ?: System.currentTimeMillis()
+                ?: System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS
         )
     }.invokeOnCompletion {
-        if (System.currentTimeMillis() - lastSync.value!! > 3600000L) {
+        if (System.currentTimeMillis() - lastSync.value!! >= DateUtils.HOUR_IN_MILLIS) {
             startSync()
         } else {
             stopSelf()

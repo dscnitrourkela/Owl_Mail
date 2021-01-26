@@ -118,7 +118,7 @@ dependencies {
     // Preferences DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0-alpha06"
 
-    //jsoup
+    //JSoup
     implementation 'org.jsoup:jsoup:1.13.1'
 
     //Google Play Core

@@ -30,12 +30,14 @@
         android:layout_height="0dp"
         android:layout_marginTop="64dp"
         android:layout_marginBottom="48dp"
+        android:background="@drawable/ic_launcher_background"
         app:layout_constraintBottom_toBottomOf="@id/guideline"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_account_circle_24" />
+        app:shapeAppearance="@style/Circular"
+        app:srcCompat="@drawable/ic_launcher_foreground" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogin"
@@ -100,16 +102,25 @@
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--        <com.google.android.material.imageview.ShapeableImageView-->
-    <!--            android:id="@+id/imageViewSplash"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent"-->
-    <!--            android:elevation="16dp"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintStart_toStartOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent"-->
-    <!--            app:srcCompat="@drawable/gradient_blue" />-->
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/textViewPrivacyPolicy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/privacy_policy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--            <com.google.android.material.imageview.ShapeableImageView-->
+    <!--                android:id="@+id/imageViewSplash"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:elevation="16dp"-->
+    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:srcCompat="@drawable/gradient_blue" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
