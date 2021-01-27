@@ -1,10 +1,7 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
-import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import github.sachin2dehury.owlmail.ui.viewmodels.SentViewModel
+import github.sachin2dehury.owlmail.others.Constants
 
 @AndroidEntryPoint
-class SentFragment : MailBoxFragment() {
-    override val viewModel: SentViewModel by viewModels()
-}
+class SentFragment : MailBoxFragment(Constants.SENT_URL)

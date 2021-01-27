@@ -38,16 +38,19 @@
     <fragment
         android:id="@+id/mailItemsFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.MailItemsFragment"
-        android:label="MailItemsFragment"
-        tools:layout="@layout/fragment_mail_box">
+        android:label=""
+        tools:layout="@layout/fragment_mail_items">
         <argument
             android:name="conversationId"
+            app:argType="string" />
+        <argument
+            android:name="id"
             app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/mailItemFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.MailItemFragment"
-        android:label="Owl Mail"
+        android:label=""
         tools:layout="@layout/fragment_mail_item">
         <argument
             android:name="id"
@@ -87,6 +90,9 @@
         app:destination="@id/mailItemsFragment">
         <argument
             android:name="conversationId"
+            app:argType="string" />
+        <argument
+            android:name="id"
             app:argType="string" />
     </action>
     <action

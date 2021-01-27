@@ -6,17 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--    <androidx.viewpager2.widget.ViewPager2-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent">-->
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="600dp"
             tools:ignore="WebViewLayout">
 
             <com.google.android.material.textview.MaterialTextView
@@ -27,45 +23,39 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="4dp"
                 android:ellipsize="end"
+                android:fontFamily="@font/librefranklin_regular"
                 android:gravity="start"
                 android:maxLines="1"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/imageViewAttachment"
-                app:layout_constraintStart_toEndOf="@+id/imageViewSender"
-                app:layout_constraintTop_toTopOf="@+id/imageViewSender"
+                app:layout_constraintStart_toEndOf="@+id/textViewSender"
+                app:layout_constraintTop_toTopOf="@+id/textViewSender"
                 tools:text="Sender Name" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewSenderEmail"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:maxLines="1"
-                android:textSize="14sp"
-                app:drawableEndCompat="@drawable/ic_baseline_arrow_drop_down_24"
-                app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
-                app:layout_constraintEnd_toStartOf="@+id/textViewDate"
-                app:layout_constraintStart_toEndOf="@+id/imageViewSender" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textViewReceiverEmail"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:textSize="14sp"
-                android:visibility="gone"
-                app:drawableEndCompat="@drawable/ic_baseline_arrow_drop_up_24"
-                app:layout_constraintEnd_toEndOf="@id/textViewMailSubject"
-                app:layout_constraintStart_toEndOf="@+id/imageViewSender"
-                app:layout_constraintTop_toBottomOf="@id/textViewSenderEmail" />
+                app:endIconMode="dropdown_menu"
+                app:hintAnimationEnabled="true"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
+                app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+                app:layout_constraintStart_toEndOf="@+id/textViewSender"
+                app:layout_constraintTop_toBottomOf="@id/textViewSenderName">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textViewReceiverEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/librefranklin_regular"
+                    android:maxLines="1"
+                    android:textSize="14sp"
+                    tools:text="Sender Email" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewMailSubject"
@@ -76,30 +66,26 @@
                 android:gravity="start"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:fontFamily="@font/merriweather_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Mail Subject" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageViewSender"
-                android:layout_width="?android:attr/listPreferredItemHeightSmall"
-                android:layout_height="?android:attr/listPreferredItemHeightSmall"
-                android:layout_marginTop="8dp"
-                app:layout_constraintStart_toStartOf="@+id/textViewMailSubject"
-                app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
-                app:srcCompat="@drawable/ic_baseline_brightness_1_24" />
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewSender"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                style="@style/Widget.MaterialComponents.TextView"
+                android:layout_width="?android:attr/listPreferredItemHeightSmall"
+                android:layout_height="?android:attr/listPreferredItemHeightSmall"
+                android:layout_margin="8dp"
+                android:background="@drawable/ic_baseline_brightness_1_24"
+                android:elegantTextHeight="true"
+                android:fontFamily="@font/librefranklin_regular"
                 android:gravity="center"
                 android:textSize="24sp"
-                app:layout_constraintBottom_toBottomOf="@id/imageViewSender"
-                app:layout_constraintEnd_toEndOf="@id/imageViewSender"
-                app:layout_constraintStart_toStartOf="@id/imageViewSender"
-                app:layout_constraintTop_toTopOf="@id/imageViewSender"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewMailSubject"
                 app:textAllCaps="true"
                 tools:text="a" />
 
@@ -108,11 +94,13 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:fontFamily="@font/librefranklin_regular"
                 android:gravity="end"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imageViewSender"
                 app:layout_constraintEnd_toEndOf="@+id/textViewSenderName"
+                app:layout_constraintTop_toBottomOf="@+id/textViewSenderName"
                 tools:text="Date" />
 
             <WebView
@@ -123,7 +111,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewReceiverEmail" />
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imageViewAttachment"
@@ -138,5 +126,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!--    </androidx.viewpager2.widget.ViewPager2>-->
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

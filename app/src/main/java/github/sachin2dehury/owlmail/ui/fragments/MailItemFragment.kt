@@ -33,7 +33,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
     private val viewModel: MailItemViewModel by viewModels()
 
-//    private lateinit var colors: IntArray
+//    @Inject
+//    lateinit var colors: IntArray
 //    private var colorsLength: Int = 0
 
     @Inject
@@ -44,7 +45,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         viewModel.setId(args.id)
 
-//        colors = requireContext().resources.getIntArray(R.array.colors)
 //        colorsLength = colors.size
 
         _binding = FragmentMailItemBinding.bind(view)
@@ -66,7 +66,6 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         binding.webView.apply {
-            webViewClient = mailViewClient
             isVerticalScrollBarEnabled = false
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
@@ -145,15 +144,14 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
             }
             binding.apply {
                 textViewSender.text = name.first().toString()
-                imageViewSender.setColorFilter(color)
+                textViewSender.background.setTint(color)
                 textViewDate.text = date
                 textViewMailSubject.text = mail.subject
                 textViewSenderName.text =
                     if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore(
                         '@'
                     )
-                textViewSenderEmail.text = sender.email
-                textViewReceiverEmail.text = newValue
+                textViewReceiverEmail.text = sender.email
                 if (mail.flag.contains('a')) {
                     imageViewAttachment.isVisible = true
                 }
@@ -167,15 +165,12 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     "utf-8",
                     null
                 )
-                textViewSenderEmail.setOnClickListener {
+                textInputLayout.addOnEndIconChangedListener { _, previousIcon ->
                     textViewDate.isVisible = false
-                    textViewSenderEmail.isVisible = false
-                    textViewReceiverEmail.isVisible = true
-                }
-                textViewReceiverEmail.setOnClickListener {
-                    textViewDate.isVisible = true
-                    textViewSenderEmail.isVisible = true
-                    textViewReceiverEmail.isVisible = false
+                    textViewReceiverEmail.text = newValue
+//                        textViewDate.isVisible = true
+//                        textViewReceiverEmail.text = sender.email
+//
                 }
             }
         }

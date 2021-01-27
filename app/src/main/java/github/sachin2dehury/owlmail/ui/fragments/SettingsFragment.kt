@@ -42,7 +42,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Theme")?.apply {
-            setDefaultValue(viewModel.isDarkThemeEnabled.value)
+            setDefaultValue(viewModel.isDarkThemeEnabled.value ?: true)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveThemeState(value as Boolean)
                 (requireActivity() as ActivityExt).showSnackbar("Theme will be applied on exit.")
@@ -52,7 +52,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Sync")?.apply {
-            setDefaultValue(viewModel.shouldSync.value)
+            setDefaultValue(viewModel.shouldSync.value ?: false)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveSyncState(value as Boolean)
                 true

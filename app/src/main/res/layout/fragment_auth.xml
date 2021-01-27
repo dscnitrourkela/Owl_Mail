@@ -1,9 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    android:id="@+id/swipeRefreshLayout"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent">-->
-
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefreshLayout"
@@ -47,6 +42,7 @@
         android:layout_gravity="start"
         android:text="@string/sign_in"
         app:cornerRadius="32dp"
+        app:fontFamily="@font/librefranklin_regular"
         app:icon="@drawable/ic_baseline_login_24"
         app:iconGravity="start"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +70,8 @@
             android:id="@+id/editTextUserRoll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textAutoComplete" />
+            android:inputType="textAutoComplete"
+            app:fontFamily="@font/librefranklin_regular" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,29 +96,24 @@
             android:id="@+id/editTextUserPassword"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            app:fontFamily="@font/librefranklin_regular" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/textViewPrivacyPolicy"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonPrivacyPolicy"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
         android:text="@string/privacy_policy"
+        android:textColor="@color/rally_blue_500"
+        app:fontFamily="@font/librefranklin_regular"
+        app:icon="@drawable/ic_baseline_privacy_tip_24"
+        app:iconGravity="start"
+        app:iconTint="@color/rally_blue_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!--            <com.google.android.material.imageview.ShapeableImageView-->
-    <!--                android:id="@+id/imageViewSplash"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="match_parent"-->
-    <!--                android:elevation="16dp"-->
-    <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                app:layout_constraintTop_toTopOf="parent"-->
-    <!--                app:srcCompat="@drawable/gradient_blue" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->

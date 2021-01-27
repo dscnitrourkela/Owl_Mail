@@ -60,13 +60,12 @@ class MailRepository(
         val token = getToken().substringAfter('=')
         val parsedMail = Jsoup.parse(response.string())
         response.close()
-        parsedMail.removeClass("MsgBody")
-        parsedMail.removeClass("Msg")
-        parsedMail.removeClass("ZhAppContent")
-        parsedMail.getElementsByClass("MsgHdr").remove()
-//        parsedMail.select(".View.address").remove()
-//        parsedMail.select(".cushion")
-        var body = parsedMail.toString()
+//        parsedMail.removeClass("MsgBody")
+//        parsedMail.removeClass("Msg")
+//        parsedMail.removeClass("ZhAppContent")
+//        parsedMail.getElementsByClass("MsgHdr").remove()
+
+        var body = "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
         if (body.contains("auth=co", true)) {
             body = body.replace("auth=co", "auth=qp&amp;zauthtoken=$token")
             debugLog("Mail Body $body")

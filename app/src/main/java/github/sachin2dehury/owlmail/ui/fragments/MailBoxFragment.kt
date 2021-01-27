@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import github.sachin2dehury.owlmail.NavGraphDirections
@@ -19,18 +20,19 @@ import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
-abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
+open class MailBoxFragment(private val request: String) : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    abstract val viewModel: MailBoxViewModel
+    private val viewModel: MailBoxViewModel by viewModels()
 
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.syncAllMails(request)
         setHasOptionsMenu(true)
     }
 
@@ -44,7 +46,7 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncAllMails()
+            viewModel.syncAllMails(request)
         }
 
         binding.floatingActionButtonCompose.setOnClickListener {
@@ -58,7 +60,12 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
-        findNavController().navigate(NavGraphDirections.actionToMailItemFragment(it.id))
+        findNavController().navigate(
+            NavGraphDirections.actionToMailItemsFragment(
+                it.conversationId,
+                it.id
+            )
+        )
     }
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
@@ -147,7 +154,7 @@ abstract class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String): Boolean {
                     binding.swipeRefreshLayout.isRefreshing = true
-                    viewModel.setSearchQuery(query)
+                    viewModel.syncSearchMails(query)
                     return false
                 }
 

@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
 import android.text.format.DateUtils
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Event
@@ -9,31 +10,29 @@ import github.sachin2dehury.owlmail.repository.MailRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-abstract class MailBoxViewModel(
+class MailBoxViewModel @ViewModelInject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val mailRepository: MailRepository,
 ) : ViewModel() {
 
-    abstract val request: String
+    private val _request = MutableLiveData<String>()
 
-    private val _forceUpdate = MutableLiveData(false)
+    private val _searchQuery = MutableLiveData<String>()
 
-    private val _searchQuery = MutableLiveData(Constants.NO_CREDENTIAL)
-
-    private val lastSync = _forceUpdate.switchMap {
+    private val lastSync = _request.switchMap { request ->
         dataStoreRepository.readLastSync(request).map { it ?: Constants.NO_LAST_SYNC }
             .asLiveData(viewModelScope.coroutineContext)
     }
 
-    val search = _searchQuery.switchMap {
-        mailRepository.getMails(request, _searchQuery.value!!)
+    val search = _searchQuery.switchMap { request ->
+        mailRepository.getMails(request, _searchQuery.value ?: Constants.NO_CREDENTIAL)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
     }
 
-    val mails = lastSync.switchMap {
-        mailRepository.getMails(request, Constants.UPDATE_QUERY + lastSync.value)
+    val mails = lastSync.switchMap { lastSync ->
+        mailRepository.getMails(_request.value ?: "", Constants.UPDATE_QUERY + lastSync)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
@@ -41,11 +40,11 @@ abstract class MailBoxViewModel(
 
     fun saveLastSync() = viewModelScope.launch {
         dataStoreRepository.saveLastSync(
-            request, System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
+            _request.value ?: "", System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
         )
     }
 
-    fun syncAllMails() = _forceUpdate.postValue(true)
+    fun syncAllMails(request: String) = _request.postValue(request)
 
-    fun setSearchQuery(query: String) = _searchQuery.postValue(query)
+    fun syncSearchMails(query: String) = _searchQuery.postValue(query)
 }

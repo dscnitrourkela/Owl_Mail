@@ -12,14 +12,13 @@ class MailItemsViewModel @ViewModelInject constructor(
     private val _conversationId = MutableLiveData<String>()
 
     val parsedMails = _conversationId.switchMap { conversationId ->
-        mailRepository.getParsedMails(conversationId)
-            .asLiveData(viewModelScope.coroutineContext)
-            .switchMap {
-                MutableLiveData(Event(it))
+        mailRepository.getParsedMails(conversationId).asLiveData(viewModelScope.coroutineContext)
+            .switchMap { MutableLiveData(Event(it)) }.also {
+                it.value?.peekContent()?.data?.let { list ->
+                    list.forEach { mail -> mailRepository.getParsedMailItem(mail.id) }
+                }
             }
     }
-
-    fun syncParsedMails() = _conversationId.postValue(_conversationId.value)
 
     fun setConversationId(conversationId: String) = _conversationId.postValue(conversationId)
 }

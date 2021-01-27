@@ -1,10 +1,7 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
-import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import github.sachin2dehury.owlmail.ui.viewmodels.JunkViewModel
+import github.sachin2dehury.owlmail.others.Constants
 
 @AndroidEntryPoint
-class JunkFragment : MailBoxFragment() {
-    override val viewModel: JunkViewModel by viewModels()
-}
+class JunkFragment : MailBoxFragment(Constants.JUNK_URL)

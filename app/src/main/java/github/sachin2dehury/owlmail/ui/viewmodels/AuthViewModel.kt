@@ -23,8 +23,7 @@ class AuthViewModel @ViewModelInject constructor(
 
     val isLoggedIn = _forceUpdate.switchMap {
         dataStoreRepository.readCredential(Constants.KEY_TOKEN)
-            .asLiveData(viewModelScope.coroutineContext)
-            .map { token ->
+            .asLiveData(viewModelScope.coroutineContext).map { token ->
                 if (token != null && token != Constants.NO_TOKEN) {
                     mailRepository.setToken(token)
                     true
@@ -32,8 +31,8 @@ class AuthViewModel @ViewModelInject constructor(
                     false
                 }
             }.switchMap { loggedIn ->
-                dataStoreRepository.readCredential(Constants.KEY_CREDENTIAL).asLiveData()
-                    .map { credential ->
+                dataStoreRepository.readCredential(Constants.KEY_CREDENTIAL)
+                    .asLiveData(viewModelScope.coroutineContext).map { credential ->
                         if (credential != null && credential != Constants.NO_TOKEN) {
                             mailRepository.setCredential(credential)
                             true

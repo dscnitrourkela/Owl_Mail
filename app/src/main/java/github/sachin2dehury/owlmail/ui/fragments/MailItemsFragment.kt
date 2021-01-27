@@ -4,44 +4,47 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import github.sachin2dehury.owlmail.NavGraphDirections
+import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
 import github.sachin2dehury.owlmail.api.data.Mail
-import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
+import javax.inject.Inject
 
-//@AndroidEntryPoint
-class MailItemsFragment : Fragment(R.layout.fragment_mail_box) {
+@AndroidEntryPoint
+class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
 
-    private var _binding: FragmentMailBoxBinding? = null
-    private val binding: FragmentMailBoxBinding get() = _binding!!
+    private var _binding: FragmentMailItemsBinding? = null
+    private val binding: FragmentMailItemsBinding get() = _binding!!
 
     private val viewModel: MailItemsViewModel by viewModels()
 
-    //    @Inject
+    private val args: MailItemsFragmentArgs by navArgs()
+
+    @Inject
     lateinit var mailItemsAdapter: MailItemsAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setConversationId(args.conversationId)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentMailBoxBinding.bind(view)
+        _binding = FragmentMailItemsBinding.bind(view)
 
-        setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncParsedMails()
-        }
-
-        binding.floatingActionButtonCompose.setOnClickListener {
-            findNavController().navigate(NavGraphDirections.actionToComposeFragment())
+            viewModel.setConversationId(args.conversationId)
         }
 
         (activity as ActivityExt).apply {
@@ -50,12 +53,9 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_box) {
         }
     }
 
-    private fun setupAdapter() = mailItemsAdapter.setOnItemClickListener {
-        findNavController().navigate(NavGraphDirections.actionToMailItemFragment(it.id))
-    }
-
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
-        adapter = adapter
+        mailItemsAdapter.id = args.id
+        adapter = mailItemsAdapter
         layoutManager = LinearLayoutManager(requireContext())
     }
 
@@ -90,6 +90,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_box) {
     private fun setContent(result: Resource<List<Mail>>) {
         result.data?.let { mails ->
             mailItemsAdapter.mails = mails
+            binding.textViewMailSubject.text = mails.first().subject
         }
     }
 

@@ -26,13 +26,17 @@
             android:icon="@drawable/ic_baseline_delete_24"
             android:title="@string/trash" />
     </group>
-    <group android:id="@+id/settingMenu">
+    <group
+        android:id="@+id/settingMenu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/settingsFragment"
             android:icon="@drawable/ic_baseline_settings_24"
             android:title="@string/settings" />
     </group>
-    <group android:id="@+id/otherMenu">
+    <group
+        android:id="@+id/otherMenu"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/aboutFragment"
             android:icon="@drawable/ic_dsc_logo"

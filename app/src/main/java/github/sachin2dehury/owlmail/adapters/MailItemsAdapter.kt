@@ -6,20 +6,23 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
-import github.sachin2dehury.owlmail.databinding.MailItemBinding
+import github.sachin2dehury.owlmail.databinding.MailItemsBinding
 import github.sachin2dehury.owlmail.others.Constants
 import java.text.SimpleDateFormat
 
-class MailItemsAdapter(context: Context) :
-    RecyclerView.Adapter<MailItemsAdapter.MailItemViewHolder>() {
+class MailItemsAdapter(private val context: Context) :
+    RecyclerView.Adapter<MailItemsAdapter.MailItemsViewHolder>() {
 
-    class MailItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class MailItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private val diffCallback = object : DiffUtil.ItemCallback<Mail>() {
 
@@ -32,8 +35,6 @@ class MailItemsAdapter(context: Context) :
         }
     }
 
-    private var onItemClickListener: ((Mail) -> Unit)? = null
-
     private val differ = AsyncListDiffer(this, diffCallback)
 
     private val colors = context.resources.getIntArray(R.array.colors)
@@ -43,80 +44,83 @@ class MailItemsAdapter(context: Context) :
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MailItemViewHolder {
-        return MailItemViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.fragment_mail_item, parent, false)
+    var id = ""
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MailItemsViewHolder {
+        return MailItemsViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.mail_items, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: MailItemViewHolder, position: Int) {
-        setContent(holder, position)
+    override fun onBindViewHolder(holder: MailItemsViewHolder, position: Int) {
+        val binding = MailItemsBinding.bind(holder.itemView)
+        val mail = mails[position]
+        if (position == mails.lastIndex) {
+            binding.divider.isVisible = false
+        }
+        setContent(binding, mail)
+        holder.itemView.setOnClickListener {
+            binding.webView.isVisible = !binding.webView.isVisible
+        }
     }
 
     override fun getItemCount(): Int {
         return mails.size
     }
 
-    fun setOnItemClickListener(onItemClick: (Mail) -> Unit) {
-        this.onItemClickListener = onItemClick
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView(binding: MailItemsBinding) {
+        binding.webView.apply {
+            isVerticalScrollBarEnabled = false
+            settings.javaScriptEnabled = true
+            settings.loadsImagesAutomatically = true
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                val darkMode = when (AppCompatDelegate.getDefaultNightMode()) {
+                    AppCompatDelegate.MODE_NIGHT_NO -> WebSettingsCompat.FORCE_DARK_OFF
+                    else -> WebSettingsCompat.FORCE_DARK_ON
+                }
+                WebSettingsCompat.setForceDark(this.settings, darkMode)
+            }
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun setContent(holder: MailItemViewHolder, position: Int) {
-        val mail = mails[position]
-        val binding = MailItemBinding.bind(holder.itemView)
-        val sender =
-            if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
-        val name =
-            if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
-        if (position == 0) {
+    private fun setContent(binding: MailItemsBinding, mail: Mail) {
+        val sender = if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
+        val name = if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+        val color = colors[mail.size % colorsLength]
+        val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
+
+        binding.apply {
+            textViewDate.text = dateFormat.format(mail.time)
+            textViewSenderName.text = name
+            textViewSender.text = name.first().toString()
+            textViewSender.background.setTint(color)
+            textViewMailBody.text = mail.body
+            setupWebView(binding)
+            webView.loadDataWithBaseURL(
+                Constants.BASE_URL,
+                mail.parsedBody,
+                "text/html",
+                "utf-8",
+                null
+            )
+        }
+
+        if (mail.id == id) {
             binding.apply {
-                val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
-                val color = colors[mail.size % colorsLength]
-                textViewSender.text = name.first().toString()
-                imageViewSender.setColorFilter(color)
-                textViewDate.text =
-                    dateFormat.format(mail.time)
-                textViewMailSubject.text = mail.subject
-                textViewSenderEmail.text = name
-                textViewSenderEmail.text = sender.email
                 if (mail.flag.contains('a')) {
                     imageViewAttachment.isVisible = true
                 }
+                webView.isVisible = true
 //                if (mail.body.isEmpty()) {
 //                    (activity as ActivityExt).showSnackbar("This mail has no content")
 //                }
-//                webView.loadDataWithBaseURL(
-//                    Constants.BASE_URL,
-//                    mail.parsedBody,
-//                    "text/html",
-//                    "utf-8",
-//                    null
-//                )
             }
         } else {
-
-            val dateFormat = when {
-                (System.currentTimeMillis() - mail.time) < Constants.DAY -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_DATE)
-                }
-                (System.currentTimeMillis() - mail.time) < Constants.YEAR -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
-                }
-                else -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
-                }
-            }
             binding.apply {
-                textViewSender.text = name.first().toString()
-                imageViewSender.setColorFilter(colors.random())
-                textViewDate.text = dateFormat.format(mail.time)
-                textViewMailBody.text = mail.body
-                textViewMailSubject.text = mail.subject
-                textViewSenderEmail.text = name
                 if (mail.flag.contains('u')) {
-                    textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
-                    textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
+                    textViewSenderName.typeface = Typeface.DEFAULT_BOLD
                     textViewDate.typeface = Typeface.DEFAULT_BOLD
                     textViewMailBody.typeface = Typeface.DEFAULT_BOLD
                 }
@@ -129,14 +133,6 @@ class MailItemsAdapter(context: Context) :
 //            if (mail.flag.contains('r')) {
 //                imageViewReply.isVisible = true
 //            }
-                if (position == mails.lastIndex) {
-                    divider.isVisible = false
-                }
-            }
-        }
-        holder.itemView.setOnClickListener {
-            onItemClickListener?.let { click ->
-                click(mail)
             }
         }
     }
