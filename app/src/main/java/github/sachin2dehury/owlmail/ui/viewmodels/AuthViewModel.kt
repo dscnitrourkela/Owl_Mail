@@ -1,7 +1,10 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
@@ -16,32 +19,8 @@ class AuthViewModel @ViewModelInject constructor(
     private val mailRepository: MailRepository,
 ) : ViewModel() {
 
-    private val _forceUpdate = MutableLiveData(false)
-
     private val _loginStatus = MutableLiveData<Resource<List<Mail>>>()
     val loginStatus: LiveData<Resource<List<Mail>>> = _loginStatus
-
-    val isLoggedIn = _forceUpdate.switchMap {
-        dataStoreRepository.readCredential(Constants.KEY_TOKEN)
-            .asLiveData(viewModelScope.coroutineContext).map { token ->
-                if (token != null && token != Constants.NO_TOKEN) {
-                    mailRepository.setToken(token)
-                    true
-                } else {
-                    false
-                }
-            }.switchMap { loggedIn ->
-                dataStoreRepository.readCredential(Constants.KEY_CREDENTIAL)
-                    .asLiveData(viewModelScope.coroutineContext).map { credential ->
-                        if (credential != null && credential != Constants.NO_TOKEN) {
-                            mailRepository.setCredential(credential)
-                            true
-                        } else {
-                            loggedIn
-                        }
-                    }
-            }
-    }
 
     fun login(credential: String) {
         _loginStatus.postValue(Resource.loading(null))
@@ -63,6 +42,4 @@ class AuthViewModel @ViewModelInject constructor(
             saveState(Constants.KEY_SHOULD_SYNC, true)
         }
     }
-
-    fun syncState() = _forceUpdate.postValue(true)
 }

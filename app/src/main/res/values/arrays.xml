@@ -18,6 +18,11 @@
         <item>@color/WET_ASPHALT</item>
         <item>@color/MIDNIGHT_BLUE</item>
     </integer-array>
+    <integer-array name="rally">
+        <item>@color/rally_green_300</item>
+        <item>@color/rally_green_500</item>
+        <item>@color/rally_blue_700</item>
+    </integer-array>
     <!--        <item>@color/CLOUDS</item>-->
     <!--        <item>@color/SILVER</item>-->
     <!--        <item>@color/CONCRETE</item>-->

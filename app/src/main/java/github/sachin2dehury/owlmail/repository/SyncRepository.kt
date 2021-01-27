@@ -8,7 +8,7 @@ import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
-import github.sachin2dehury.owlmail.utilities.isInternetConnected
+import github.sachin2dehury.owlmail.repository.utilities.isInternetConnected
 import kotlinx.coroutines.flow.flow
 
 class SyncRepository(

@@ -8,8 +8,8 @@ import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.debugLog
-import github.sachin2dehury.owlmail.utilities.isInternetConnected
-import github.sachin2dehury.owlmail.utilities.networkBoundResource
+import github.sachin2dehury.owlmail.repository.utilities.isInternetConnected
+import github.sachin2dehury.owlmail.repository.utilities.networkBoundResource
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup

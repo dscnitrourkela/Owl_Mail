@@ -17,6 +17,7 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.databinding.MailItemsBinding
 import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import java.text.SimpleDateFormat
 
 class MailItemsAdapter(private val context: Context) :
@@ -113,9 +114,9 @@ class MailItemsAdapter(private val context: Context) :
                     imageViewAttachment.isVisible = true
                 }
                 webView.isVisible = true
-//                if (mail.body.isEmpty()) {
-//                    (activity as ActivityExt).showSnackbar("This mail has no content")
-//                }
+                if (mail.body.isEmpty()) {
+                    this.root.showSnackbar("This mail has no content")
+                }
             }
         } else {
             binding.apply {

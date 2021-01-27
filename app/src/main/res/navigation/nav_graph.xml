@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/authFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/authFragment"
@@ -71,6 +71,11 @@
         android:name="github.sachin2dehury.owlmail.ui.fragments.SettingsFragment"
         android:label="Settings"
         tools:layout="@xml/root_preferences" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.SplashFragment"
+        android:label=""
+        tools:layout="@layout/fragment_splash" />
 
     <action
         android:id="@+id/action_to_authFragment"

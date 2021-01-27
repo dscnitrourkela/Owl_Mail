@@ -2,7 +2,7 @@ package github.sachin2dehury.owlmail.repository
 
 import android.content.Context
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.utilities.isInternetConnected
+import github.sachin2dehury.owlmail.repository.utilities.isInternetConnected
 
 class DataStoreRepository(
     private val context: Context,

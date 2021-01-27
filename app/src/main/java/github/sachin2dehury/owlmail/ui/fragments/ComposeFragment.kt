@@ -3,6 +3,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -10,6 +11,7 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.databinding.FragmentComposeBinding
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.viewmodels.ComposeViewModel
 import javax.inject.Inject
 
@@ -30,7 +32,8 @@ class ComposeFragment : Fragment(R.layout.fragment_compose) {
 
         _binding = FragmentComposeBinding.bind(view)
 
-        (requireActivity() as ActivityExt).toggleDrawer(false)
+        (requireActivity() as AppCompatActivity).enableActionBar(true)
+        (requireActivity() as ActivityExt).enableDrawer(false)
 
         val url = "https://mail.nitrkl.ac.in/h/?action=compose"
 //            Constants.BASE_URL + Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.COMPOSE_MAIL

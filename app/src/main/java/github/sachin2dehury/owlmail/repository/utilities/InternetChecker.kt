@@ -1,4 +1,4 @@
-package github.sachin2dehury.owlmail.utilities
+package github.sachin2dehury.owlmail.repository.utilities
 
 import android.content.Context
 import android.net.ConnectivityManager

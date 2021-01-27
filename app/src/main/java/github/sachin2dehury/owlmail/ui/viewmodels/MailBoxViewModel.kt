@@ -24,8 +24,8 @@ class MailBoxViewModel @ViewModelInject constructor(
             .asLiveData(viewModelScope.coroutineContext)
     }
 
-    val search = _searchQuery.switchMap { request ->
-        mailRepository.getMails(request, _searchQuery.value ?: Constants.NO_CREDENTIAL)
+    val search = _searchQuery.switchMap { query ->
+        mailRepository.getMails(_request.value ?: "", query)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))

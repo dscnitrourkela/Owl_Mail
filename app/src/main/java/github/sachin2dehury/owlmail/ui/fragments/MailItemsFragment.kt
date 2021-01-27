@@ -2,6 +2,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -14,6 +15,8 @@ import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
 import javax.inject.Inject
 
@@ -47,10 +50,8 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
             viewModel.setConversationId(args.conversationId)
         }
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(true)
-            toggleActionBar(true)
-        }
+        (requireActivity() as AppCompatActivity).enableActionBar(true)
+        (requireActivity() as ActivityExt).enableDrawer(false)
     }
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
@@ -71,7 +72,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                (activity as ActivityExt).showSnackbar(message)
+                                view?.showSnackbar(message)
                             }
                         }
                         setContent(result)

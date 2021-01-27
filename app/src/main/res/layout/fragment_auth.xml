@@ -41,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:text="@string/sign_in"
+        android:textStyle="bold"
         app:cornerRadius="32dp"
         app:fontFamily="@font/librefranklin_regular"
         app:icon="@drawable/ic_baseline_login_24"

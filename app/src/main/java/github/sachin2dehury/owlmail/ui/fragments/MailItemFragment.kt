@@ -3,6 +3,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -19,6 +20,8 @@ import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemViewModel
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -49,10 +52,8 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
 
         _binding = FragmentMailItemBinding.bind(view)
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(false)
-            toggleActionBar(true)
-        }
+        (requireActivity() as AppCompatActivity).enableActionBar(true)
+        (requireActivity() as ActivityExt).enableDrawer(false)
 
         setupWebView()
 
@@ -93,7 +94,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                (activity as ActivityExt).showSnackbar(message)
+                                view?.showSnackbar(message)
                             }
                         }
                         setContent(result)
@@ -156,7 +157,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     imageViewAttachment.isVisible = true
                 }
                 if (mail.body.isEmpty()) {
-                    (activity as ActivityExt).showSnackbar("This mail has no content")
+                    view?.showSnackbar("This mail has no content")
                 }
                 webView.loadDataWithBaseURL(
                     Constants.BASE_URL,

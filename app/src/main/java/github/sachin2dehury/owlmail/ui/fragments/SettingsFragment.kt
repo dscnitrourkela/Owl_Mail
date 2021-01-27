@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -11,6 +12,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
 
 @AndroidEntryPoint
@@ -23,10 +26,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         viewModel.refreshStates()
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(false)
-            toggleActionBar(true)
-        }
+        (requireActivity() as AppCompatActivity).enableActionBar(true)
+        (requireActivity() as ActivityExt).enableDrawer(false)
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {
@@ -45,7 +46,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setDefaultValue(viewModel.isDarkThemeEnabled.value ?: true)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveThemeState(value as Boolean)
-                (requireActivity() as ActivityExt).showSnackbar("Theme will be applied on exit.")
+                view?.showSnackbar("Theme will be applied on exit.")
                 true
             }
         }

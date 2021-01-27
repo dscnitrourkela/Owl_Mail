@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,6 +18,8 @@ import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
@@ -53,10 +56,8 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
             findNavController().navigate(NavGraphDirections.actionToComposeFragment())
         }
 
-        (activity as ActivityExt).apply {
-            toggleDrawer(true)
-            toggleActionBar(true)
-        }
+        (requireActivity() as AppCompatActivity).enableActionBar(true)
+        (requireActivity() as ActivityExt).enableDrawer(true)
     }
 
     private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
@@ -85,7 +86,7 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                (activity as ActivityExt).showSnackbar(message)
+                                view?.showSnackbar(message)
                             }
                         }
                         setSearchContent(result)
@@ -110,7 +111,7 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
                     Status.ERROR -> {
                         event.getContentIfNotHandled()?.let { errorResource ->
                             errorResource.message?.let { message ->
-                                (activity as ActivityExt).showSnackbar(message)
+                                view?.showSnackbar(message)
                             }
                         }
                         setContent(result)
@@ -142,7 +143,7 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
         inflater.inflate(R.menu.search_menu, menu)
         val searchAction = menu.findItem(R.id.searchBar).actionView
         val searchView = searchAction as SearchView
-        (requireActivity() as ActivityExt).setSearchView(searchView)
+//        (requireActivity() as ActivityExt).setSearchView(searchView)
         searchView.apply {
             queryHint = "Search"
             isSubmitButtonEnabled = true

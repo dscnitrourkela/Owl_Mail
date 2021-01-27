@@ -72,9 +72,9 @@ class SyncService : LifecycleService() {
         }
     }
 
-    private fun syncWithServer() = lastSync.switchMap {
+    private fun syncWithServer() = lastSync.switchMap { lastSync ->
         syncRepository.getMails(
-            Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync.value!!
+            Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync
         ).asLiveData().switchMap {
             MutableLiveData(Event(it))
         }.map { response ->
@@ -82,7 +82,7 @@ class SyncService : LifecycleService() {
                 val result = event.peekContent()
                 if (result.status == Status.SUCCESS) {
                     result.data?.let { list ->
-                        list.body()?.let { sendNotification(it.mails, lastSync.value!!) }
+                        list.body()?.let { sendNotification(it.mails, lastSync) }
                     }
                     saveLastSync()
                 }

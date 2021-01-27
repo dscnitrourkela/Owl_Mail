@@ -3,6 +3,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -14,6 +15,8 @@ import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
 import okhttp3.Credentials
 import java.util.*
@@ -31,32 +34,22 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.syncState()
-
         _binding = FragmentAuthBinding.bind(view)
 
         binding.buttonLogin.setOnClickListener {
-//            AlertDialog.Builder(requireContext()).apply {
-//                setMessage("Loading...")
-//                setCancelable(false)
-//            }.show()
             getCredential()
             viewModel.login(credential)
-            (requireActivity() as ActivityExt).hideKeyBoard()
         }
 
-//        binding.swipeRefreshLayout.setOnRefreshListener {
-//            viewModel.login(credential)
-//        }
-
-        (requireActivity() as ActivityExt).apply {
-            toggleActionBar(false)
-            toggleDrawer(false)
-        }
-
+        (requireActivity() as AppCompatActivity).enableActionBar(false)
+        (requireActivity() as ActivityExt).enableDrawer(false)
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         subscribeToObservers()
+
+        binding.buttonPrivacyPolicy.setOnClickListener {
+            it.showSnackbar("Load PrivacyPolicy.")
+        }
     }
 
     private fun redirectFragment() {
@@ -80,23 +73,17 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             result?.let {
                 when (result.status) {
                     Status.SUCCESS -> {
-                        (requireActivity() as ActivityExt).showSnackbar("Successfully logged in")
+                        view?.showSnackbar("Successfully logged in")
                         viewModel.saveLogIn()
                         redirectFragment()
                     }
                     Status.ERROR -> {
-                        (requireActivity() as ActivityExt).showSnackbar(
-                            it.message ?: "An unknown error occurred"
-                        )
+                        view?.showSnackbar(it.message ?: "An unknown error occurred")
                     }
                     Status.LOADING -> {
+                        view?.showSnackbar("Loading...")
                     }
                 }
-            }
-        })
-        viewModel.isLoggedIn.observe(viewLifecycleOwner, {
-            when (it) {
-                true -> redirectFragment()
             }
         })
     }
