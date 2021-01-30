@@ -83,8 +83,9 @@ class MainActivity : AppCompatActivity(), ActivityExt {
                 R.id.trashFragment,
                 R.id.settingsFragment,
                 R.id.aboutFragment,
-                R.id.aboutFragment,
-                R.id.aboutFragment,
+                R.id.privacyPolicyFragment,
+                R.id.termsAndConditionsFragment,
+                R.id.newFeaturesFragment,
             ), binding.drawerLayout
         )
 

@@ -1,12 +1,14 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
+import javax.inject.Inject
 
-class SplashViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SplashViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val mailRepository: MailRepository,
 ) : ViewModel() {

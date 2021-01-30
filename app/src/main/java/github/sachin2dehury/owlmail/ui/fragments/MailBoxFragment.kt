@@ -143,7 +143,6 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
         inflater.inflate(R.menu.search_menu, menu)
         val searchAction = menu.findItem(R.id.searchBar).actionView
         val searchView = searchAction as SearchView
-//        (requireActivity() as ActivityExt).setSearchView(searchView)
         searchView.apply {
             queryHint = "Search"
             isSubmitButtonEnabled = true

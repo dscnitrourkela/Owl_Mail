@@ -16,6 +16,7 @@ import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.enableActionBar
+import github.sachin2dehury.owlmail.ui.hideKeyBoard
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
 import okhttp3.Credentials
@@ -31,6 +32,11 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private var credential = Constants.NO_CREDENTIAL
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.resetLogin()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -39,6 +45,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         binding.buttonLogin.setOnClickListener {
             getCredential()
             viewModel.login(credential)
+            binding.root.hideKeyBoard(requireContext())
         }
 
         (requireActivity() as AppCompatActivity).enableActionBar(false)
@@ -48,7 +55,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         subscribeToObservers()
 
         binding.buttonPrivacyPolicy.setOnClickListener {
-            it.showSnackbar("Load PrivacyPolicy.")
+            findNavController().navigate(R.id.privacyPolicyFragment)
         }
     }
 

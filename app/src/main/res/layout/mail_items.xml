@@ -100,6 +100,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSender" />
 
+    <!--    <com.google.android.material.textview.MaterialTextView-->
+    <!--        android:id="@+id/textViewMail"-->
+    <!--        android:textColor="@color/Silver"-->
+    <!--        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:fontFamily="@font/librefranklin_regular"-->
+    <!--        android:textSize="16sp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textViewSender"-->
+    <!--        tools:text="Email Body" />-->
+
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"

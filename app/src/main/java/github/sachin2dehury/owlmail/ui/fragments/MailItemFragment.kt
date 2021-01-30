@@ -166,7 +166,7 @@ class MailItemFragment : Fragment(R.layout.fragment_mail_item) {
                     "utf-8",
                     null
                 )
-                textInputLayout.addOnEndIconChangedListener { _, previousIcon ->
+                textInputLayout.addOnEndIconChangedListener { _, _ ->
                     textViewDate.isVisible = false
                     textViewReceiverEmail.text = newValue
 //                        textViewDate.isVisible = true

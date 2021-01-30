@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:gravity="start"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:fontFamily="@font/merriweather_regular"
             app:layout_constraintEnd_toEndOf="parent"

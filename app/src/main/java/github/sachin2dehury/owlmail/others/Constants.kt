@@ -7,8 +7,9 @@ object Constants {
     const val MOBILE_URL = "m/zmain"
     const val HTML_URL = "h/message"
 
-    const val PRIVACY_POLICY_URL = ""
-    const val NEW_FEATURES_URL = ""
+    const val PRIVACY_POLICY = "privacy_policy.html"
+    const val NEW_FEATURES = ""
+    const val TERMS_AND_CONDITIONS = "terms_and_condition.html"
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"

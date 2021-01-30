@@ -1,11 +1,13 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import github.sachin2dehury.owlmail.others.Event
 import github.sachin2dehury.owlmail.repository.MailRepository
+import javax.inject.Inject
 
-class MailItemsViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MailItemsViewModel @Inject constructor(
     private val mailRepository: MailRepository
 ) : ViewModel() {
 
@@ -13,11 +15,7 @@ class MailItemsViewModel @ViewModelInject constructor(
 
     val parsedMails = _conversationId.switchMap { conversationId ->
         mailRepository.getParsedMails(conversationId).asLiveData(viewModelScope.coroutineContext)
-            .switchMap { MutableLiveData(Event(it)) }.also {
-                it.value?.peekContent()?.data?.let { list ->
-                    list.forEach { mail -> mailRepository.getParsedMailItem(mail.id) }
-                }
-            }
+            .switchMap { MutableLiveData(Event(it)) }
     }
 
     fun setConversationId(conversationId: String) = _conversationId.postValue(conversationId)

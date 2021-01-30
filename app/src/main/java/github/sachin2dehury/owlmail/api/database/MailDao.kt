@@ -19,12 +19,18 @@ interface MailDao {
     @Query("SELECT * FROM mails WHERE conversationId = :conversationId ORDER BY id DESC")
     fun getConversationMails(conversationId: String): Flow<List<Mail>>
 
-    @Query("DELETE FROM mails")
-    suspend fun deleteAllMails()
-
     @Query("SELECT * FROM mails WHERE id = :id")
     fun getMailItem(id: String): Flow<Mail>
 
+    @Query("SELECT id FROM mails WHERE conversationId = :conversationId ORDER BY id DESC")
+    fun getMailsId(conversationId: String): Flow<List<String>>
+
+    @Query("DELETE FROM mails")
+    suspend fun deleteAllMails()
+
     @Query("UPDATE mails SET parsedBody = :parsedBody WHERE id = :id")
     suspend fun updateMail(parsedBody: String, id: String)
+
+    @Query("UPDATE mails SET flag = TRIM('u',flag) WHERE id = :id")
+    suspend fun markAsRead(id: String)
 }

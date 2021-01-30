@@ -4,4 +4,4 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.others.Constants
 
 @AndroidEntryPoint
-class AboutFragment : WebViewFragment(Constants.PRIVACY_POLICY)
+class PrivacyPolicyFragment : WebViewFragment(Constants.PRIVACY_POLICY)

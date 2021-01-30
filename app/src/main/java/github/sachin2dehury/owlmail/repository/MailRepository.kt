@@ -7,9 +7,9 @@ import github.sachin2dehury.owlmail.api.data.Mails
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
-import github.sachin2dehury.owlmail.others.debugLog
-import github.sachin2dehury.owlmail.repository.utilities.isInternetConnected
-import github.sachin2dehury.owlmail.repository.utilities.networkBoundResource
+import github.sachin2dehury.owlmail.utils.isInternetConnected
+import github.sachin2dehury.owlmail.utils.networkBoundResource
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
@@ -39,9 +39,9 @@ class MailRepository(
 
     fun getParsedMails(conversationId: String) = networkBoundResource(
         query = { mailDao.getConversationMails(conversationId) },
-        fetch = { },
-        saveFetchResult = { },
-        shouldFetch = { false },
+        fetch = { mailDao.getMailsId(conversationId) },
+        saveFetchResult = { list -> list.first().forEach { id -> getParsedMailItem(id) } },
+        shouldFetch = { true },
     )
 
     private fun getBox(request: String) = when (request) {
@@ -57,19 +57,14 @@ class MailRepository(
         response.body()?.mails?.let { mails -> mails.forEach { mail -> mailDao.insertMail(mail) } }
 
     private suspend fun updateMailBody(response: ResponseBody, id: String) {
-        val token = getToken().substringAfter('=')
+//        val token = getToken().substringAfter('=')
         val parsedMail = Jsoup.parse(response.string())
         response.close()
 //        parsedMail.removeClass("MsgBody")
 //        parsedMail.removeClass("Msg")
 //        parsedMail.removeClass("ZhAppContent")
 //        parsedMail.getElementsByClass("MsgHdr").remove()
-
-        var body = "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
-        if (body.contains("auth=co", true)) {
-            body = body.replace("auth=co", "auth=qp&amp;zauthtoken=$token")
-            debugLog("Mail Body $body")
-        }
+        val body = "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
         mailDao.updateMail(body, id)
     }
 

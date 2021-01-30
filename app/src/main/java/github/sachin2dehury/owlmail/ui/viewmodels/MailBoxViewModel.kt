@@ -1,16 +1,18 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
 import android.text.format.DateUtils
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Event
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MailBoxViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MailBoxViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val mailRepository: MailRepository,
 ) : ViewModel() {

@@ -21,17 +21,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private val viewModel: SettingsViewModel by activityViewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.refreshStates()
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
-
-        viewModel.refreshStates()
 
         (requireActivity() as AppCompatActivity).enableActionBar(true)
         (requireActivity() as ActivityExt).enableDrawer(false)
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {
-                viewModel.logout()
                 val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.settingsFragment, true)
                     .build()
@@ -56,6 +58,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setDefaultValue(viewModel.shouldSync.value ?: false)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveSyncState(value as Boolean)
+                viewModel.refreshStates()
                 true
             }
         }

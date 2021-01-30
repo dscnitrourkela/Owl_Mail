@@ -1,10 +1,10 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
@@ -13,8 +13,10 @@ import github.sachin2dehury.owlmail.repository.MailRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel @ViewModelInject constructor(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val dataStoreRepository: DataStoreRepository,
     private val mailRepository: MailRepository,
 ) : ViewModel() {
@@ -41,5 +43,10 @@ class AuthViewModel @ViewModelInject constructor(
             saveCredential(Constants.KEY_TOKEN, mailRepository.getToken())
             saveState(Constants.KEY_SHOULD_SYNC, true)
         }
+    }
+
+    fun resetLogin() = viewModelScope.launch {
+        dataStoreRepository.resetLogin()
+        mailRepository.resetLogin()
     }
 }

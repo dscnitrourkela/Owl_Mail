@@ -8,32 +8,32 @@
     <fragment
         android:id="@+id/authFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.AuthFragment"
-        android:label="Owl Mail"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_auth" />
     <fragment
         android:id="@+id/inboxFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.InboxFragment"
-        android:label="Inbox"
+        android:label="@string/inbox"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
         android:id="@+id/draftFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.DraftFragment"
-        android:label="Draft"
+        android:label="@string/draft"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
         android:id="@+id/trashFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.TrashFragment"
-        android:label="Trash"
+        android:label="@string/trash"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
         android:id="@+id/sentFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.SentFragment"
-        android:label="Sent"
+        android:label="@string/sent"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
         android:id="@+id/junkFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.JunkFragment"
-        android:label="Junk"
+        android:label="@string/junk"
         tools:layout="@layout/fragment_mail_box" />
     <fragment
         android:id="@+id/mailItemsFragment"
@@ -60,22 +60,37 @@
         android:id="@+id/composeFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.ComposeFragment"
         android:label="Compose Mail"
-        tools:layout="@layout/fragment_compose" />
+        tools:layout="@layout/fragment_web_view" />
     <fragment
         android:id="@+id/aboutFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.AboutFragment"
-        android:label="About Us"
-        tools:layout="@layout/fragment_about" />
+        android:label="@string/about_us"
+        tools:layout="@layout/fragment_web_view" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.SettingsFragment"
-        android:label="Settings"
+        android:label="@string/settings"
         tools:layout="@xml/root_preferences" />
     <fragment
         android:id="@+id/splashFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.SplashFragment"
         android:label=""
         tools:layout="@layout/fragment_splash" />
+    <fragment
+        android:id="@+id/newFeaturesFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.NewFeaturesFragment"
+        android:label="@string/new_features"
+        tools:layout="@layout/fragment_web_view" />
+    <fragment
+        android:id="@+id/privacyPolicyFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.PrivacyPolicyFragment"
+        android:label="@string/privacy_policy"
+        tools:layout="@layout/fragment_web_view" />
+    <fragment
+        android:id="@+id/termsAndConditionsFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.TermsAndConditionsFragment"
+        android:label="@string/terms_conditions"
+        tools:layout="@layout/fragment_web_view" />
 
     <action
         android:id="@+id/action_to_authFragment"
@@ -103,8 +118,5 @@
     <action
         android:id="@+id/action_to_composeFragment"
         app:destination="@id/composeFragment" />
-    <action
-        android:id="@+id/action_to_settingsFragment"
-        app:destination="@id/settingsFragment" />
 
 </navigation>

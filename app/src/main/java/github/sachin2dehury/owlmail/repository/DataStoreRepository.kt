@@ -2,7 +2,7 @@ package github.sachin2dehury.owlmail.repository
 
 import android.content.Context
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.repository.utilities.isInternetConnected
+import github.sachin2dehury.owlmail.utils.isInternetConnected
 
 class DataStoreRepository(
     private val context: Context,
@@ -26,7 +26,7 @@ class DataStoreRepository(
 
     fun readLastSync(request: String) = dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
 
-    suspend fun logout() {
+    suspend fun resetLogin() {
         saveCredential(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
         saveCredential(Constants.KEY_TOKEN, Constants.NO_TOKEN)
         saveState(Constants.KEY_SHOULD_SYNC, false)

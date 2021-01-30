@@ -42,11 +42,15 @@
             android:icon="@drawable/ic_dsc_logo"
             android:title="@string/about_us" />
         <item
-            android:id="@+id/privacyPolicy"
+            android:id="@+id/privacyPolicyFragment"
             android:icon="@drawable/ic_baseline_privacy_tip_24"
             android:title="@string/privacy_policy" />
         <item
-            android:id="@+id/newFeatures"
+            android:id="@+id/termsAndConditionsFragment"
+            android:icon="@drawable/ic_baseline_privacy_tip_24"
+            android:title="@string/terms_conditions" />
+        <item
+            android:id="@+id/newFeaturesFragment"
             android:icon="@drawable/ic_baseline_whatshot_24"
             android:title="@string/new_features" />
     </group>

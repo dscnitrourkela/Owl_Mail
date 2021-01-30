@@ -31,18 +31,21 @@ class NotificationExt(private val context: Context) {
         }
     }
 
-    fun notify(title: String, subject: String) {
-        val intent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 1000, intent, 0)
-        val notification =
-            NotificationCompat.Builder(context, Constants.NOTIFICATION_ID).apply {
-                priority = NotificationCompat.PRIORITY_DEFAULT
-                setStyle(NotificationCompat.BigTextStyle())
-                setSmallIcon(R.mipmap.ic_launcher)
-                setContentTitle(title)
-                setContentText(subject)
-                setContentIntent(pendingIntent)
-            }
-        notificationManager.notify(1000, notification.build())
-    }
+    private fun notificationBuilder(title: String, subject: String, pendingIntent: PendingIntent) =
+        NotificationCompat.Builder(context, Constants.NOTIFICATION_ID).apply {
+            priority = NotificationCompat.PRIORITY_DEFAULT
+            setStyle(NotificationCompat.BigTextStyle())
+            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setContentTitle(title)
+            setContentText(subject)
+            setContentIntent(pendingIntent)
+        }.build()
+
+    fun notify(
+        title: String, subject: String, id: Int = 0,
+        pendingIntent: PendingIntent =
+            PendingIntent.getActivity(context, 1000, Intent(context, MainActivity::class.java), 0)
+    ) = notificationManager.notify(id, notificationBuilder(title, subject, pendingIntent))
+
+    fun cancelNotify(id: Int = 0) = notificationManager.cancel(id)
 }

@@ -15,7 +15,7 @@ class SyncBroadcastReceiver : BroadcastReceiver() {
             debugLog("Running SyncBroadcastReceiver on BOOT_COMPLETED")
         }
         context?.let {
-            val syncIntent = Intent(context, SyncService::class.java)
+            val syncIntent = Intent(context, SyncIntentService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(syncIntent)
             } else {

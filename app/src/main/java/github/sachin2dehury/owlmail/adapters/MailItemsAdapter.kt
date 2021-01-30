@@ -113,7 +113,7 @@ class MailItemsAdapter(private val context: Context) :
                 if (mail.flag.contains('a')) {
                     imageViewAttachment.isVisible = true
                 }
-                webView.isVisible = true
+//                webView.isVisible = true
                 if (mail.body.isEmpty()) {
                     this.root.showSnackbar("This mail has no content")
                 }

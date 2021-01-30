@@ -34,9 +34,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service
-            android:name=".services.SyncService"
+            android:name=".services.SyncIntentService"
             android:exported="false" />
 
         <receiver
@@ -47,6 +46,6 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
     </application>
+
 </manifest>
