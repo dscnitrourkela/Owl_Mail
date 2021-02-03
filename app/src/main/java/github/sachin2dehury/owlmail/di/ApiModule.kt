@@ -1,32 +1,32 @@
-package github.sachin2dehury.owlmail.di.service
+package github.sachin2dehury.owlmail.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ServiceComponent
-import dagger.hilt.android.scopes.ServiceScoped
+import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.others.Constants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ServiceComponent::class)
+@InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    @ServiceScoped
+    @Singleton
     @Provides
     fun provideBasicAuthInterceptor() = BasicAuthInterceptor()
 
-    @ServiceScoped
+    @Singleton
     @Provides
     fun provideOkHttpClient(basicAuthInterceptor: BasicAuthInterceptor) = OkHttpClient.Builder()
         .addInterceptor(basicAuthInterceptor)
         .build()
 
-    @ServiceScoped
+    @Singleton
     @Provides
     fun provideMailApi(
         okHttpClient: OkHttpClient

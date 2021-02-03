@@ -1,20 +1,19 @@
-package github.sachin2dehury.owlmail.di.app
+package github.sachin2dehury.owlmail.di
 
 import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.owlmail.repository.DataStoreExt
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityRetainedComponent::class)
+@InstallIn(SingletonComponent::class)
 object DataStoreModule {
 
-    @ActivityRetainedScoped
+    @Singleton
     @Provides
     fun provideDataStore(@ApplicationContext context: Context) = DataStoreExt(context)
-
 }

@@ -9,7 +9,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailBoxAdapter
@@ -23,19 +25,22 @@ import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
 
-open class MailBoxFragment(private val request: String) : Fragment(R.layout.fragment_mail_box) {
+@AndroidEntryPoint
+class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
     private val viewModel: MailBoxViewModel by viewModels()
 
+    private val args: MailBoxFragmentArgs by navArgs()
+
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.syncAllMails(request)
+        viewModel.syncAllMails(args.request)
         setHasOptionsMenu(true)
     }
 
@@ -49,23 +54,20 @@ open class MailBoxFragment(private val request: String) : Fragment(R.layout.frag
         subscribeToObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.syncAllMails(request)
+            viewModel.syncAllMails(args.request)
         }
 
         binding.floatingActionButtonCompose.setOnClickListener {
-            findNavController().navigate(NavGraphDirections.actionToComposeFragment())
+            findNavController().navigate(NavGraphDirections.actionToComposeFragment(""))
         }
 
         (requireActivity() as AppCompatActivity).enableActionBar(true)
         (requireActivity() as ActivityExt).enableDrawer(true)
     }
 
-    private fun setupAdapter() = mailBoxAdapter.setOnItemClickListener {
+    private fun setupAdapter() = mailBoxAdapter.setupOnItemClickListener {
         findNavController().navigate(
-            NavGraphDirections.actionToMailItemsFragment(
-                it.conversationId,
-                it.id
-            )
+            NavGraphDirections.actionToMailItemsFragment(it.conversationId, it.id)
         )
     }
 

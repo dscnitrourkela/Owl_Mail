@@ -5,7 +5,7 @@ object Constants {
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
     const val MOBILE_URL = "m/zmain"
-    const val HTML_URL = "h/message"
+    const val HTML_URL = "h/imessage"
 
     const val PRIVACY_POLICY = "privacy_policy.html"
     const val NEW_FEATURES = ""

@@ -45,7 +45,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         binding.buttonLogin.setOnClickListener {
             getCredential()
             viewModel.login(credential)
-            binding.root.hideKeyBoard(requireContext())
+            binding.root.hideKeyBoard()
         }
 
         (requireActivity() as AppCompatActivity).enableActionBar(false)
@@ -64,7 +64,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-            NavGraphDirections.actionToInboxFragment(),
+            NavGraphDirections.actionToMailBoxFragment(Constants.INBOX_URL),
             navOptions
         )
     }

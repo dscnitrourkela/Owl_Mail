@@ -11,30 +11,23 @@
         android:label="@string/app_name"
         tools:layout="@layout/fragment_auth" />
     <fragment
-        android:id="@+id/inboxFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.InboxFragment"
-        android:label="@string/inbox"
-        tools:layout="@layout/fragment_mail_box" />
+        android:id="@+id/mailBoxFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.MailBoxFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_mail_box">
+        <argument
+            android:name="request"
+            app:argType="string" />
+    </fragment>
     <fragment
-        android:id="@+id/draftFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.DraftFragment"
-        android:label="@string/draft"
-        tools:layout="@layout/fragment_mail_box" />
-    <fragment
-        android:id="@+id/trashFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.TrashFragment"
-        android:label="@string/trash"
-        tools:layout="@layout/fragment_mail_box" />
-    <fragment
-        android:id="@+id/sentFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.SentFragment"
-        android:label="@string/sent"
-        tools:layout="@layout/fragment_mail_box" />
-    <fragment
-        android:id="@+id/junkFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.JunkFragment"
-        android:label="@string/junk"
-        tools:layout="@layout/fragment_mail_box" />
+        android:id="@+id/webViewFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.WebViewFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_web_view">
+        <argument
+            android:name="request"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/mailItemsFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.MailItemsFragment"
@@ -62,11 +55,6 @@
         android:label="Compose Mail"
         tools:layout="@layout/fragment_web_view" />
     <fragment
-        android:id="@+id/aboutFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.AboutFragment"
-        android:label="@string/about_us"
-        tools:layout="@layout/fragment_web_view" />
-    <fragment
         android:id="@+id/settingsFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.SettingsFragment"
         android:label="@string/settings"
@@ -76,28 +64,17 @@
         android:name="github.sachin2dehury.owlmail.ui.fragments.SplashFragment"
         android:label=""
         tools:layout="@layout/fragment_splash" />
-    <fragment
-        android:id="@+id/newFeaturesFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.NewFeaturesFragment"
-        android:label="@string/new_features"
-        tools:layout="@layout/fragment_web_view" />
-    <fragment
-        android:id="@+id/privacyPolicyFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.PrivacyPolicyFragment"
-        android:label="@string/privacy_policy"
-        tools:layout="@layout/fragment_web_view" />
-    <fragment
-        android:id="@+id/termsAndConditionsFragment"
-        android:name="github.sachin2dehury.owlmail.ui.fragments.TermsAndConditionsFragment"
-        android:label="@string/terms_conditions"
-        tools:layout="@layout/fragment_web_view" />
 
     <action
         android:id="@+id/action_to_authFragment"
         app:destination="@id/authFragment" />
     <action
-        android:id="@+id/action_to_inboxFragment"
-        app:destination="@id/inboxFragment" />
+        android:id="@+id/action_to_mailBoxFragment"
+        app:destination="@id/mailBoxFragment">
+        <argument
+            android:name="request"
+            app:argType="string" />
+    </action>
     <action
         android:id="@+id/action_to_mailItemFragment"
         app:destination="@id/mailItemFragment">
@@ -117,6 +94,20 @@
     </action>
     <action
         android:id="@+id/action_to_composeFragment"
-        app:destination="@id/composeFragment" />
+        app:destination="@id/composeFragment">
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </action>
+    <action
+        android:id="@+id/action_to_webViewFragment"
+        app:destination="@id/webViewFragment">
+        <argument
+            android:name="request"
+            app:argType="string" />
+    </action>
+    <action
+        android:id="@+id/action_to_settingsFragment"
+        app:destination="@id/settingsFragment" />
 
 </navigation>

@@ -1,9 +1,14 @@
 package github.sachin2dehury.owlmail.ui
 
+import android.app.AlarmManager
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
+import android.os.PersistableBundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,20 +22,31 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import github.sachin2dehury.owlmail.others.debugLog
-import github.sachin2dehury.owlmail.services.SyncIntentService
+import github.sachin2dehury.owlmail.services.SyncService
 
 fun AppCompatActivity.enableActionBar(shouldEnable: Boolean) = when (shouldEnable) {
     true -> this.supportActionBar?.show()
     false -> this.supportActionBar?.hide()
 }
 
-fun AppCompatActivity.enableSyncService(shouldEnable: Boolean) =
-    Intent(this, SyncIntentService::class.java).apply {
-        when (shouldEnable) {
-            true -> startService(this)
-            else -> stopService(this)
-        }
+fun AppCompatActivity.enableSyncService(shouldEnable: Boolean, bundle: PersistableBundle) =
+    when (shouldEnable) {
+        true -> startSyncJobService(bundle)
+        else -> stopSyncJobService()
     }
+
+fun AppCompatActivity.startSyncJobService(bundle: PersistableBundle) {
+    val syncJob = JobInfo.Builder(1000, ComponentName(this, SyncService::class.java)).apply {
+        setPeriodic(AlarmManager.INTERVAL_FIFTEEN_MINUTES)
+        setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        setExtras(bundle)
+        setPersisted(true)
+    }.build()
+    (this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).schedule(syncJob)
+}
+
+fun AppCompatActivity.stopSyncJobService() =
+    (this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).cancelAll()
 
 fun AppCompatActivity.openAsset(fileName: String) =
     this.assets.open(fileName).bufferedReader().use { it.readText() }
@@ -83,15 +99,17 @@ fun ActionBarDrawerToggle.enableDrawer(shouldEnable: Boolean) {
     this.isDrawerIndicatorEnabled = shouldEnable
 }
 
+fun View.showToast(message: String) = Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
 fun View.showSnackbar(message: String) = Snackbar.make(this, message, Snackbar.LENGTH_LONG).show()
 
-fun View.hideKeyBoard(context: Context) =
-    (context.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-        this.windowToken,
-        0
-    )
+fun View.hideKeyBoard() =
+    (context.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager)
+        .hideSoftInputFromWindow(windowToken, 0)
 
-fun enableDarkTheme(shouldEnable: Boolean) = when (shouldEnable) {
-    true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-    false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+fun AppCompatActivity.enableDarkTheme(shouldEnable: Boolean) {
+    when (shouldEnable) {
+        true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
 }

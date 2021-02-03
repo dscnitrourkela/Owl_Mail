@@ -2,21 +2,18 @@ package github.sachin2dehury.owlmail.ui
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.ActivityMainBinding
-import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
+import github.sachin2dehury.owlmail.others.Constants
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityExt {
@@ -26,17 +23,12 @@ class MainActivity : AppCompatActivity(), ActivityExt {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
-
-    private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        subscribeToObservers()
 
         drawerOptionMenu()
 
@@ -45,15 +37,6 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         inAppUpdate()
 
         Firebase.analytics.setAnalyticsCollectionEnabled(true)
-    }
-
-    private fun subscribeToObservers() {
-        viewModel.isDarkThemeEnabled.observe(this, { themeState ->
-            themeState?.let { enableDarkTheme(it) }
-        })
-        viewModel.shouldSync.observe(this, { syncState ->
-            syncState?.let { enableSyncService(it) }
-        })
     }
 
     private fun drawerOptionMenu() {
@@ -67,30 +50,32 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         toggle.syncState()
 
         binding.navView.apply {
+            setCheckedItem(R.id.inboxFragment)
             setNavigationItemSelectedListener {
+                navController.navigate(getNavGraphDirections(it.itemId))
                 setCheckedItem(it)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
         }
+    }
 
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.inboxFragment,
-                R.id.sentFragment,
-                R.id.draftFragment,
-                R.id.junkFragment,
-                R.id.trashFragment,
-                R.id.settingsFragment,
-                R.id.aboutFragment,
-                R.id.privacyPolicyFragment,
-                R.id.termsAndConditionsFragment,
-                R.id.newFeaturesFragment,
-            ), binding.drawerLayout
+    private fun getNavGraphDirections(itemId: Int) = when (itemId) {
+        R.id.inboxFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.INBOX_URL)
+        R.id.sentFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.SENT_URL)
+        R.id.draftFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.DRAFT_URL)
+        R.id.junkFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.JUNK_URL)
+        R.id.trashFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.TRASH_URL)
+        R.id.settingsFragment -> NavGraphDirections.actionToSettingsFragment()
+        R.id.aboutFragment -> NavGraphDirections.actionToWebViewFragment(Constants.PRIVACY_POLICY)
+        R.id.newFeaturesFragment -> NavGraphDirections.actionToWebViewFragment(Constants.NEW_FEATURES)
+        R.id.privacyPolicyFragment -> NavGraphDirections.actionToWebViewFragment(
+            Constants.PRIVACY_POLICY
         )
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
+        R.id.termsAndConditionsFragment -> NavGraphDirections.actionToWebViewFragment(
+            Constants.TERMS_AND_CONDITIONS
+        )
+        else -> NavGraphDirections.actionToAuthFragment()
     }
 
     override fun enableDrawer(shouldEnable: Boolean) {
@@ -106,7 +91,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun onBackPressed() {
-        if (binding.root.hideKeyBoard(this)) {
+        if (binding.root.hideKeyBoard()) {
             return
         }
         super.onBackPressed()

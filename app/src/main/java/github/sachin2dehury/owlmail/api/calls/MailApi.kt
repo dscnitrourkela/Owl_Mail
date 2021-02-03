@@ -21,9 +21,13 @@ interface MailApi {
         @Query("query") search: String,
     ): Response<Mails>
 
-    //    @GET(Constants.HTML_URL + Constants.AUTH_FROM_COOKIE + Constants.LOAD_IMAGES)
     @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)
     suspend fun getParsedMail(
+        @Query("id") id: String,
+    ): ResponseBody
+
+    @GET(Constants.HTML_URL + Constants.AUTH_FROM_COOKIE + Constants.LOAD_IMAGES)
+    suspend fun getMailBody(
         @Query("id") id: String,
     ): ResponseBody
 }

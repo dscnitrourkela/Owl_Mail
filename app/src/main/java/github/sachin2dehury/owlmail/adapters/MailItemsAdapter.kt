@@ -1,59 +1,27 @@
 package github.sachin2dehury.owlmail.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Typeface
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import github.sachin2dehury.owlmail.R
+import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.databinding.MailItemsBinding
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.ui.showSnackbar
+import github.sachin2dehury.owlmail.ui.showToast
 import java.text.SimpleDateFormat
 
-class MailItemsAdapter(private val context: Context) :
-    RecyclerView.Adapter<MailItemsAdapter.MailItemsViewHolder>() {
+class MailItemsAdapter(private val colors: IntArray, private val mailViewClient: MailViewClient) :
+    MailAdapter(R.layout.mail_items) {
 
-    class MailItemsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-    private val diffCallback = object : DiffUtil.ItemCallback<Mail>() {
-
-        override fun areItemsTheSame(oldItem: Mail, newItem: Mail): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Mail, newItem: Mail): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
-        }
-    }
-
-    private val differ = AsyncListDiffer(this, diffCallback)
-
-    private val colors = context.resources.getIntArray(R.array.colors)
-    private val colorsLength = colors.size
-
-    var mails: List<Mail>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
+    private val colorsLength = colors.lastIndex
 
     var id = ""
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MailItemsViewHolder {
-        return MailItemsViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.mail_items, parent, false)
-        )
-    }
-
-    override fun onBindViewHolder(holder: MailItemsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MailViewHolder, position: Int) {
         val binding = MailItemsBinding.bind(holder.itemView)
         val mail = mails[position]
         if (position == mails.lastIndex) {
@@ -65,16 +33,14 @@ class MailItemsAdapter(private val context: Context) :
         }
     }
 
-    override fun getItemCount(): Int {
-        return mails.size
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView(binding: MailItemsBinding) {
         binding.webView.apply {
+            webViewClient = mailViewClient
             isVerticalScrollBarEnabled = false
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
+            settings.setSupportZoom(true)
             if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
                 val darkMode = when (AppCompatDelegate.getDefaultNightMode()) {
                     AppCompatDelegate.MODE_NIGHT_NO -> WebSettingsCompat.FORCE_DARK_OFF
@@ -113,9 +79,9 @@ class MailItemsAdapter(private val context: Context) :
                 if (mail.flag.contains('a')) {
                     imageViewAttachment.isVisible = true
                 }
-//                webView.isVisible = true
+                webView.isVisible = true
                 if (mail.body.isEmpty()) {
-                    this.root.showSnackbar("This mail has no content")
+                    root.showToast("This mail has no content")
                 }
             }
         } else {

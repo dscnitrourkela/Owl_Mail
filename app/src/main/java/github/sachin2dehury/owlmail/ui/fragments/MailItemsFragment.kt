@@ -90,6 +90,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
 
     private fun setContent(result: Resource<List<Mail>>) {
         result.data?.let { mails ->
+            mailItemsAdapter.list = mails
             mailItemsAdapter.mails = mails
             binding.textViewMailSubject.text = mails.first().subject
         }

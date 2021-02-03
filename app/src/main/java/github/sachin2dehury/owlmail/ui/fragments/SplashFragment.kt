@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
+import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.viewmodels.SplashViewModel
@@ -39,7 +40,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
                     .build()
                 when (it) {
                     true -> findNavController().navigate(
-                        NavGraphDirections.actionToInboxFragment(),
+                        NavGraphDirections.actionToMailBoxFragment(Constants.INBOX_URL),
                         navOptions
                     )
                     false -> findNavController().navigate(

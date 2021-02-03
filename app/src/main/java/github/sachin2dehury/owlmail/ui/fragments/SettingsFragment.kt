@@ -2,7 +2,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
@@ -11,20 +11,13 @@ import androidx.preference.SwitchPreferenceCompat
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
-import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
-import github.sachin2dehury.owlmail.ui.showSnackbar
+import github.sachin2dehury.owlmail.ui.*
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private val viewModel: SettingsViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.refreshStates()
-    }
+    private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -45,9 +38,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Theme")?.apply {
-            setDefaultValue(viewModel.isDarkThemeEnabled.value ?: true)
+            setDefaultValue(viewModel.isDarkThemeEnabled.value ?: false)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveThemeState(value as Boolean)
+                (requireActivity() as AppCompatActivity).enableDarkTheme(value)
                 view?.showSnackbar("Theme will be applied on exit.")
                 true
             }
@@ -58,14 +52,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setDefaultValue(viewModel.shouldSync.value ?: false)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveSyncState(value as Boolean)
-                viewModel.refreshStates()
+                (requireActivity() as AppCompatActivity)
+                    .enableSyncService(value, viewModel.getBundle())
                 true
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.refreshStates()
     }
 }

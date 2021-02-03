@@ -7,6 +7,7 @@ import github.sachin2dehury.owlmail.api.data.Mails
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
+import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.utils.isInternetConnected
 import github.sachin2dehury.owlmail.utils.networkBoundResource
 import kotlinx.coroutines.flow.first
@@ -15,7 +16,6 @@ import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Response
 
-@Suppress("BlockingMethodInNonBlockingContext")
 class MailRepository(
     private val basicAuthInterceptor: BasicAuthInterceptor,
     private val context: Context,
@@ -39,9 +39,9 @@ class MailRepository(
 
     fun getParsedMails(conversationId: String) = networkBoundResource(
         query = { mailDao.getConversationMails(conversationId) },
-        fetch = { mailDao.getMailsId(conversationId) },
-        saveFetchResult = { list -> list.first().forEach { id -> getParsedMailItem(id) } },
-        shouldFetch = { true },
+        fetch = { updateConversations(conversationId) },
+        saveFetchResult = { },
+        shouldFetch = { isInternetConnected(context) },
     )
 
     private fun getBox(request: String) = when (request) {
@@ -56,10 +56,26 @@ class MailRepository(
     private suspend fun insertMails(response: Response<Mails>) =
         response.body()?.mails?.let { mails -> mails.forEach { mail -> mailDao.insertMail(mail) } }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private suspend fun updateConversations(conversationId: String) {
+        mailDao.getMailsId(conversationId).first().forEach { id ->
+//            val body = mailApi.getMailBody(id).string()
+            val token = getToken().substringAfter('=')
+            val parsedMail = Jsoup.parse(mailApi.getParsedMail(id).string())
+            var body =
+                "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
+            if (body.contains("auth=co", true)) {
+                body = body.replace("auth=co", "auth=qp&amp;zauthtoken=$token")
+                debugLog("Mail Body $body")
+            }
+            mailDao.updateMail(body, id)
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun updateMailBody(response: ResponseBody, id: String) {
 //        val token = getToken().substringAfter('=')
         val parsedMail = Jsoup.parse(response.string())
-        response.close()
 //        parsedMail.removeClass("MsgBody")
 //        parsedMail.removeClass("Msg")
 //        parsedMail.removeClass("ZhAppContent")
