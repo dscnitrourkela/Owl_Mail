@@ -7,7 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +20,6 @@ import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -31,7 +30,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private val viewModel: MailBoxViewModel by viewModels()
+    private val viewModel: MailBoxViewModel by activityViewModels()
 
     private val args: MailBoxFragmentArgs by navArgs()
 
@@ -40,7 +39,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.syncAllMails(args.request)
         setHasOptionsMenu(true)
     }
 
@@ -49,6 +47,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
         _binding = FragmentMailBoxBinding.bind(view)
 
+        viewModel.syncAllMails(args.request)
         setupAdapter()
         setupRecyclerView()
         subscribeToObservers()
@@ -61,8 +60,15 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
             findNavController().navigate(NavGraphDirections.actionToComposeFragment(""))
         }
 
-        (requireActivity() as AppCompatActivity).enableActionBar(true)
-        (requireActivity() as ActivityExt).enableDrawer(true)
+        requireActivity().apply {
+//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            (this as AppCompatActivity).supportActionBar?.let {
+                it.title = args.request.substringBefore('.')
+                it.show()
+            }
+            (this as ActivityExt).enableDrawer(true)
+        }
+
     }
 
     private fun setupAdapter() = mailBoxAdapter.setupOnItemClickListener {

@@ -5,6 +5,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.firebase.analytics.ktx.analytics
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), ActivityExt {
         R.id.draftFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.DRAFT_URL)
         R.id.junkFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.JUNK_URL)
         R.id.trashFragment -> NavGraphDirections.actionToMailBoxFragment(Constants.TRASH_URL)
+        R.id.allMailsFragment -> NavGraphDirections.actionToMailBoxFragment("")
         R.id.settingsFragment -> NavGraphDirections.actionToSettingsFragment()
         R.id.aboutFragment -> NavGraphDirections.actionToWebViewFragment(Constants.PRIVACY_POLICY)
         R.id.newFeaturesFragment -> NavGraphDirections.actionToWebViewFragment(Constants.NEW_FEATURES)
@@ -79,8 +81,8 @@ class MainActivity : AppCompatActivity(), ActivityExt {
     }
 
     override fun enableDrawer(shouldEnable: Boolean) {
-        binding.drawerLayout.enableDrawer(shouldEnable)
-        toggle.enableDrawer(shouldEnable)
+        binding.drawerLayout.setDrawerLockMode(if (shouldEnable) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        toggle.isDrawerIndicatorEnabled = shouldEnable
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

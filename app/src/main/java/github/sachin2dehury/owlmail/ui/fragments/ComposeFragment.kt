@@ -12,7 +12,6 @@ import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.databinding.FragmentWebViewBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.viewmodels.ComposeViewModel
 import javax.inject.Inject
 
@@ -33,8 +32,13 @@ class ComposeFragment : Fragment(R.layout.fragment_web_view) {
 
         _binding = FragmentWebViewBinding.bind(view)
 
-        (requireActivity() as AppCompatActivity).enableActionBar(true)
-        (requireActivity() as ActivityExt).enableDrawer(false)
+        requireActivity().apply {
+            (this as AppCompatActivity).supportActionBar?.let {
+                it.show()
+                it.title = getString(R.string.compose)
+            }
+            (this as ActivityExt).enableDrawer(false)
+        }
 
         val url =
 //            "https://mail.nitrkl.ac.in/h/?action=compose"

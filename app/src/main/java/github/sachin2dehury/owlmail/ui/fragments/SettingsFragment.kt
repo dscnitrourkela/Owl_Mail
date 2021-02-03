@@ -11,7 +11,10 @@ import androidx.preference.SwitchPreferenceCompat
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
-import github.sachin2dehury.owlmail.ui.*
+import github.sachin2dehury.owlmail.ui.ActivityExt
+import github.sachin2dehury.owlmail.ui.enableDarkTheme
+import github.sachin2dehury.owlmail.ui.enableSyncService
+import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
 
 @AndroidEntryPoint
@@ -22,8 +25,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-        (requireActivity() as AppCompatActivity).enableActionBar(true)
-        (requireActivity() as ActivityExt).enableDrawer(false)
+        requireActivity().apply {
+//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            (this as AppCompatActivity).supportActionBar?.let {
+                it.show()
+                it.title = getString(R.string.settings)
+            }
+            (this as ActivityExt).enableDrawer(false)
+        }
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {

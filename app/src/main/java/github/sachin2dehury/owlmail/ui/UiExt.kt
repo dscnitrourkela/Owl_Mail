@@ -9,10 +9,8 @@ import android.os.PersistableBundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -23,11 +21,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.services.SyncService
-
-fun AppCompatActivity.enableActionBar(shouldEnable: Boolean) = when (shouldEnable) {
-    true -> this.supportActionBar?.show()
-    false -> this.supportActionBar?.hide()
-}
 
 fun AppCompatActivity.enableSyncService(shouldEnable: Boolean, bundle: PersistableBundle) =
     when (shouldEnable) {
@@ -42,14 +35,11 @@ fun AppCompatActivity.startSyncJobService(bundle: PersistableBundle) {
         setExtras(bundle)
         setPersisted(true)
     }.build()
-    (this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).schedule(syncJob)
+    (getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).schedule(syncJob)
 }
 
 fun AppCompatActivity.stopSyncJobService() =
-    (this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).cancelAll()
-
-fun AppCompatActivity.openAsset(fileName: String) =
-    this.assets.open(fileName).bufferedReader().use { it.readText() }
+    (getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler).cancelAll()
 
 fun AppCompatActivity.inAppReview() {
     val reviewManager = ReviewManagerFactory.create(this)
@@ -71,7 +61,7 @@ fun AppCompatActivity.inAppUpdate() {
     val appUpdateManager = AppUpdateManagerFactory.create(this)
     val appUpdateInfo = appUpdateManager.appUpdateInfo
     appUpdateInfo.addOnSuccessListener {
-        this.doUpdate(appUpdateManager, appUpdateInfo)
+        doUpdate(appUpdateManager, appUpdateInfo)
     }
 }
 
@@ -90,13 +80,6 @@ fun AppCompatActivity.doUpdate(
             1000
         )
     }
-}
-
-fun DrawerLayout.enableDrawer(shouldEnable: Boolean) =
-    this.setDrawerLockMode(if (shouldEnable) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-
-fun ActionBarDrawerToggle.enableDrawer(shouldEnable: Boolean) {
-    this.isDrawerIndicatorEnabled = shouldEnable
 }
 
 fun View.showToast(message: String) = Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

@@ -13,7 +13,6 @@ import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.viewmodels.SplashViewModel
 
 @AndroidEntryPoint
@@ -26,10 +25,11 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
         subscribeToObservers()
 
-        (requireActivity() as AppCompatActivity).enableActionBar(false)
-        (requireActivity() as ActivityExt).enableDrawer(false)
-
-        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requireActivity().apply {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            (this as AppCompatActivity).supportActionBar?.hide()
+            (this as ActivityExt).enableDrawer(false)
+        }
     }
 
     private fun subscribeToObservers() {

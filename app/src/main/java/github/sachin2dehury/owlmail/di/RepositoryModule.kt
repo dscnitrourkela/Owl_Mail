@@ -1,6 +1,9 @@
 package github.sachin2dehury.owlmail.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.createDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.database.MailDao
-import github.sachin2dehury.owlmail.repository.DataStoreExt
+import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
 import javax.inject.Singleton
@@ -29,8 +32,11 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideDataStoreRepository(
-        @ApplicationContext context: Context,
-        dataStore: DataStoreExt,
-    ) = DataStoreRepository(context, dataStore)
+    fun provideDataStore(@ApplicationContext context: Context) =
+        context.createDataStore(Constants.DATA_STORE_NAME)
+
+    @Singleton
+    @Provides
+    fun provideDataStoreRepository(dataStore: DataStore<Preferences>) =
+        DataStoreRepository(dataStore)
 }

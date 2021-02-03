@@ -14,7 +14,11 @@ import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.showToast
 import java.text.SimpleDateFormat
 
-class MailItemsAdapter(private val colors: IntArray, private val mailViewClient: MailViewClient) :
+class MailItemsAdapter(
+    private val colors: IntArray,
+    private val mailViewClient: MailViewClient,
+    private val css: String
+) :
     MailAdapter(R.layout.mail_items) {
 
     private val colorsLength = colors.lastIndex
@@ -67,7 +71,7 @@ class MailItemsAdapter(private val colors: IntArray, private val mailViewClient:
             setupWebView(binding)
             webView.loadDataWithBaseURL(
                 Constants.BASE_URL,
-                mail.parsedBody,
+                css + mail.parsedBody,
                 "text/html",
                 "utf-8",
                 null

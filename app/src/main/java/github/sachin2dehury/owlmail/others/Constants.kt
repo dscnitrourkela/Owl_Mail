@@ -7,22 +7,23 @@ object Constants {
     const val MOBILE_URL = "m/zmain"
     const val HTML_URL = "h/imessage"
 
-    const val PRIVACY_POLICY = "privacy_policy.html"
+    const val PRIVACY_POLICY = "Privacy Policy.html"
     const val NEW_FEATURES = ""
-    const val TERMS_AND_CONDITIONS = "terms_and_condition.html"
+    const val TERMS_AND_CONDITIONS = "Terms & Condition.html"
+    const val FONT = "Font.html"
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
-    const val INBOX_URL = "inbox.json"
-    const val SENT_URL = "sent.json"
-    const val DRAFT_URL = "drafts.json"
-    const val JUNK_URL = "junk.json"
-    const val TRASH_URL = "trash.json"
+    const val INBOX_URL = "Inbox.json"
+    const val SENT_URL = "Sent.json"
+    const val DRAFT_URL = "Drafts.json"
+    const val JUNK_URL = "Junk.json"
+    const val TRASH_URL = "Trash.json"
 
-//    const val CALENDAR_URL = "calendar.json"
-//    const val CONTACTS_URL = "contacts.json"
-//    const val TASKS_URL = "tasks.json"
+    const val CALENDAR_URL = "Calendar.json"
+    const val CONTACTS_URL = "Contacts.json"
+    const val TASKS_URL = "Tasks.json"
 
     const val AUTH_FROM_COOKIE = "?auth=co"
     const val AUTH_SET_COOKIE = "?auth=sc"

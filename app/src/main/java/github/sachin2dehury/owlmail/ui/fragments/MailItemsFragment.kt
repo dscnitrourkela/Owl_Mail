@@ -15,7 +15,6 @@ import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
 import javax.inject.Inject
@@ -50,8 +49,11 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
             viewModel.setConversationId(args.conversationId)
         }
 
-        (requireActivity() as AppCompatActivity).enableActionBar(true)
-        (requireActivity() as ActivityExt).enableDrawer(false)
+        requireActivity().apply {
+//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            (this as AppCompatActivity).supportActionBar?.show()
+            (this as ActivityExt).enableDrawer(false)
+        }
     }
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {

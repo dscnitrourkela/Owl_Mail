@@ -22,8 +22,8 @@ class MailBoxViewModel @Inject constructor(
     private val _searchQuery = MutableLiveData<String>()
 
     private val lastSync = _request.switchMap { request ->
-        dataStoreRepository.readLastSync(request).map { it ?: Constants.NO_LAST_SYNC }
-            .asLiveData(viewModelScope.coroutineContext)
+        dataStoreRepository.readLastSync(Constants.KEY_LAST_SYNC + request)
+            .map { it ?: Constants.NO_LAST_SYNC }.asLiveData(viewModelScope.coroutineContext)
     }
 
     val search = _searchQuery.switchMap { query ->
@@ -42,7 +42,8 @@ class MailBoxViewModel @Inject constructor(
 
     fun saveLastSync() = viewModelScope.launch {
         dataStoreRepository.saveLastSync(
-            _request.value ?: "", System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
+            Constants.KEY_LAST_SYNC + _request.value,
+            System.currentTimeMillis() - DateUtils.MINUTE_IN_MILLIS
         )
     }
 

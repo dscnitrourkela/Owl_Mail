@@ -1,40 +1,40 @@
 package github.sachin2dehury.owlmail.repository
 
-import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.*
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.utils.isInternetConnected
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
-class DataStoreRepository(
-    private val context: Context,
-    private val dataStore: DataStoreExt,
-) {
+class DataStoreRepository(private val dataStore: DataStore<Preferences>) {
 
-    suspend fun saveLastSync(request: String, lastSync: Long) {
-        if (isInternetConnected(context)) {
-            dataStore.saveLastSync(Constants.KEY_LAST_SYNC + request, lastSync)
-        }
-    }
+    suspend fun saveCredential(key: String, value: String) =
+        dataStore.edit { settings -> settings[stringPreferencesKey(key)] = value }
 
-    suspend fun saveCredential(key: String, value: String) = dataStore.saveCredential(key, value)
+    suspend fun saveLastSync(key: String, value: Long) =
+        dataStore.edit { settings -> settings[longPreferencesKey(key)] = value }
 
-    suspend fun saveState(key: String, isEnabled: Boolean) =
-        dataStore.saveState(key, isEnabled)
+    suspend fun saveState(key: String, value: Boolean) =
+        dataStore.edit { settings -> settings[booleanPreferencesKey(key)] = value }
 
-    fun readState(key: String) = dataStore.readState(key)
+    fun readCredential(key: String) =
+        flow { emit(dataStore.data.first()[stringPreferencesKey(key)]) }
 
-    fun readCredential(key: String) = dataStore.readCredential(key)
+    fun readLastSync(key: String) =
+        flow { emit(dataStore.data.first()[longPreferencesKey(key)]) }
 
-    fun readLastSync(request: String) = dataStore.readLastSync(Constants.KEY_LAST_SYNC + request)
+    fun readState(key: String) =
+        flow { emit(dataStore.data.first()[booleanPreferencesKey(key)]) }
 
     suspend fun resetLogin() {
         saveCredential(Constants.KEY_CREDENTIAL, Constants.NO_CREDENTIAL)
         saveCredential(Constants.KEY_TOKEN, Constants.NO_TOKEN)
         saveState(Constants.KEY_SHOULD_SYNC, false)
         saveLastSync(Constants.KEY_SYNC_SERVICE, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.SENT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.KEY_LAST_SYNC + Constants.INBOX_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.KEY_LAST_SYNC + Constants.SENT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.KEY_LAST_SYNC + Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.KEY_LAST_SYNC + Constants.JUNK_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(Constants.KEY_LAST_SYNC + Constants.TRASH_URL, Constants.NO_LAST_SYNC)
     }
 }

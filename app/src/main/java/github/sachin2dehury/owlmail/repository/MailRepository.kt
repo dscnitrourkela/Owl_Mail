@@ -12,7 +12,6 @@ import github.sachin2dehury.owlmail.utils.isInternetConnected
 import github.sachin2dehury.owlmail.utils.networkBoundResource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Response
 
@@ -27,13 +26,6 @@ class MailRepository(
         query = { mailDao.getMails(getBox(request)) },
         fetch = { mailApi.getMails(request, search) },
         saveFetchResult = { response -> insertMails(response) },
-        shouldFetch = { isInternetConnected(context) },
-    )
-
-    fun getParsedMailItem(id: String) = networkBoundResource(
-        query = { mailDao.getMailItem(id) },
-        fetch = { mailApi.getParsedMail(id) },
-        saveFetchResult = { response -> updateMailBody(response, id) },
         shouldFetch = { isInternetConnected(context) },
     )
 
@@ -62,6 +54,10 @@ class MailRepository(
 //            val body = mailApi.getMailBody(id).string()
             val token = getToken().substringAfter('=')
             val parsedMail = Jsoup.parse(mailApi.getParsedMail(id).string())
+//            parsedMail.removeClass("MsgBody")
+//            parsedMail.removeClass("Msg")
+//            parsedMail.removeClass("ZhAppContent")
+//            parsedMail.getElementsByClass("MsgHdr").remove()
             var body =
                 "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
             if (body.contains("auth=co", true)) {
@@ -70,18 +66,6 @@ class MailRepository(
             }
             mailDao.updateMail(body, id)
         }
-    }
-
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun updateMailBody(response: ResponseBody, id: String) {
-//        val token = getToken().substringAfter('=')
-        val parsedMail = Jsoup.parse(response.string())
-//        parsedMail.removeClass("MsgBody")
-//        parsedMail.removeClass("Msg")
-//        parsedMail.removeClass("ZhAppContent")
-//        parsedMail.getElementsByClass("MsgHdr").remove()
-        val body = "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
-        mailDao.updateMail(body, id)
     }
 
     suspend fun login() = try {

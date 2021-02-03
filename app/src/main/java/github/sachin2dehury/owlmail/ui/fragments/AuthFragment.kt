@@ -15,7 +15,6 @@ import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableActionBar
 import github.sachin2dehury.owlmail.ui.hideKeyBoard
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
@@ -48,9 +47,11 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             binding.root.hideKeyBoard()
         }
 
-        (requireActivity() as AppCompatActivity).enableActionBar(false)
-        (requireActivity() as ActivityExt).enableDrawer(false)
-        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requireActivity().apply {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            (this as AppCompatActivity).supportActionBar?.hide()
+            (this as ActivityExt).enableDrawer(false)
+        }
 
         subscribeToObservers()
 
