@@ -1,12 +1,17 @@
 package github.sachin2dehury.owlmail.repository
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.others.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
-class DataStoreRepository(private val dataStore: DataStore<Preferences>) {
+class DataStoreRepository(
+    private val context: Context,
+    private val dataStore: DataStore<Preferences>
+) {
 
     suspend fun saveCredential(key: String, value: String) =
         dataStore.edit { settings -> settings[stringPreferencesKey(key)] = value }
@@ -31,10 +36,25 @@ class DataStoreRepository(private val dataStore: DataStore<Preferences>) {
         saveCredential(Constants.KEY_TOKEN, Constants.NO_TOKEN)
         saveState(Constants.KEY_SHOULD_SYNC, false)
         saveLastSync(Constants.KEY_SYNC_SERVICE, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.KEY_LAST_SYNC + Constants.INBOX_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.KEY_LAST_SYNC + Constants.SENT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.KEY_LAST_SYNC + Constants.DRAFT_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.KEY_LAST_SYNC + Constants.JUNK_URL, Constants.NO_LAST_SYNC)
-        saveLastSync(Constants.KEY_LAST_SYNC + Constants.TRASH_URL, Constants.NO_LAST_SYNC)
+        saveLastSync(
+            Constants.KEY_LAST_SYNC + context.getString(R.string.inbox),
+            Constants.NO_LAST_SYNC
+        )
+        saveLastSync(
+            Constants.KEY_LAST_SYNC + context.getString(R.string.sent),
+            Constants.NO_LAST_SYNC
+        )
+        saveLastSync(
+            Constants.KEY_LAST_SYNC + context.getString(R.string.draft),
+            Constants.NO_LAST_SYNC
+        )
+        saveLastSync(
+            Constants.KEY_LAST_SYNC + context.getString(R.string.junk),
+            Constants.NO_LAST_SYNC
+        )
+        saveLastSync(
+            Constants.KEY_LAST_SYNC + context.getString(R.string.trash),
+            Constants.NO_LAST_SYNC
+        )
     }
 }

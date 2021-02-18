@@ -1,8 +1,7 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
@@ -11,28 +10,15 @@ import androidx.preference.SwitchPreferenceCompat
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
-import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.enableDarkTheme
-import github.sachin2dehury.owlmail.ui.enableSyncService
-import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private val viewModel: SettingsViewModel by viewModels()
+    private val viewModel: SettingsViewModel by activityViewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
-
-        requireActivity().apply {
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            (this as AppCompatActivity).supportActionBar?.let {
-                it.show()
-                it.title = getString(R.string.settings)
-            }
-            (this as ActivityExt).enableDrawer(false)
-        }
 
         preferenceManager.findPreference<Preference>("Logout")?.apply {
             setOnPreferenceClickListener {
@@ -45,13 +31,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-
         preferenceManager.findPreference<SwitchPreferenceCompat>("Theme")?.apply {
             setDefaultValue(viewModel.isDarkThemeEnabled.value ?: false)
             setOnPreferenceChangeListener { _, value ->
-                viewModel.saveThemeState(value as Boolean)
-                (requireActivity() as AppCompatActivity).enableDarkTheme(value)
-                view?.showSnackbar("Theme will be applied on exit.")
+                viewModel.saveThemeState(value as Boolean).invokeOnCompletion {
+                    viewModel.syncState()
+                }
                 true
             }
         }
@@ -60,9 +45,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceManager.findPreference<SwitchPreferenceCompat>("Sync")?.apply {
             setDefaultValue(viewModel.shouldSync.value ?: false)
             setOnPreferenceChangeListener { _, value ->
-                viewModel.saveSyncState(value as Boolean)
-                (requireActivity() as AppCompatActivity)
-                    .enableSyncService(value, viewModel.getBundle())
+                viewModel.saveSyncState(value as Boolean).invokeOnCompletion {
+                    viewModel.syncState()
+                }
                 true
             }
         }

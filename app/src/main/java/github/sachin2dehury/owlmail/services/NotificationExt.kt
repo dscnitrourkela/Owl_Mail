@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.ui.MainActivity
+import github.sachin2dehury.owlmail.ui.activities.MailActivity
 
 class NotificationExt(private val context: Context) {
 
@@ -44,7 +44,7 @@ class NotificationExt(private val context: Context) {
     fun notify(
         title: String, subject: String, id: Int = 0,
         pendingIntent: PendingIntent =
-            PendingIntent.getActivity(context, 1000, Intent(context, MainActivity::class.java), 0)
+            PendingIntent.getActivity(context, 1000, Intent(context, MailActivity::class.java), 0)
     ) = notificationManager.notify(id, notificationBuilder(title, subject, pendingIntent))
 
     fun cancelNotify(id: Int = 0) = notificationManager.cancel(id)

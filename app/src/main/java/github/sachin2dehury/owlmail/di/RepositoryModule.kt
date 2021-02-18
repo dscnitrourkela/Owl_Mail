@@ -37,6 +37,8 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideDataStoreRepository(dataStore: DataStore<Preferences>) =
-        DataStoreRepository(dataStore)
+    fun provideDataStoreRepository(
+        @ApplicationContext context: Context,
+        dataStore: DataStore<Preferences>
+    ) = DataStoreRepository(context, dataStore)
 }

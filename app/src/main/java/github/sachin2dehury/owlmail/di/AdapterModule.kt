@@ -4,39 +4,39 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import github.sachin2dehury.owlmail.R
+import github.sachin2dehury.owlmail.adapters.AttachmentAdapter
 import github.sachin2dehury.owlmail.adapters.MailBoxAdapter
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
 import github.sachin2dehury.owlmail.api.calls.MailViewClient
-import github.sachin2dehury.owlmail.others.Constants
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityRetainedComponent::class)
 object AdapterModule {
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideMailBoxAdapter(colors: IntArray) = MailBoxAdapter(colors)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideMailItemsAdapter(colors: IntArray, mailViewClient: MailViewClient, css: String) =
-        MailItemsAdapter(colors, mailViewClient, css)
+    fun provideMailItemsAdapter(colors: IntArray, attachmentAdapter: AttachmentAdapter) =
+        MailItemsAdapter(colors, attachmentAdapter)
 
-    @Singleton
+    @ActivityRetainedScoped
+    @Provides
+    fun providesAttachmentAdapter() = AttachmentAdapter()
+
+    @ActivityRetainedScoped
     @Provides
     fun provideMailViewClient() = MailViewClient()
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideColorList(@ApplicationContext context: Context) =
         context.resources.getIntArray(R.array.colors)
 
-    @Singleton
-    @Provides
-    fun provideCss(@ApplicationContext context: Context) =
-        context.assets.open(Constants.FONT).bufferedReader().use { it.readText() }
 }

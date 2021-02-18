@@ -11,12 +11,18 @@ class MailItemsViewModel @Inject constructor(
     private val mailRepository: MailRepository
 ) : ViewModel() {
 
-    private val _conversationId = MutableLiveData<String>()
+    private val _conversationId = MutableLiveData<Int>()
 
     val parsedMails = _conversationId.switchMap { conversationId ->
         mailRepository.getParsedMails(conversationId).asLiveData(viewModelScope.coroutineContext)
             .switchMap { MutableLiveData(Event(it)) }
     }
 
-    fun setConversationId(conversationId: String) = _conversationId.postValue(conversationId)
+//    private val _quota = MutableLiveData<String>()
+
+    fun setConversationId(conversationId: Int) = _conversationId.postValue(conversationId)
+
+//    fun setQuota(quota: String) = _quota.postValue(quota)
+
+    fun getToken() = mailRepository.getToken()
 }

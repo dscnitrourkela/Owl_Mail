@@ -1,18 +1,18 @@
 package github.sachin2dehury.owlmail.repository
 
 import android.content.Context
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.data.Mails
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
-import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.utils.isInternetConnected
 import github.sachin2dehury.owlmail.utils.networkBoundResource
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import org.jsoup.Jsoup
 import retrofit2.Response
 
 class MailRepository(
@@ -22,54 +22,49 @@ class MailRepository(
     private val mailDao: MailDao,
 ) {
 
-    fun getMails(request: String, search: String) = networkBoundResource(
+    fun getMails(request: String, lastSync: Long) = networkBoundResource(
         query = { mailDao.getMails(getBox(request)) },
-        fetch = { mailApi.getMails(request, search) },
+        fetch = { mailApi.getMails(request, Constants.UPDATE_QUERY + lastSync) },
         saveFetchResult = { response -> insertMails(response) },
         shouldFetch = { isInternetConnected(context) },
     )
 
-    fun getParsedMails(conversationId: String) = networkBoundResource(
+    fun getParsedMails(conversationId: Int) = networkBoundResource(
         query = { mailDao.getConversationMails(conversationId) },
-        fetch = { updateConversations(conversationId) },
-        saveFetchResult = { },
+        fetch = { mailDao.getMailsId(conversationId) },
+        saveFetchResult = { response -> updateConversations(response) },
         shouldFetch = { isInternetConnected(context) },
     )
 
+    fun searchMails(search: String) = networkBoundResource(
+        query = { mailDao.searchMails(search) },
+        fetch = { mailApi.searchMails(search) },
+        saveFetchResult = { },
+        shouldFetch = { false },
+    )
+
     private fun getBox(request: String) = when (request) {
-        Constants.INBOX_URL -> 2
-        Constants.TRASH_URL -> 3
-        Constants.JUNK_URL -> 4
-        Constants.SENT_URL -> 5
-        Constants.DRAFT_URL -> 6
+        context.getString(R.string.inbox) -> 2
+        context.getString(R.string.trash) -> 3
+        context.getString(R.string.junk) -> 4
+        context.getString(R.string.sent) -> 5
+        context.getString(R.string.draft) -> 6
         else -> 0
-    }.toString()
+    }
 
     private suspend fun insertMails(response: Response<Mails>) =
         response.body()?.mails?.let { mails -> mails.forEach { mail -> mailDao.insertMail(mail) } }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun updateConversations(conversationId: String) {
-        mailDao.getMailsId(conversationId).first().forEach { id ->
-//            val body = mailApi.getMailBody(id).string()
-            val token = getToken().substringAfter('=')
-            val parsedMail = Jsoup.parse(mailApi.getParsedMail(id).string())
-//            parsedMail.removeClass("MsgBody")
-//            parsedMail.removeClass("Msg")
-//            parsedMail.removeClass("ZhAppContent")
-//            parsedMail.getElementsByClass("MsgHdr").remove()
-            var body =
-                "${parsedMail.select(".msgwrap")}<br>${parsedMail.select(".View.attachments")}"
-            if (body.contains("auth=co", true)) {
-                body = body.replace("auth=co", "auth=qp&amp;zauthtoken=$token")
-                debugLog("Mail Body $body")
-            }
-            mailDao.updateMail(body, id)
-        }
+    private suspend fun updateConversations(ids: Flow<List<Int>>) = ids.first().forEach { id ->
+        val parsedMail = mailApi.getParsedMail(id).string()
+        mailDao.updateMail(parsedMail, id)
     }
 
     suspend fun login() = try {
-        val response = mailApi.login(Constants.UPDATE_QUERY + System.currentTimeMillis())
+        val response = mailApi.login(
+            context.getString(R.string.draft), Constants.UPDATE_QUERY + System.currentTimeMillis()
+        )
         if (response.isSuccessful && response.code() == 200) {
             Resource.success(response.body()?.mails)
         } else {

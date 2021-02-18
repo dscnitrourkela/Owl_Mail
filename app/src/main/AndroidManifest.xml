@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OwlMail"
         tools:ignore="AllowBackup">
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.activities.MailActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

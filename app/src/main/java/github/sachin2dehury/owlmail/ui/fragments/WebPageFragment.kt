@@ -3,52 +3,62 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.databinding.FragmentWebViewBinding
 import github.sachin2dehury.owlmail.others.Constants
-import github.sachin2dehury.owlmail.ui.ActivityExt
-import github.sachin2dehury.owlmail.ui.viewmodels.ComposeViewModel
+import github.sachin2dehury.owlmail.others.debugLog
+import github.sachin2dehury.owlmail.ui.viewmodels.WebPageViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ComposeFragment : Fragment(R.layout.fragment_web_view) {
+class WebPageFragment : Fragment(R.layout.fragment_web_view) {
 
     private var _binding: FragmentWebViewBinding? = null
     private val binding: FragmentWebViewBinding get() = _binding!!
 
-    private val viewModel: ComposeViewModel by viewModels()
+    private val viewModel: WebPageViewModel by viewModels()
+
+    private val args: WebPageFragmentArgs by navArgs()
 
     @Inject
     lateinit var mailViewClient: MailViewClient
 
-    @SuppressLint("SetJavaScriptEnabled")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentWebViewBinding.bind(view)
 
-        requireActivity().apply {
-            (this as AppCompatActivity).supportActionBar?.let {
-                it.show()
-                it.title = getString(R.string.compose)
-            }
-            (this as ActivityExt).enableDrawer(false)
+        setContent()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            setContent()
         }
+    }
 
-        val url =
-//            "https://mail.nitrkl.ac.in/h/?action=compose"
-            Constants.BASE_URL + Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.COMPOSE_MAIL
-
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setContent() {
+        binding.swipeRefreshLayout.isRefreshing = true
         binding.webView.apply {
             webViewClient = mailViewClient
             settings.javaScriptEnabled = true
             settings.loadsImagesAutomatically = true
-            loadUrl(url, mapOf("Cookie" to viewModel.token))
+            settings.setSupportZoom(true)
+            setInitialScale(100)
+            debugLog(args.url + Constants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
+            loadUrl(args.url + Constants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
+            zoomOut()
         }
+        binding.swipeRefreshLayout.isRefreshing = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

@@ -19,7 +19,7 @@ class MailBoxAdapter(private val colors: IntArray) : MailAdapter(R.layout.mail_i
         val mail = mails[position]
         val binding = MailItemBinding.bind(holder.itemView)
         val sender =
-            if (mail.flag.contains('s')) mail.addresses.first() else mail.addresses.last()
+            if (mail.flag?.contains('s') == true) mail.addresses.first() else mail.addresses.last()
 
         @SuppressLint("SimpleDateFormat")
         val dateFormat = when {
@@ -33,36 +33,26 @@ class MailBoxAdapter(private val colors: IntArray) : MailAdapter(R.layout.mail_i
                 SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
             }
         }
-        val name = if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
+
         val color = colors[mail.size % colorsLength]
-//        val color = when (sender.email.contains("@nitrkl.ac.in", true)) {
-//            true -> {
-//                try {
-//                    sender.email.first().toInt()
-//                    colors.first()
-//                } catch (e: Exception) {
-//                    colors[1]
-//                }
-//            }
-//            else -> colors.last()
-//        }
+
         binding.apply {
-            textViewSender.text = name.first().toString()
+            textViewSender.text = sender.firstName.first().toString()
             textViewSender.background.setTint(color)
             textViewDate.text = dateFormat.format(mail.time)
             textViewMailBody.text = mail.body
             textViewMailSubject.text = mail.subject
-            textViewSenderEmail.text = name
-            if (mail.flag.contains('u')) {
+            textViewSenderEmail.text = sender.firstName
+            if (mail.flag?.contains('u') == true) {
                 textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                 textViewMailSubject.typeface = Typeface.DEFAULT_BOLD
                 textViewDate.typeface = Typeface.DEFAULT_BOLD
                 textViewMailBody.typeface = Typeface.DEFAULT_BOLD
             }
-            if (mail.flag.contains('f')) {
+            if (mail.flag?.contains('f') == true) {
                 imageViewStared.isVisible = true
             }
-            if (mail.flag.contains('a')) {
+            if (mail.flag?.contains('a') == true) {
                 imageViewAttachment.isVisible = true
             }
 //            if (mail.flag.contains('r')) {

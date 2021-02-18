@@ -3,7 +3,6 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -14,7 +13,6 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.hideKeyBoard
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
@@ -31,11 +29,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private var credential = Constants.NO_CREDENTIAL
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.resetLogin()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -47,16 +40,12 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             binding.root.hideKeyBoard()
         }
 
-        requireActivity().apply {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            (this as AppCompatActivity).supportActionBar?.hide()
-            (this as ActivityExt).enableDrawer(false)
-        }
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         subscribeToObservers()
 
         binding.buttonPrivacyPolicy.setOnClickListener {
-            findNavController().navigate(R.id.privacyPolicyFragment)
+            findNavController().navigate(NavGraphDirections.actionToWebViewFragment(getString(R.string.privacy_policy)))
         }
     }
 
@@ -65,7 +54,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
             .setPopUpTo(R.id.authFragment, true)
             .build()
         findNavController().navigate(
-            NavGraphDirections.actionToMailBoxFragment(Constants.INBOX_URL),
+            NavGraphDirections.actionToMailBoxFragment(getString(R.string.inbox)),
             navOptions
         )
     }

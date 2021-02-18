@@ -1,4 +1,4 @@
-package github.sachin2dehury.owlmail.ui
+package github.sachin2dehury.owlmail.utils
 
 import android.app.AlarmManager
 import android.app.job.JobInfo
@@ -6,12 +6,8 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.os.PersistableBundle
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -82,17 +78,9 @@ fun AppCompatActivity.doUpdate(
     }
 }
 
-fun View.showToast(message: String) = Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-fun View.showSnackbar(message: String) = Snackbar.make(this, message, Snackbar.LENGTH_LONG).show()
-
-fun View.hideKeyBoard() =
-    (context.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager)
-        .hideSoftInputFromWindow(windowToken, 0)
-
-fun AppCompatActivity.enableDarkTheme(shouldEnable: Boolean) {
+fun enableDarkTheme(shouldEnable: Boolean) {
     when (shouldEnable) {
-        true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
     }
 }

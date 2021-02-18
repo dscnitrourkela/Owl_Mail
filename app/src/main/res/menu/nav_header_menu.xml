@@ -25,10 +25,6 @@
             android:id="@+id/trashFragment"
             android:icon="@drawable/ic_baseline_delete_24"
             android:title="@string/trash" />
-        <!--        <item-->
-        <!--            android:id="@+id/allMailsFragment"-->
-        <!--            android:icon="@drawable/ic_baseline_mail_24"-->
-        <!--            android:title="@string/all_mails" />-->
     </group>
     <group android:id="@+id/settingMenu">
         <item

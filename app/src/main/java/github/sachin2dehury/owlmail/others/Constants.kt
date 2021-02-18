@@ -7,34 +7,21 @@ object Constants {
     const val MOBILE_URL = "m/zmain"
     const val HTML_URL = "h/imessage"
 
-    const val PRIVACY_POLICY = "Privacy Policy.html"
-    const val NEW_FEATURES = ""
-    const val TERMS_AND_CONDITIONS = "Terms & Condition.html"
-    const val FONT = "Font.html"
-
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"
 
-    const val INBOX_URL = "Inbox.json"
-    const val SENT_URL = "Sent.json"
-    const val DRAFT_URL = "Drafts.json"
-    const val JUNK_URL = "Junk.json"
-    const val TRASH_URL = "Trash.json"
-
-    const val CALENDAR_URL = "Calendar.json"
-    const val CONTACTS_URL = "Contacts.json"
-    const val TASKS_URL = "Tasks.json"
+//    const val CALENDAR_URL = "Calendar.json"
+//    const val CONTACTS_URL = "Contacts.json"
+//    const val TASKS_URL = "Tasks.json"
 
     const val AUTH_FROM_COOKIE = "?auth=co"
     const val AUTH_SET_COOKIE = "?auth=sc"
-    const val AUTH_FROM_TOKEN = "?auth=qp&zauthtoken="
+    const val AUTH_FROM_TOKEN = "&auth=qp&zauthtoken="
     const val CLIENT_VIEW = "&zms=ipad&action=view"
     const val LOAD_IMAGES = "&xim=1"
     const val COMPOSE_MAIL = "&st=newmail&zms=ipad"
     const val UPDATE_QUERY = "after:"
-
-    const val FRAME_BODY = "iframeBody"
-//    const val TABLE = "table"
+    const val JSON_FORMAT = "&fmt=json"
 
     const val DATABASE_NAME = "MAIL_DB"
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"

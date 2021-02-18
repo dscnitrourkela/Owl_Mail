@@ -2,19 +2,19 @@ package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
 import javax.inject.Inject
@@ -48,18 +48,20 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.setConversationId(args.conversationId)
         }
-
-        requireActivity().apply {
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            (this as AppCompatActivity).supportActionBar?.show()
-            (this as ActivityExt).enableDrawer(false)
-        }
     }
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
         mailItemsAdapter.id = args.id
+        mailItemsAdapter.token = viewModel.getToken()
+        mailItemsAdapter.setupOnItemClickListener { part ->
+            findNavController().navigate(
+                NavGraphDirections.actionToComposeFragment(
+                    "https://mail.nitrkl.ac.in/service/home/~/?id=17364&part=$part&disp=i"
+                )
+            )
+        }
         adapter = mailItemsAdapter
-        layoutManager = LinearLayoutManager(requireContext())
+        layoutManager = LinearLayoutManager(context)
     }
 
     private fun subscribeToObservers() {
@@ -92,7 +94,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
 
     private fun setContent(result: Resource<List<Mail>>) {
         result.data?.let { mails ->
-            mailItemsAdapter.list = mails
+//            mailItemsAdapter.list = mails
             mailItemsAdapter.mails = mails
             binding.textViewMailSubject.text = mails.first().subject
         }

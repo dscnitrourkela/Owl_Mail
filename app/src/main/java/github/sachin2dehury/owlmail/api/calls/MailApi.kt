@@ -10,24 +10,30 @@ import retrofit2.http.Query
 
 interface MailApi {
 
-    @GET(Constants.HOME_URL + Constants.TRASH_URL + Constants.AUTH_SET_COOKIE)
+    @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_SET_COOKIE + Constants.JSON_FORMAT)
     suspend fun login(
+        @Path("request") request: String,
         @Query("query") sync: String,
     ): Response<Mails>
 
-    @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_FROM_COOKIE)
+    @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_FROM_COOKIE + Constants.JSON_FORMAT)
     suspend fun getMails(
         @Path("request") request: String,
-        @Query("query") search: String,
+        @Query("query") lastSync: String,
     ): Response<Mails>
 
     @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)
     suspend fun getParsedMail(
-        @Query("id") id: String,
+        @Query("id") id: Int,
     ): ResponseBody
 
     @GET(Constants.HTML_URL + Constants.AUTH_FROM_COOKIE + Constants.LOAD_IMAGES)
     suspend fun getMailBody(
-        @Query("id") id: String,
+        @Query("id") id: Int,
     ): ResponseBody
+
+    @GET(Constants.HOME_URL + Constants.AUTH_FROM_COOKIE + Constants.JSON_FORMAT)
+    suspend fun searchMails(
+        @Query("query") query: String,
+    ): Response<Mails>
 }

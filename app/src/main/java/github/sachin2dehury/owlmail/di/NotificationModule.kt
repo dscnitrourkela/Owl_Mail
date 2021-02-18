@@ -4,16 +4,16 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.scopes.ServiceScoped
 import github.sachin2dehury.owlmail.services.NotificationExt
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ServiceComponent::class)
 object NotificationModule {
 
-    @Singleton
+    @ServiceScoped
     @Provides
     fun provideNotificationExt(@ApplicationContext context: Context) = NotificationExt(context)
 }

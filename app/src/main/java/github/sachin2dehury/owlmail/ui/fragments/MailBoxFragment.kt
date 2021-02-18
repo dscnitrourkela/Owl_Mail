@@ -1,11 +1,7 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -17,9 +13,9 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailBoxAdapter
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
+import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.ui.ActivityExt
 import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
 import javax.inject.Inject
@@ -37,11 +33,6 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -57,18 +48,12 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         }
 
         binding.floatingActionButtonCompose.setOnClickListener {
-            findNavController().navigate(NavGraphDirections.actionToComposeFragment(""))
+            findNavController().navigate(
+                NavGraphDirections.actionToComposeFragment(
+                    Constants.BASE_URL + Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.COMPOSE_MAIL
+                )
+            )
         }
-
-        requireActivity().apply {
-//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            (this as AppCompatActivity).supportActionBar?.let {
-                it.title = args.request.substringBefore('.')
-                it.show()
-            }
-            (this as ActivityExt).enableDrawer(true)
-        }
-
     }
 
     private fun setupAdapter() = mailBoxAdapter.setupOnItemClickListener {
@@ -79,34 +64,10 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
 
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
         adapter = mailBoxAdapter
-        layoutManager = LinearLayoutManager(requireContext())
+        layoutManager = LinearLayoutManager(context)
     }
 
     private fun subscribeToObservers() {
-        viewModel.search.observe(viewLifecycleOwner, {
-            it?.let { event ->
-                val result = event.peekContent()
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        setSearchContent(result)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.ERROR -> {
-                        event.getContentIfNotHandled()?.let { errorResource ->
-                            errorResource.message?.let { message ->
-                                view?.showSnackbar(message)
-                            }
-                        }
-                        setSearchContent(result)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.LOADING -> {
-                        setSearchContent(result)
-                        binding.swipeRefreshLayout.isRefreshing = true
-                    }
-                }
-            }
-        })
         viewModel.mails.observe(viewLifecycleOwner, {
             it?.let { event ->
                 val result = event.peekContent()
@@ -134,46 +95,8 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
     }
 
-    private fun setContent(result: Resource<List<Mail>>) {
-        result.data?.let { mails ->
-            mailBoxAdapter.list = mails
-            mailBoxAdapter.mails = mails
-        }
-    }
-
-    private fun setSearchContent(result: Resource<List<Mail>>) {
-        result.data?.let { mails ->
-            mailBoxAdapter.mails = mails
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.search_menu, menu)
-        val searchAction = menu.findItem(R.id.searchBar).actionView
-        val searchView = searchAction as SearchView
-        searchView.apply {
-            queryHint = "Search"
-            isSubmitButtonEnabled = true
-            setOnCloseListener {
-                mailBoxAdapter.mails = mailBoxAdapter.list
-                binding.swipeRefreshLayout.isRefreshing = false
-                false
-            }
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    binding.swipeRefreshLayout.isRefreshing = true
-                    viewModel.syncSearchMails(query)
-                    return false
-                }
-
-                override fun onQueryTextChange(query: String): Boolean {
-                    mailBoxAdapter.filter.filter(query)
-                    return false
-                }
-            })
-        }
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+    private fun setContent(result: Resource<List<Mail>>) =
+        result.data?.let { mails -> mailBoxAdapter.mails = mails }
 
     override fun onDestroy() {
         super.onDestroy()

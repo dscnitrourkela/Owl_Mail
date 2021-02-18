@@ -35,6 +35,8 @@ class SettingsViewModel @Inject constructor(
         dataStoreRepository.saveState(Constants.KEY_SHOULD_SYNC, shouldSync)
     }
 
+    fun syncState() = _forceUpdate.postValue(true)
+
     fun getBundle() = persistableBundleOf(
         Constants.KEY_SHOULD_SYNC to shouldSync.value,
         Constants.KEY_SYNC_SERVICE to System.currentTimeMillis(),

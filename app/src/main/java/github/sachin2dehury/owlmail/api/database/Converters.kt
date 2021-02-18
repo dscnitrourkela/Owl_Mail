@@ -8,12 +8,9 @@ import github.sachin2dehury.owlmail.api.data.Address
 class Converters {
 
     @TypeConverter
-    fun fromList(list: List<Address>): String {
-        return Gson().toJson(list)
-    }
+    fun fromList(value: List<Address>): String = Gson().toJson(value)
 
     @TypeConverter
-    fun toList(string: String): List<Address> {
-        return Gson().fromJson(string, object : TypeToken<List<Address>>() {}.type)
-    }
+    fun toList(value: String): List<Address> =
+        Gson().fromJson(value, object : TypeToken<List<Address>>() {}.type)
 }

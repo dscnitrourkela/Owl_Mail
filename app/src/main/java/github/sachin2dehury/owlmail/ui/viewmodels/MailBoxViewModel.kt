@@ -19,22 +19,13 @@ class MailBoxViewModel @Inject constructor(
 
     private val _request = MutableLiveData<String>()
 
-    private val _searchQuery = MutableLiveData<String>()
-
     private val lastSync = _request.switchMap { request ->
         dataStoreRepository.readLastSync(Constants.KEY_LAST_SYNC + request)
             .map { it ?: Constants.NO_LAST_SYNC }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    val search = _searchQuery.switchMap { query ->
-        mailRepository.getMails(_request.value ?: "", query)
-            .asLiveData(viewModelScope.coroutineContext)
-    }.switchMap {
-        MutableLiveData(Event(it))
-    }
-
     val mails = lastSync.switchMap { lastSync ->
-        mailRepository.getMails(_request.value ?: "", Constants.UPDATE_QUERY + lastSync)
+        mailRepository.getMails(_request.value ?: "",  lastSync)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))
@@ -48,6 +39,4 @@ class MailBoxViewModel @Inject constructor(
     }
 
     fun syncAllMails(request: String) = _request.postValue(request)
-
-    fun syncSearchMails(query: String) = _searchQuery.postValue(query)
 }

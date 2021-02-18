@@ -8,17 +8,43 @@ import com.google.gson.annotations.SerializedName
 data class Mail(
 
     @PrimaryKey(autoGenerate = false)
-    @SerializedName("id") val id: String = "",
+    @SerializedName("id") val id: Int,
 
-    @SerializedName("cid") val conversationId: String = "",
-    @SerializedName("d") val time: Long = 0,
-    @SerializedName("e") val addresses: List<Address> = emptyList(),
-    @SerializedName("f") val flag: String = "",
-    @SerializedName("fr") val body: String = "",
-    @SerializedName("l") val box: String = "",
-//    @SerializedName("rev") val rev: Int = 0,
-    @SerializedName("s") val size: Int = 0,
-    @SerializedName("su") val subject: String = "",
+    @SerializedName("cid") val conversationId: Int,
+    @SerializedName("d") val time: Long,
+    @SerializedName("e") val addresses: List<Address>,
+    @SerializedName("f") val flag: String?,
+    @SerializedName("fr") val body: String?,
+    @SerializedName("l") val box: Byte,
+    @SerializedName("rev") val rev: Int,
+    @SerializedName("s") val size: Int,
+    @SerializedName("su") val subject: String?,
 
-    val parsedBody: String = ""
-)
+    val parsedBody: String? = null
+) {
+    constructor(
+        id: String,
+        conversationId: String,
+        time: Long,
+        addresses: List<Address>,
+        flag: String?,
+        body: String,
+        box: String,
+        rev: Int,
+        size: Int,
+        subject: String,
+        parsedBody: String
+    ) : this(
+        id.toInt(),
+        conversationId.toInt(),
+        time,
+        addresses,
+        flag,
+        if (body.isEmpty()) null else body.removeSuffix("..."),
+        box.toByte(),
+        rev,
+        size,
+        if (subject.isEmpty()) null else subject,
+        if (parsedBody.isEmpty()) null else parsedBody
+    )
+}

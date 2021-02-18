@@ -6,6 +6,7 @@ import android.app.job.JobService
 import android.text.format.DateUtils
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.AndroidEntryPoint
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
@@ -48,6 +49,7 @@ class SyncService : JobService() {
             val token = it.extras.getString(Constants.KEY_TOKEN, Constants.NO_TOKEN)
             mailRepository.setToken(token)
             mailRepository.setCredential(credential)
+            debugLog(credential + token + lastSync + shouldSync)
         }
         startSyncWorker(jobParameters)
         return true
@@ -56,7 +58,6 @@ class SyncService : JobService() {
     override fun onStopJob(jobParameters: JobParameters?) = true
 
     private fun startSyncWorker(jobParameters: JobParameters?) {
-        debugLog("SyncService startSyncWorker")
         notificationExt.notify("Syncing Mails", "You may have some new mails")
         notificationExt.cancelNotify()
         fetchMails().invokeOnCompletion {
@@ -68,25 +69,27 @@ class SyncService : JobService() {
                 }
                 else -> jobFinished(jobParameters, true)
             }
-            debugLog("SyncService startSyncWorker ${mails.value?.data}")
         }
     }
 
     private fun fetchMails() = CoroutineScope(Dispatchers.IO).launch {
         mails.postValue(
-            mailRepository.getMails(Constants.INBOX_URL, Constants.UPDATE_QUERY + lastSync).first()
+            mailRepository.getMails(applicationContext.getString(R.string.inbox), lastSync).first()
         )
+        debugLog(mails.value?.data.toString())
         delay(5000)
+        debugLog(mails.value?.data.toString())
     }
 
     private fun sendNotification(list: List<Mail>, lastSync: Long) {
         list.forEach { mail ->
-            if (mail.flag.contains('u') && mail.time > lastSync) {
-                val id = mail.id.toInt()
+            if (mail.flag?.contains('u') == true && mail.time > lastSync) {
                 val sender = mail.addresses.last()
-                val name =
-                    if (sender.name.isNotEmpty()) sender.name else sender.email.substringBefore('@')
-                notificationExt.notify("New Mail From $name", mail.subject, id)
+                notificationExt.notify(
+                    "New Mail From ${sender.firstName}",
+                    mail.subject ?: "",
+                    mail.id
+                )
             }
         }
     }

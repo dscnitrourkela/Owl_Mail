@@ -6,7 +6,7 @@ import github.sachin2dehury.owlmail.repository.MailRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class ComposeViewModel @Inject constructor(
+class WebPageViewModel @Inject constructor(
     private val mailRepository: MailRepository
 ) : ViewModel() {
     val token = mailRepository.getToken()
