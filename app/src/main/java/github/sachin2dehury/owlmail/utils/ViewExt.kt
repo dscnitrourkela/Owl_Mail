@@ -1,4 +1,4 @@
-package github.sachin2dehury.owlmail.ui
+package github.sachin2dehury.owlmail.utils
 
 import android.view.View
 import android.view.inputmethod.InputMethodManager

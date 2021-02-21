@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import github.sachin2dehury.owlmail.api.data.Address
 
-class Converters {
+class MailConverters {
 
     @TypeConverter
     fun fromList(value: List<Address>): String = Gson().toJson(value)

@@ -1,5 +1,6 @@
 package github.sachin2dehury.owlmail.api.database
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,10 +15,7 @@ interface MailDao {
     suspend fun insertMail(mail: Mail)
 
     @Query("SELECT * FROM mails WHERE box = :box ORDER BY time DESC")
-    fun getMails(box: Int): Flow<List<Mail>>
-
-    @Query("SELECT * FROM mails WHERE conversationId = :conversationId ORDER BY id DESC")
-    fun getConversationMails(conversationId: Int): Flow<List<Mail>>
+    fun getMails(box: Int): PagingSource<Int, Mail>
 
     @Query("SELECT id FROM mails WHERE conversationId = :conversationId ORDER BY id DESC")
     fun getMailsId(conversationId: Int): Flow<List<Int>>
@@ -25,12 +23,9 @@ interface MailDao {
     @Query("DELETE FROM mails")
     suspend fun deleteAllMails()
 
-    @Query("UPDATE mails SET parsedBody = :parsedBody WHERE id = :id")
-    suspend fun updateMail(parsedBody: String, id: Int)
-
-    @Query("UPDATE mails SET flag = :flag WHERE id = :id")
-    suspend fun markAsRead(flag: String, id: Int)
+//    @Query("UPDATE mails SET flag = REPLACE(flag,'u','') WHERE id = :id")
+//    suspend fun markAsRead(id: Int)
 
     @Query("SELECT * FROM mails WHERE body LIKE '%' || :query || '%' OR subject LIKE '%' || :query || '%' ORDER BY time DESC")
-    fun searchMails(query: String): Flow<List<Mail>>
+    fun searchMails(query: String): PagingSource<Int, Mail>
 }

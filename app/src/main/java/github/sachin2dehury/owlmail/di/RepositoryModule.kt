@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.createDataStore
+import androidx.paging.PagingConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +13,7 @@ import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.database.MailDao
+import github.sachin2dehury.owlmail.api.database.ParsedMailDao
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
@@ -28,7 +30,9 @@ object RepositoryModule {
         basicAuthInterceptor: BasicAuthInterceptor,
         mailApi: MailApi,
         mailDao: MailDao,
-    ) = MailRepository(basicAuthInterceptor, context, mailApi, mailDao)
+        parsedMailDao: ParsedMailDao,
+        pagingConfig: PagingConfig
+    ) = MailRepository(basicAuthInterceptor, context, mailApi, mailDao, parsedMailDao, pagingConfig)
 
     @Singleton
     @Provides
@@ -41,4 +45,8 @@ object RepositoryModule {
         @ApplicationContext context: Context,
         dataStore: DataStore<Preferences>
     ) = DataStoreRepository(context, dataStore)
+
+    @Singleton
+    @Provides
+    fun providePagerConfig() = PagingConfig(5, 2, false, 5, 10, 1)
 }

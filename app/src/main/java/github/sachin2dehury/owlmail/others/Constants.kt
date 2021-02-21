@@ -23,7 +23,8 @@ object Constants {
     const val UPDATE_QUERY = "after:"
     const val JSON_FORMAT = "&fmt=json"
 
-    const val DATABASE_NAME = "MAIL_DB"
+    const val MAIL_DATABASE = "MAIL_DB"
+    const val PARSED_MAIL_DATABASE = "PARSED_MAIL_DB"
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
 
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"
@@ -41,6 +42,7 @@ object Constants {
     const val DATE_FORMAT_MONTH = "dd MMM"
     const val DATE_FORMAT_DATE = "hh:mm a"
     const val DATE_FORMAT_FULL = "hh:mm a dd MMM yyyy"
+    const val DATE_FORMAT = "EEEE, MMMM dd, yyyy HH:mm a"
 
     const val YEAR = 31449600000L
     const val DAY = 86400000L

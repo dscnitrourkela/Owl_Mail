@@ -10,7 +10,7 @@ import github.sachin2dehury.owlmail.api.data.Mail
     version = 1
 )
 
-@TypeConverters(Converters::class)
+@TypeConverters(MailConverters::class)
 abstract class MailDatabase : RoomDatabase() {
     abstract fun getMailDao(): MailDao
 }

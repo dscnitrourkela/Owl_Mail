@@ -17,7 +17,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "v1.1-alpha"
+        versionName "v1.2-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -108,11 +108,11 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
 
     // Room
-    implementation "androidx.room:room-runtime:2.2.6"
-    kapt "androidx.room:room-compiler:2.2.6"
+    implementation "androidx.room:room-runtime:2.3.0-beta02"
+    kapt "androidx.room:room-compiler:2.3.0-beta02"
 
     // Kotlin Extensions and Coroutines support for Room
-    implementation "androidx.room:room-ktx:2.2.6"
+    implementation "androidx.room:room-ktx:2.3.0-beta02"
 
     // Preferences DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0-alpha06"

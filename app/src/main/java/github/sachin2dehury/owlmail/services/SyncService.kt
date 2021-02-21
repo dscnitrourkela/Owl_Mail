@@ -6,7 +6,6 @@ import android.app.job.JobService
 import android.text.format.DateUtils
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.AndroidEntryPoint
-import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
@@ -16,7 +15,6 @@ import github.sachin2dehury.owlmail.repository.MailRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -73,9 +71,9 @@ class SyncService : JobService() {
     }
 
     private fun fetchMails() = CoroutineScope(Dispatchers.IO).launch {
-        mails.postValue(
-            mailRepository.getMails(applicationContext.getString(R.string.inbox), lastSync).first()
-        )
+//        mails.postValue(
+//            mailRepository.getMails(applicationContext.getString(R.string.inbox), lastSync).first()
+//        )
         debugLog(mails.value?.data.toString())
         delay(5000)
         debugLog(mails.value?.data.toString())

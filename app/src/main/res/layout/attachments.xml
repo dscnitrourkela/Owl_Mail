@@ -6,6 +6,7 @@
     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_margin="16dp"
     android:padding="12dp"
     android:textColor="@color/rally_blue_500"
     app:icon="@drawable/ic_baseline_cloud_download_24"

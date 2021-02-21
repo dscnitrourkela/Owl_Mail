@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.paging.Pager
+import androidx.paging.cachedIn
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
@@ -16,8 +19,10 @@ import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
+import github.sachin2dehury.owlmail.utils.showSnackbar
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -95,8 +100,11 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         })
     }
 
-    private fun setContent(result: Resource<List<Mail>>) =
-        result.data?.let { mails -> mailBoxAdapter.mails = mails }
+    private fun setContent(result: Resource<Pager<Int, Mail>>) = lifecycleScope.launch {
+        result.data?.flow?.cachedIn(lifecycleScope)?.first()?.let {
+            mailBoxAdapter.submitData(it)
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()

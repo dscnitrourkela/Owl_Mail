@@ -25,7 +25,7 @@ class MailBoxViewModel @Inject constructor(
     }
 
     val mails = lastSync.switchMap { lastSync ->
-        mailRepository.getMails(_request.value ?: "",  lastSync)
+        mailRepository.getMails(_request.value ?: "", lastSync)
             .asLiveData(viewModelScope.coroutineContext)
     }.switchMap {
         MutableLiveData(Event(it))

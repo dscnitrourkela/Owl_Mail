@@ -13,9 +13,9 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.ui.hideKeyBoard
-import github.sachin2dehury.owlmail.ui.showSnackbar
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
+import github.sachin2dehury.owlmail.utils.hideKeyBoard
+import github.sachin2dehury.owlmail.utils.showSnackbar
 import okhttp3.Credentials
 import java.util.*
 

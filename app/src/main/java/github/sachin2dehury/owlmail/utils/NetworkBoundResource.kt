@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.utils
 
 import github.sachin2dehury.owlmail.others.Resource
+import github.sachin2dehury.owlmail.others.debugLog
 import kotlinx.coroutines.flow.*
 
 inline fun <ResultType, RequestType> networkBoundResource(
@@ -12,12 +13,14 @@ inline fun <ResultType, RequestType> networkBoundResource(
 ) = flow {
     emit(Resource.loading(null))
     val data = query().first()
+    debugLog("DB : $data")
     val flow = when {
         shouldFetch(data) -> {
             emit(Resource.loading(data))
             try {
                 val fetchedResult = fetch()
                 saveFetchResult(fetchedResult)
+                debugLog("Network $fetchedResult")
                 query().map { Resource.success(it) }
             } catch (t: Throwable) {
                 onFetchFailed(t)

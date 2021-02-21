@@ -19,8 +19,6 @@ data class Mail(
     @SerializedName("rev") val rev: Int,
     @SerializedName("s") val size: Int,
     @SerializedName("su") val subject: String?,
-
-    val parsedBody: String? = null
 ) {
     constructor(
         id: String,
@@ -33,7 +31,6 @@ data class Mail(
         rev: Int,
         size: Int,
         subject: String,
-        parsedBody: String
     ) : this(
         id.toInt(),
         conversationId.toInt(),
@@ -45,6 +42,5 @@ data class Mail(
         rev,
         size,
         if (subject.isEmpty()) null else subject,
-        if (parsedBody.isEmpty()) null else parsedBody
     )
 }

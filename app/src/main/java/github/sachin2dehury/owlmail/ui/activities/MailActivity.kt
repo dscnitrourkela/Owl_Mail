@@ -16,12 +16,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.ActivityMailBinding
-import github.sachin2dehury.owlmail.ui.hideKeyBoard
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
-import github.sachin2dehury.owlmail.utils.enableDarkTheme
-import github.sachin2dehury.owlmail.utils.enableSyncService
-import github.sachin2dehury.owlmail.utils.inAppReview
-import github.sachin2dehury.owlmail.utils.inAppUpdate
+import github.sachin2dehury.owlmail.utils.*
 
 @AndroidEntryPoint
 class MailActivity : AppCompatActivity() {
