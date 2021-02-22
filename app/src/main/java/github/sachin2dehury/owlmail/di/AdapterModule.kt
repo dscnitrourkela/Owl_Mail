@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.di
 
 import android.content.Context
+import android.webkit.WebChromeClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,7 +12,6 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.AttachmentAdapter
 import github.sachin2dehury.owlmail.adapters.MailBoxAdapter
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
-import github.sachin2dehury.owlmail.api.calls.MailViewClient
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -32,11 +32,10 @@ object AdapterModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMailViewClient() = MailViewClient()
+    fun provideWebChromeClient() = WebChromeClient()
 
     @ActivityRetainedScoped
     @Provides
     fun provideColorList(@ApplicationContext context: Context) =
         context.resources.getIntArray(R.array.colors)
-
 }

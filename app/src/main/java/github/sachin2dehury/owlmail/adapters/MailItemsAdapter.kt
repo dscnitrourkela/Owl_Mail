@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 
 class MailItemsAdapter(
     private val colors: IntArray,
-    private val attachmentAdapter: AttachmentAdapter
+    private val attachmentAdapter: AttachmentAdapter,
 ) : PagingDataAdapter<ParsedMail, MailItemsAdapter.MailItemsViewHolder>(
 
     object : DiffUtil.ItemCallback<ParsedMail>() {
@@ -53,6 +53,7 @@ class MailItemsAdapter(
             if (position == itemCount - 1) {
                 binding.divider.isVisible = false
             }
+            setupWebView(binding)
             setContent(binding, mail)
             holder.itemView.setOnClickListener {
                 binding.apply {
@@ -73,34 +74,33 @@ class MailItemsAdapter(
     private fun setContent(binding: MailItemsBinding, mail: ParsedMail) {
         val color = colors[mail.id % colorsLength]
         val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
-        val sender = mail.from?.substringBefore('@')
+        val sender = mail.from?.split(' ')
         val body = mail.body?.replace("auth=co", "auth=qp&amp;zauthtoken=$token") + css
         binding.apply {
             textViewDate.text = dateFormat.format(mail.time)
-            textViewSenderName.text = sender
-            textViewSender.text = sender?.first().toString()
+            textViewSenderName.text = sender?.first()
+            textViewSender.text = sender?.first()?.first().toString()
             textViewSender.background.setTint(color)
             textViewMailBody.text = mail.body
             textViewEmailDetails.text = mail.to
 //            if (mail.flag?.contains('f') == true) {
 //                imageViewStared.isVisible = true
 //            }
-            if (mail.attachments.isNotEmpty()) {
+            mail.attachments?.let {
                 imageViewAttachment.isVisible = true
             }
 //            if (mail.flag?.contains('r') == true) {
 //                imageViewReply.isVisible = true
 //            }
-            setupWebView(binding)
             webView.loadDataWithBaseURL(Constants.BASE_URL, body, "text/html", "utf-8", null)
             recyclerViewAttachments.apply {
-                attachmentAdapter.list = mail.attachments
+                attachmentAdapter.attachments = mail.attachments
                 adapter = attachmentAdapter
                 layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
             if (mail.id == id) {
-                textViewMailBody.text = mail.from
+                textViewMailBody.text = sender?.last()
                 webView.isVisible = true
                 recyclerViewAttachments.isVisible = true
                 if (mail.body.isNullOrEmpty()) {
@@ -114,9 +114,6 @@ class MailItemsAdapter(
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView(binding: MailItemsBinding) {
         binding.webView.apply {
-            isVerticalScrollBarEnabled = false
-            settings.javaScriptEnabled = true
-            settings.loadsImagesAutomatically = true
             if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
                 val darkMode = when (AppCompatDelegate.getDefaultNightMode()) {
                     AppCompatDelegate.MODE_NIGHT_YES -> WebSettingsCompat.FORCE_DARK_ON
@@ -124,6 +121,9 @@ class MailItemsAdapter(
                 }
                 WebSettingsCompat.setForceDark(this.settings, darkMode)
             }
+            isVerticalScrollBarEnabled = false
+            settings.javaScriptEnabled = true
+            settings.loadsImagesAutomatically = true
         }
     }
 

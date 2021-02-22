@@ -22,13 +22,13 @@ interface MailApi {
         @Query("query") lastSync: String,
     ): Response<Mails>
 
-    @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)
-    suspend fun getParsedMail(
-        @Query("id") id: Int,
-    ): ResponseBody
+//    @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)
+//    suspend fun getParsedMail(
+//        @Query("id") id: Int,
+//    ): ResponseBody
 
     @GET(Constants.HTML_URL + Constants.AUTH_FROM_COOKIE + Constants.LOAD_IMAGES)
-    suspend fun getMailBody(
+    suspend fun getParsedMail(
         @Query("id") id: Int,
     ): ResponseBody
 

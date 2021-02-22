@@ -65,7 +65,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         mailItemsAdapter.setupOnItemClickListener { part ->
             findNavController().navigate(
                 NavGraphDirections.actionToComposeFragment(
-                    "https://mail.nitrkl.ac.in/service/home/~/?id=17364&part=$part"
+                    "https://mail.nitrkl.ac.in/service/home/~/?id=${args.id}&part=$part"
                 )
             )
         }

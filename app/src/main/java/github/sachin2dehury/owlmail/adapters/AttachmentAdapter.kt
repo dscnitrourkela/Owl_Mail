@@ -11,7 +11,8 @@ class AttachmentAdapter : RecyclerView.Adapter<AttachmentAdapter.AttachmentViewH
 
     var onItemClickListener: ((Int) -> Unit)? = null
 
-    var list: List<String> = emptyList()
+    var attachments: String? = null
+    private var list = attachments?.split(") ") ?: emptyList()
 
     class AttachmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 

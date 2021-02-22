@@ -5,7 +5,7 @@ object Constants {
     const val BASE_URL = "https://mail.nitrkl.ac.in/"
     const val HOME_URL = "home/~/"
     const val MOBILE_URL = "m/zmain"
-    const val HTML_URL = "h/imessage"
+    const val HTML_URL = "h/printmessage"
 
     const val NOTIFICATION_ID = "NITR Mail Notification Sync"
     const val NOTIFICATION_CHANNEL = "NITR Mail Notification"

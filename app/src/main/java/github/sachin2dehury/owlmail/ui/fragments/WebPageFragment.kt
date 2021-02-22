@@ -1,14 +1,13 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebChromeClient
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
-import github.sachin2dehury.owlmail.api.calls.MailViewClient
 import github.sachin2dehury.owlmail.databinding.FragmentWebViewBinding
 import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.debugLog
@@ -26,7 +25,7 @@ class WebPageFragment : Fragment(R.layout.fragment_web_view) {
     private val args: WebPageFragmentArgs by navArgs()
 
     @Inject
-    lateinit var mailViewClient: MailViewClient
+    lateinit var chromeClient: WebChromeClient
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,12 +40,10 @@ class WebPageFragment : Fragment(R.layout.fragment_web_view) {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private fun setContent() {
         binding.swipeRefreshLayout.isRefreshing = true
         binding.webView.apply {
-            webViewClient = mailViewClient
-            settings.javaScriptEnabled = true
+            webChromeClient = chromeClient
             settings.loadsImagesAutomatically = true
             settings.setSupportZoom(true)
             setInitialScale(100)
