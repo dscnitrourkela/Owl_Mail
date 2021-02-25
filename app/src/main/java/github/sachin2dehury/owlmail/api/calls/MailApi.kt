@@ -19,7 +19,7 @@ interface MailApi {
     @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_FROM_COOKIE + Constants.JSON_FORMAT)
     suspend fun getMails(
         @Path("request") request: String,
-        @Query("query") lastSync: String,
+        @Query("query") month: String,
     ): Response<Mails>
 
 //    @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)

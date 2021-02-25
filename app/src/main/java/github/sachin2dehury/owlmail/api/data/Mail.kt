@@ -37,7 +37,7 @@ data class Mail(
         time,
         addresses,
         flag,
-        if (body.isEmpty()) null else body.removeSuffix("..."),
+        if (body.isEmpty()) null else body.replace("...", ""),
         box.toByte(),
         rev,
         size,

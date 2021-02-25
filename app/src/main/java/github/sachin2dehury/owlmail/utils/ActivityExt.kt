@@ -41,14 +41,17 @@ fun AppCompatActivity.inAppReview() {
     val reviewManager = ReviewManagerFactory.create(this)
     val request = reviewManager.requestReviewFlow()
     request.addOnCompleteListener { task ->
-        if (task.isSuccessful) {
-            val reviewInfo = task.result
-            val flow = reviewManager.launchReviewFlow(this, reviewInfo)
-            flow.addOnCompleteListener {
-                debugLog("Successful Review")
+        when (task.isSuccessful) {
+            true -> {
+                val reviewInfo = task.result
+                val flow = reviewManager.launchReviewFlow(this, reviewInfo)
+                flow.addOnCompleteListener {
+                    debugLog(task.isComplete)
+                }
             }
-        } else {
-            debugLog(task.exception.toString())
+            else -> {
+                debugLog(task.exception)
+            }
         }
     }
 }

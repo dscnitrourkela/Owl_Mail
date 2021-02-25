@@ -14,6 +14,9 @@ interface MailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMail(mail: Mail)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMails(mails: List<Mail>)
+
     @Query("SELECT * FROM mails WHERE box = :box ORDER BY time DESC")
     fun getMails(box: Int): PagingSource<Int, Mail>
 

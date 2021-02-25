@@ -20,11 +20,13 @@ object Constants {
     const val CLIENT_VIEW = "&zms=ipad&action=view"
     const val LOAD_IMAGES = "&xim=1"
     const val COMPOSE_MAIL = "&st=newmail&zms=ipad"
-    const val UPDATE_QUERY = "after:"
+    const val MONTH_QUERY = "month:"
+    const val AFTER_QUERY = "after:"
     const val JSON_FORMAT = "&fmt=json"
 
     const val MAIL_DATABASE = "MAIL_DB"
-    const val PARSED_MAIL_DATABASE = "PARSED_MAIL_DB"
+
+    //    const val PARSED_MAIL_DATABASE = "PARSED_MAIL_DB"
     const val DATA_STORE_NAME = "MAIL_CREDENTIAL"
 
     const val KEY_CREDENTIAL = "KEY_CREDENTIAL"

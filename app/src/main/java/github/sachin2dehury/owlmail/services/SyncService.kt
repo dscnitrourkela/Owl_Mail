@@ -61,7 +61,7 @@ class SyncService : JobService() {
     private fun fetchMails(lastSync: Long) = CoroutineScope(Dispatchers.IO).launch {
         val list = mailApi.getMails(
             applicationContext.getString(R.string.inbox),
-            Constants.UPDATE_QUERY + (lastSync - DateUtils.HOUR_IN_MILLIS)
+            Constants.AFTER_QUERY + (lastSync - DateUtils.HOUR_IN_MILLIS)
         ).body()?.mails
         list?.let { sendNotification(it, lastSync) }
     }

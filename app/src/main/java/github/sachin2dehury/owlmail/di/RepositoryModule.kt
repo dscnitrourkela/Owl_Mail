@@ -25,17 +25,6 @@ object RepositoryModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMailRepository(
-        @ApplicationContext context: Context,
-        basicAuthInterceptor: BasicAuthInterceptor,
-        mailApi: MailApi,
-        mailDao: MailDao,
-        parsedMailDao: ParsedMailDao,
-        pagingConfig: PagingConfig
-    ) = MailRepository(basicAuthInterceptor, context, mailApi, mailDao, parsedMailDao, pagingConfig)
-
-    @ActivityRetainedScoped
-    @Provides
     fun provideDataStore(@ApplicationContext context: Context) =
         context.createDataStore(Constants.DATA_STORE_NAME)
 
@@ -48,5 +37,16 @@ object RepositoryModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun providePagerConfig() = PagingConfig(10, 2, false)
+    fun providePagerConfig() = PagingConfig(20, 2, false)
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideNewMailRepository(
+        @ApplicationContext context: Context,
+        basicAuthInterceptor: BasicAuthInterceptor,
+        mailApi: MailApi,
+        mailDao: MailDao,
+        parsedMailDao: ParsedMailDao,
+        pagingConfig: PagingConfig
+    ) = MailRepository(basicAuthInterceptor, context, mailApi, mailDao, parsedMailDao, pagingConfig)
 }

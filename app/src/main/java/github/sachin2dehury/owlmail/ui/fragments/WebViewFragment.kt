@@ -48,7 +48,7 @@ open class WebViewFragment : Fragment(R.layout.fragment_web_view) {
             loadDataWithBaseURL(null, page + css, "text/html", "utf-8", null)
         }
     } catch (e: Exception) {
-        debugLog(e.toString())
+        debugLog(e)
     }
 
     override fun onDestroy() {

@@ -7,21 +7,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.paging.Pager
-import androidx.paging.cachedIn
+import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
-import github.sachin2dehury.owlmail.api.data.ParsedMail
 import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
-import github.sachin2dehury.owlmail.others.Resource
-import github.sachin2dehury.owlmail.others.Status
-import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
-import github.sachin2dehury.owlmail.utils.showSnackbar
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,21 +33,17 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
     @Inject
     lateinit var mailItemsAdapter: MailItemsAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.setConversationId(args.conversationId)
-    }
-
+    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentMailItemsBinding.bind(view)
 
         setupRecyclerView()
-        subscribeToObservers()
+        setContent()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.setConversationId(args.conversationId)
+            setContent()
         }
     }
 
@@ -73,38 +63,11 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         layoutManager = LinearLayoutManager(context)
     }
 
-    private fun subscribeToObservers() {
-        viewModel.parsedMails.observe(viewLifecycleOwner, {
-            it?.let { event ->
-                val result = event.peekContent()
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        setContent(result)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.ERROR -> {
-                        event.getContentIfNotHandled()?.let { errorResource ->
-                            errorResource.message?.let { message ->
-                                view?.showSnackbar(message)
-                            }
-                        }
-                        setContent(result)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                    Status.LOADING -> {
-                        setContent(result)
-                        binding.recyclerViewMailBox.startLayoutAnimation()
-                        binding.swipeRefreshLayout.isRefreshing = true
-                    }
-                }
-                debugLog(mailItemsAdapter.quota ?: "")
-            }
-        })
-    }
-
-    private fun setContent(result: Resource<Pager<Int, ParsedMail>>) = lifecycleScope.launch {
-        result.data?.flow?.cachedIn(lifecycleScope)?.first()
-            ?.let { mailItemsAdapter.submitData(it) }
+    @ExperimentalPagingApi
+    private fun setContent() = lifecycleScope.launch {
+        viewModel.getParsedMails(args.conversationId).collectLatest {
+            mailItemsAdapter.submitData(it)
+        }
     }
 
     override fun onDestroy() {

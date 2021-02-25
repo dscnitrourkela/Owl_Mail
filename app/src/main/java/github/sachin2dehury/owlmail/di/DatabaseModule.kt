@@ -9,7 +9,6 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import github.sachin2dehury.owlmail.api.database.MailDatabase
-import github.sachin2dehury.owlmail.api.database.ParsedMailDatabase
 import github.sachin2dehury.owlmail.others.Constants
 
 @Module
@@ -29,17 +28,6 @@ object DatabaseModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideParsedMailDatabase(
-        @ApplicationContext context: Context
-    ) = Room.databaseBuilder(
-        context,
-        ParsedMailDatabase::class.java,
-        Constants.PARSED_MAIL_DATABASE
-    )
-        .fallbackToDestructiveMigration().build()
-
-    @ActivityRetainedScoped
-    @Provides
-    fun provideParsedMailDao(parsedMailDatabase: ParsedMailDatabase) =
-        parsedMailDatabase.getParsedMailDao()
+    fun provideParsedMailDao(mailDatabase: MailDatabase) =
+        mailDatabase.getParsedMailDao()
 }

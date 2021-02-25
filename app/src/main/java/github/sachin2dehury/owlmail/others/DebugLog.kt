@@ -2,6 +2,6 @@ package github.sachin2dehury.owlmail.others
 
 import android.util.Log
 
-fun debugLog(string: String) {
-    Log.w("Test", string)
+fun <T> debugLog(value: T) {
+    Log.w("Test", "$value")
 }
