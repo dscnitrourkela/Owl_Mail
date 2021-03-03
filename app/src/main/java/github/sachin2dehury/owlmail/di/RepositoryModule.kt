@@ -11,11 +11,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.api.database.ParsedMailDao
-import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
 
@@ -26,7 +26,7 @@ object RepositoryModule {
     @ActivityRetainedScoped
     @Provides
     fun provideDataStore(@ApplicationContext context: Context) =
-        context.createDataStore(Constants.DATA_STORE_NAME)
+        context.createDataStore(context.getString(R.string.data_store_name))
 
     @ActivityRetainedScoped
     @Provides
@@ -37,11 +37,11 @@ object RepositoryModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun providePagerConfig() = PagingConfig(20, 2, false)
+    fun providePagerConfig() = PagingConfig(10, 3, false)
 
     @ActivityRetainedScoped
     @Provides
-    fun provideNewMailRepository(
+    fun provideMailRepository(
         @ApplicationContext context: Context,
         basicAuthInterceptor: BasicAuthInterceptor,
         mailApi: MailApi,

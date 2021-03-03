@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.ApiConstants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -31,7 +31,7 @@ object ApiModule {
     fun provideMailApi(
         okHttpClient: OkHttpClient
     ): MailApi = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
+        .baseUrl(ApiConstants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()

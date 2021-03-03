@@ -1,7 +1,7 @@
 package github.sachin2dehury.owlmail.api.calls
 
 import github.sachin2dehury.owlmail.api.data.Mails
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.ApiConstants
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
@@ -10,29 +10,26 @@ import retrofit2.http.Query
 
 interface MailApi {
 
-    @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_SET_COOKIE + Constants.JSON_FORMAT)
-    suspend fun login(
-        @Path("request") request: String,
-        @Query("query") sync: String,
-    ): Response<Mails>
+    @GET(ApiConstants.HOME_URL + ApiConstants.AUTH_SET_COOKIE + ApiConstants.JSON_FORMAT + ApiConstants.NONE_ITEM_QUERY)
+    suspend fun login(): Response<Mails>
 
-    @GET(Constants.HOME_URL + "{request}" + Constants.AUTH_FROM_COOKIE + Constants.JSON_FORMAT)
+    @GET(ApiConstants.HOME_URL + "{request}" + ApiConstants.AUTH_FROM_COOKIE + ApiConstants.JSON_FORMAT)
     suspend fun getMails(
         @Path("request") request: String,
         @Query("query") month: String,
     ): Response<Mails>
 
-//    @GET(Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.CLIENT_VIEW + Constants.LOAD_IMAGES)
-//    suspend fun getParsedMail(
-//        @Query("id") id: Int,
-//    ): ResponseBody
-
-    @GET(Constants.HTML_URL + Constants.AUTH_FROM_COOKIE + Constants.LOAD_IMAGES)
+    @GET(ApiConstants.MOBILE_URL + ApiConstants.ACTION_VIEW + ApiConstants.LOAD_IMAGES)
     suspend fun getParsedMail(
         @Query("id") id: Int,
     ): ResponseBody
 
-    @GET(Constants.HOME_URL + Constants.AUTH_FROM_COOKIE + Constants.JSON_FORMAT)
+//    @GET(ApiConstants.HTML_URL + ApiConstants.AUTH_FROM_COOKIE + ApiConstants.LOAD_IMAGES)
+//    suspend fun getParsedMail(
+//        @Query("id") id: Int,
+//    ): ResponseBody
+
+    @GET(ApiConstants.HOME_URL + ApiConstants.AUTH_FROM_COOKIE + ApiConstants.JSON_FORMAT)
     suspend fun searchMails(
         @Query("query") query: String,
     ): Response<Mails>

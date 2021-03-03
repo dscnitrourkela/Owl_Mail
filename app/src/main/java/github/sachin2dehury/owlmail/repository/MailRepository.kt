@@ -9,7 +9,6 @@ import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.api.database.ParsedMailDao
-import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,20 +25,29 @@ class MailRepository(
 
     @ExperimentalPagingApi
     fun getSearchMails(request: String) =
-        Pager(pagerConfig, 0, MailRemoteMediator(request, mailApi, mailDao),
-            { mailDao.searchMails(request) }).flow
+        Pager(pagerConfig, 0, { SearchMailPagingSource(context, request, mailApi, mailDao) }).flow
 
     @ExperimentalPagingApi
     fun getParsedMails(conversationId: Int) =
-        Pager(pagerConfig,
+        Pager(
+            pagerConfig,
             0,
-            ParsedMailRemoteMediator(conversationId, mailApi, mailDao, parsedMailDao),
-            { parsedMailDao.getConversationMails(conversationId) }).flow
+            {
+                ParsedMailPagingSource(
+                    context,
+                    conversationId,
+                    mailApi,
+                    mailDao,
+                    parsedMailDao
+                )
+            }).flow
 
     @ExperimentalPagingApi
     fun getMails(request: String) =
-        Pager(pagerConfig, 0, MailRemoteMediator(request, mailApi, mailDao),
-            { mailDao.getMails(getBox(request)) }).flow
+        Pager(
+            pagerConfig,
+            0,
+            { MailPagingSource(getBox(request), context, request, mailApi, mailDao) }).flow
 
     private fun getBox(request: String) = when (request) {
         context.getString(R.string.inbox) -> 2
@@ -48,12 +56,10 @@ class MailRepository(
         context.getString(R.string.sent) -> 5
         context.getString(R.string.draft) -> 6
         else -> 0
-    }
+    }.toByte()
 
     suspend fun login() = try {
-        val response = mailApi.login(
-            context.getString(R.string.draft), Constants.AFTER_QUERY + System.currentTimeMillis()
-        )
+        val response = mailApi.login()
         if (response.isSuccessful && response.code() == 200) {
             Resource.success(response.body()?.mails)
         } else {
@@ -80,7 +86,7 @@ class MailRepository(
     fun resetLogin() = CoroutineScope(Dispatchers.IO).launch {
         mailDao.deleteAllMails()
         parsedMailDao.deleteAllMails()
-        basicAuthInterceptor.credential = Constants.NO_CREDENTIAL
-        basicAuthInterceptor.token = Constants.NO_TOKEN
+        basicAuthInterceptor.credential = ""
+        basicAuthInterceptor.token = ""
     }
 }

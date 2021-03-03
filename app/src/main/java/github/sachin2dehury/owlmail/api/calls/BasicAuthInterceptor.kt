@@ -1,13 +1,12 @@
 package github.sachin2dehury.owlmail.api.calls
 
-import github.sachin2dehury.owlmail.others.Constants
 import okhttp3.Interceptor
 import okhttp3.Response
 
 class BasicAuthInterceptor : Interceptor {
 
-    var credential = Constants.NO_CREDENTIAL
-    var token = Constants.NO_TOKEN
+    var credential = ""
+    var token = ""
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
@@ -15,11 +14,11 @@ class BasicAuthInterceptor : Interceptor {
 
         if (response.code == 401) {
             response.close()
-            token = Constants.NO_TOKEN
+            token = ""
             response = request(chain)
         }
 
-        if (token == Constants.NO_TOKEN && response.headers("Set-Cookie").isNotEmpty()) {
+        if (token.isEmpty() && response.headers("Set-Cookie").isNotEmpty()) {
             token = response.headers("Set-Cookie").first().substringBefore(';')
         }
 
@@ -27,9 +26,8 @@ class BasicAuthInterceptor : Interceptor {
     }
 
     private fun request(chain: Interceptor.Chain) = chain.proceed(
-        when (token) {
-            Constants.NO_TOKEN -> chain.request().newBuilder().header("Authorization", credential)
-                .build()
+        when (token.isEmpty()) {
+            true -> chain.request().newBuilder().header("Authorization", credential).build()
             else -> chain.request().newBuilder().header("Cookie", token).build()
         }
     )

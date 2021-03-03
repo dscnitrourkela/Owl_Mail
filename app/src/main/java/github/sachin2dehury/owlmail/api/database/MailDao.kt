@@ -1,6 +1,5 @@
 package github.sachin2dehury.owlmail.api.database
 
-import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,13 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface MailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMail(mail: Mail)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMails(mails: List<Mail>)
 
     @Query("SELECT * FROM mails WHERE box = :box ORDER BY time DESC")
-    fun getMails(box: Int): PagingSource<Int, Mail>
+    fun getMails(box: Byte): Flow<List<Mail>>
 
     @Query("SELECT id FROM mails WHERE conversationId = :conversationId ORDER BY id DESC")
     fun getMailsId(conversationId: Int): Flow<List<Int>>
@@ -30,5 +26,5 @@ interface MailDao {
 //    suspend fun markAsRead(id: Int)
 
     @Query("SELECT * FROM mails WHERE body LIKE '%' || :query || '%' OR subject LIKE '%' || :query || '%' ORDER BY time DESC")
-    fun searchMails(query: String): PagingSource<Int, Mail>
+    fun searchMails(query: String): Flow<List<Mail>>
 }

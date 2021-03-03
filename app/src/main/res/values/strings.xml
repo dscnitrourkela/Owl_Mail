@@ -21,4 +21,25 @@
     <string name="new_features">New Features</string>
     <string name="terms_conditions">Terms &amp; Conditions</string>
     <string name="all_mails">All Mails</string>
+    <string name="calendar">Calendar</string>
+    <string name="contacts">Contacts</string>
+    <string name="tasks">Tasks</string>
+
+    <string name="database_name">MAIL_DB</string>
+    <string name="data_store_name">MAIL_CREDENTIAL</string>
+    <string name="key_credential">KEY_CREDENTIAL</string>
+    <string name="key_token">KEY_TOKEN</string>
+    <string name="key_should_sync">KEY_SYNC_SERVICE</string>
+    <string name="key_dark_theme">KEY_DARK_THEME</string>
+    <string name="key_analytics">KEY_ANALYTICS</string>
+
+    <string name="year_format">dd-MM-yyyy</string>
+    <string name="month_format">dd MMM</string>
+    <string name="day_format">hh:mm a</string>
+    <string name="full_date_format">hh:mm a dd MMM yyyy</string>
+    <string name="zimbra_date_format">EEEE, MMMM dd, yyyy HH:mm a</string>
+    <string name="zimbra_month_format">MM/dd/yyyy</string>
+
+    <string name="notification_id">NITR Mail Notification Sync</string>
+    <string name="notification_channel">NITR Mail Notification</string>
 </resources>

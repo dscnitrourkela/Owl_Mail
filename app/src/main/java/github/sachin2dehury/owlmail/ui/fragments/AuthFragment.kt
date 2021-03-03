@@ -1,5 +1,6 @@
 package github.sachin2dehury.owlmail.ui.fragments
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
@@ -11,7 +12,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
-import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
 import github.sachin2dehury.owlmail.utils.hideKeyBoard
@@ -27,16 +27,19 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private val viewModel: AuthViewModel by viewModels()
 
-    private var credential = Constants.NO_CREDENTIAL
+    private var credential: String? = null
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentAuthBinding.bind(view)
 
+        viewModel.resetLogin()
+
         binding.buttonLogin.setOnClickListener {
             getCredential()
-            viewModel.login(credential)
+            credential?.let { it1 -> viewModel.login(it1) }
             binding.root.hideKeyBoard()
         }
 

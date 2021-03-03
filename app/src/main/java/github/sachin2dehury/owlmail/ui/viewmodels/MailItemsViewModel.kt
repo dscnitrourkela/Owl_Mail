@@ -17,9 +17,5 @@ class MailItemsViewModel @Inject constructor(
     fun getParsedMails(conversationId: Int) =
         mailRepository.getParsedMails(conversationId).cachedIn(viewModelScope)
 
-//    private val _quota = MutableLiveData<String>()
-
-//    fun setQuota(quota: String) = _quota.postValue(quota)
-
     fun getToken() = mailRepository.getToken()
 }

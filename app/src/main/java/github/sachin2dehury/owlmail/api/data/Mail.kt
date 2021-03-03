@@ -12,7 +12,7 @@ data class Mail(
 
     @SerializedName("cid") val conversationId: Int,
     @SerializedName("d") val time: Long,
-    @SerializedName("e") val addresses: List<Address>,
+    @SerializedName("e") val addresses: List<Address>?,
     @SerializedName("f") val flag: String?,
     @SerializedName("fr") val body: String?,
     @SerializedName("l") val box: Byte,
@@ -24,7 +24,7 @@ data class Mail(
         id: String,
         conversationId: String,
         time: Long,
-        addresses: List<Address>,
+        addresses: List<Address>?,
         flag: String?,
         body: String,
         box: String,

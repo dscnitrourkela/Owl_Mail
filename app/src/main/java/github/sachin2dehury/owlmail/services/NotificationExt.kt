@@ -1,5 +1,6 @@
 package github.sachin2dehury.owlmail.services
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,7 +11,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import github.sachin2dehury.owlmail.R
-import github.sachin2dehury.owlmail.others.Constants
 import github.sachin2dehury.owlmail.ui.activities.MailActivity
 
 class NotificationExt(private val context: Context) {
@@ -18,8 +18,8 @@ class NotificationExt(private val context: Context) {
     private val notificationManager = NotificationManagerCompat.from(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                Constants.NOTIFICATION_ID,
-                Constants.NOTIFICATION_CHANNEL,
+                context.getString(R.string.notification_id),
+                context.getString(R.string.notification_channel),
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             notificationChannel.apply {
@@ -32,7 +32,7 @@ class NotificationExt(private val context: Context) {
     }
 
     private fun notificationBuilder(title: String, subject: String, pendingIntent: PendingIntent) =
-        NotificationCompat.Builder(context, Constants.NOTIFICATION_ID).apply {
+        NotificationCompat.Builder(context, context.getString(R.string.notification_id)).apply {
             priority = NotificationCompat.PRIORITY_DEFAULT
             setStyle(NotificationCompat.BigTextStyle())
             setSmallIcon(R.drawable.ic_owl_mail)
@@ -43,7 +43,7 @@ class NotificationExt(private val context: Context) {
 
     fun notify(
         title: String, subject: String, id: Int = 0,
-        pendingIntent: PendingIntent =
+        @SuppressLint("UnspecifiedImmutableFlag") pendingIntent: PendingIntent =
             PendingIntent.getActivity(context, 1000, Intent(context, MailActivity::class.java), 0)
     ) = notificationManager.notify(id, notificationBuilder(title, subject, pendingIntent))
 

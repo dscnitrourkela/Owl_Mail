@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentWebViewBinding
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.ui.viewmodels.WebPageViewModel
 import javax.inject.Inject
@@ -47,8 +47,8 @@ class WebPageFragment : Fragment(R.layout.fragment_web_view) {
             settings.loadsImagesAutomatically = true
             settings.setSupportZoom(true)
             setInitialScale(100)
-            debugLog(args.url + Constants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
-            loadUrl(args.url + Constants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
+            debugLog(args.url + ApiConstants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
+            loadUrl(args.url + ApiConstants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
             zoomOut()
         }
         binding.swipeRefreshLayout.isRefreshing = false

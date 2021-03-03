@@ -8,7 +8,8 @@ import github.sachin2dehury.owlmail.api.data.ParsedMail
 
 @Database(
     entities = [Mail::class, ParsedMail::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 
 @TypeConverters(Converters::class)

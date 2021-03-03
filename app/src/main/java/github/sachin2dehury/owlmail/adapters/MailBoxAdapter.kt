@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.databinding.MailItemBinding
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.utils.getDateFormat
 import java.text.SimpleDateFormat
 
-class MailBoxAdapter(private val colors: IntArray) :
+class MailBoxAdapter(private val context: Context, private val colors: IntArray) :
     PagingDataAdapter<Mail, MailBoxAdapter.MailBoxViewHolder>(
 
         object : DiffUtil.ItemCallback<Mail>() {
@@ -42,30 +43,20 @@ class MailBoxAdapter(private val colors: IntArray) :
         getItem(position)?.let { mail ->
             val binding = MailItemBinding.bind(holderBox.itemView)
             val sender =
-                if (mail.flag?.contains('s') == true) mail.addresses.first() else mail.addresses.last()
+                if (mail.flag?.contains('s') == true) mail.addresses?.first() else mail.addresses?.last()
 
             @SuppressLint("SimpleDateFormat")
-            val dateFormat = when {
-                (System.currentTimeMillis() - mail.time) < Constants.DAY -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_DATE)
-                }
-                (System.currentTimeMillis() - mail.time) < Constants.YEAR -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_MONTH)
-                }
-                else -> {
-                    SimpleDateFormat(Constants.DATE_FORMAT_YEAR)
-                }
-            }
+            val dateFormat = SimpleDateFormat(getDateFormat(mail.time, context))
 
             val color = colors[mail.size % colorsLength]
 
             binding.apply {
-                textViewSender.text = sender.firstName.first().toString()
+                textViewSender.text = sender?.firstName?.first().toString()
                 textViewSender.background.setTint(color)
                 textViewDate.text = dateFormat.format(mail.time)
                 textViewMailBody.text = mail.body
                 textViewMailSubject.text = mail.subject
-                textViewSenderEmail.text = sender.firstName
+                textViewSenderEmail.text = sender?.firstName
                 if (mail.flag?.contains('u') == true) {
                     textViewSenderEmail.typeface = Typeface.DEFAULT_BOLD
                     textViewMailSubject.typeface = Typeface.DEFAULT_BOLD

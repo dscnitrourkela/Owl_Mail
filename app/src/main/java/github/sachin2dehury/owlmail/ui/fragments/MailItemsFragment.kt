@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
@@ -15,8 +16,10 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
 import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 
@@ -33,6 +36,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
     @Inject
     lateinit var mailItemsAdapter: MailItemsAdapter
 
+    @InternalCoroutinesApi
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,7 +47,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         setContent()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            setContent()
+            mailItemsAdapter.refresh()
         }
     }
 
@@ -52,21 +56,31 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         mailItemsAdapter.token = viewModel.getToken()
         mailItemsAdapter.css =
             requireContext().assets.open("Font").bufferedReader().use { it.readText() }
-        mailItemsAdapter.setupOnItemClickListener { part ->
-            findNavController().navigate(
-                NavGraphDirections.actionToComposeFragment(
-                    "https://mail.nitrkl.ac.in/service/home/~/?id=${args.id}&part=$part"
-                )
-            )
+        mailItemsAdapter.setupOnItemClickListener { link ->
+            findNavController().navigate(NavGraphDirections.actionToComposeFragment(link))
         }
         adapter = mailItemsAdapter
         layoutManager = LinearLayoutManager(context)
     }
 
+    @InternalCoroutinesApi
     @ExperimentalPagingApi
-    private fun setContent() = lifecycleScope.launch {
-        viewModel.getParsedMails(args.conversationId).collectLatest {
-            mailItemsAdapter.submitData(it)
+    private fun setContent() {
+        lifecycleScope.launchWhenCreated {
+            mailItemsAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swipeRefreshLayout.isRefreshing = loadStates.refresh is LoadState.Loading
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            viewModel.getParsedMails(args.conversationId).collectLatest {
+                mailItemsAdapter.submitData(it)
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            mailItemsAdapter.loadStateFlow
+                .distinctUntilChangedBy { it.refresh }
+                .filter { it.refresh is LoadState.NotLoading }
+                .collectLatest { binding.recyclerViewMailBox.scrollToPosition(0) }
         }
     }
 

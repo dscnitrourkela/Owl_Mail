@@ -8,16 +8,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailBoxAdapter
 import github.sachin2dehury.owlmail.databinding.FragmentMailBoxBinding
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.ui.viewmodels.MailBoxViewModel
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,6 +36,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     @Inject
     lateinit var mailBoxAdapter: MailBoxAdapter
 
+    @InternalCoroutinesApi
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +54,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         binding.floatingActionButtonCompose.setOnClickListener {
             findNavController().navigate(
                 NavGraphDirections.actionToComposeFragment(
-                    Constants.BASE_URL + Constants.MOBILE_URL + Constants.AUTH_FROM_COOKIE + Constants.COMPOSE_MAIL
+                    ApiConstants.BASE_URL + ApiConstants.MOBILE_URL + ApiConstants.AUTH_FROM_COOKIE + ApiConstants.COMPOSE_MAIL
                 )
             )
         }
@@ -67,10 +71,24 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
         layoutManager = LinearLayoutManager(context)
     }
 
+    @InternalCoroutinesApi
     @ExperimentalPagingApi
-    private fun setContent() = lifecycleScope.launch {
-        viewModel.getMails(args.request).collectLatest {
-            mailBoxAdapter.submitData(it)
+    private fun setContent() {
+        lifecycleScope.launchWhenCreated {
+            mailBoxAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swipeRefreshLayout.isRefreshing = loadStates.refresh is LoadState.Loading
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            viewModel.getMails(args.request).collectLatest {
+                mailBoxAdapter.submitData(it)
+            }
+        }
+        lifecycleScope.launchWhenCreated {
+            mailBoxAdapter.loadStateFlow
+                .distinctUntilChangedBy { it.refresh }
+                .filter { it.refresh is LoadState.NotLoading }
+                .collectLatest { binding.recyclerViewMailBox.scrollToPosition(0) }
         }
     }
 

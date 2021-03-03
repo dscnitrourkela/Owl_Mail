@@ -1,6 +1,7 @@
 package github.sachin2dehury.owlmail.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +16,11 @@ import androidx.webkit.WebViewFeature
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.ParsedMail
 import github.sachin2dehury.owlmail.databinding.MailItemsBinding
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.utils.showToast
-import java.text.SimpleDateFormat
 
 class MailItemsAdapter(
+    private val context: Context,
     private val colors: IntArray,
     private val attachmentAdapter: AttachmentAdapter,
 ) : PagingDataAdapter<ParsedMail, MailItemsAdapter.MailItemsViewHolder>(
@@ -40,7 +41,6 @@ class MailItemsAdapter(
     var id = 0
     var token: String? = null
     var css: String? = null
-    var quota: String? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         MailItemsViewHolder(
@@ -60,10 +60,9 @@ class MailItemsAdapter(
                     webView.isVisible = !webView.isVisible
                     recyclerViewAttachments.isVisible = webView.isVisible
                     textViewEmailDetails.isVisible =
-                        webView.isVisible && !textViewEmailDetails.isVisible
+                        webView.isVisible && textViewMailBody.isVisible
                     textViewMailBody.setOnClickListener {
-                        textViewEmailDetails.isVisible =
-                            webView.isVisible && !textViewEmailDetails.isVisible
+                        textViewEmailDetails.isVisible = !textViewEmailDetails.isVisible
                     }
                 }
             }
@@ -73,34 +72,37 @@ class MailItemsAdapter(
     @SuppressLint("SimpleDateFormat")
     private fun setContent(binding: MailItemsBinding, mail: ParsedMail) {
         val color = colors[mail.id % colorsLength]
-        val dateFormat = SimpleDateFormat(Constants.DATE_FORMAT_FULL)
         val sender = mail.from?.split(' ')
         val body = mail.body?.replace("auth=co", "auth=qp&amp;zauthtoken=$token") + css
+        var address = ""
+        val mailBody = "${sender?.last()}\n${mail.time}"
+        mail.address?.forEach {
+            address += it
+        }
         binding.apply {
-            textViewDate.text = dateFormat.format(mail.time)
             textViewSenderName.text = sender?.first()
             textViewSender.text = sender?.first()?.first().toString()
             textViewSender.background.setTint(color)
-            textViewMailBody.text = mail.body
-            textViewEmailDetails.text = mail.to
+            textViewMailBody.text = mailBody
+            textViewEmailDetails.text = address
 //            if (mail.flag?.contains('f') == true) {
 //                imageViewStared.isVisible = true
 //            }
-            mail.attachments?.let {
+            if (mail.attachmentsName?.isNullOrEmpty() == true) {
                 imageViewAttachment.isVisible = true
             }
 //            if (mail.flag?.contains('r') == true) {
 //                imageViewReply.isVisible = true
 //            }
-            webView.loadDataWithBaseURL(Constants.BASE_URL, body, "text/html", "utf-8", null)
+            webView.loadDataWithBaseURL(ApiConstants.BASE_URL, body, "text/html", "utf-8", null)
             recyclerViewAttachments.apply {
-                attachmentAdapter.attachments = mail.attachments
+                attachmentAdapter.attachmentsName = mail.attachmentsName
+                attachmentAdapter.attachmentsLink = mail.attachmentsLink ?: emptyList()
                 adapter = attachmentAdapter
                 layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
             if (mail.id == id) {
-                textViewMailBody.text = sender?.last()
                 webView.isVisible = true
                 recyclerViewAttachments.isVisible = true
                 if (mail.body.isNullOrEmpty()) {
@@ -127,7 +129,7 @@ class MailItemsAdapter(
         }
     }
 
-    fun setupOnItemClickListener(onClick: ((Int) -> Unit)) {
+    fun setupOnItemClickListener(onClick: ((String) -> Unit)) {
         attachmentAdapter.onItemClickListener = onClick
     }
 }

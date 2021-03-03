@@ -2,7 +2,7 @@ package github.sachin2dehury.owlmail.ui.viewmodels
 
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import github.sachin2dehury.owlmail.others.Constants
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
 import javax.inject.Inject
@@ -16,22 +16,22 @@ class SplashViewModel @Inject constructor(
     private val _forceUpdate = MutableLiveData(false)
 
     val isLoggedIn = _forceUpdate.switchMap {
-        dataStoreRepository.readCredential(Constants.KEY_TOKEN)
+        dataStoreRepository.readCredential(R.string.key_token)
             .asLiveData(viewModelScope.coroutineContext).map { token ->
-                if (token != null && token != Constants.NO_TOKEN) {
+                if (token.isNullOrEmpty()) {
+                    false
+                } else {
                     mailRepository.setToken(token)
                     true
-                } else {
-                    false
                 }
             }.switchMap { loggedIn ->
-                dataStoreRepository.readCredential(Constants.KEY_CREDENTIAL)
+                dataStoreRepository.readCredential(R.string.key_credential)
                     .asLiveData(viewModelScope.coroutineContext).map { credential ->
-                        if (credential != null && credential != Constants.NO_TOKEN) {
+                        if (credential.isNullOrEmpty()) {
+                            loggedIn
+                        } else {
                             mailRepository.setCredential(credential)
                             true
-                        } else {
-                            loggedIn
                         }
                     }
             }

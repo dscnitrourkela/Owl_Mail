@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.text.SimpleDateFormat
 
 @Entity(tableName = "parsed_mails")
 data class ParsedMail(
@@ -14,43 +13,49 @@ data class ParsedMail(
     val id: Int,
 
     val conversationId: Int,
-    val time: Long,
+    val time: String?,
     val from: String?,
     val subject: String?,
-    val to: String?,
-    val cc: String?,
-    val bcc: String?,
-    val replyTo: String?,
+    val address: List<String>?,
     val body: String?,
-    val attachments: String?
+    val attachmentsName: List<String>?,
+    val attachmentsLink: List<String>?,
 ) {
+
     @SuppressLint("SimpleDateFormat")
     constructor(
         id: Int,
         conversationId: Int,
         mail: Document,
     ) : this(
-        id, conversationId,
-        SimpleDateFormat("EEEE, MMMM dd, yyyy HH:mm a").parse(
-            mail.select(".MsgHdrSent").text()
-        )?.time ?: 0,
-        mail.select(".MsgHdrValue"),
-        mail.select(".MsgBody")
+        id,
+        conversationId,
+        mail.select(".small-gray-text").text(),
+        mail.select("#d_from").text(),
+        mail.select(".zo_unread").text(),
+        mail.select("#d_div .View.address").eachText(),
+        mail.select(".msgwrap").toString(),
+        mail.select(".View.attachments")
     )
 
-    internal constructor(
-        id: Int, conversationId: Int, time: Long, header: Elements, frame: Elements
+    constructor(
+        id: Int,
+        conversationId: Int,
+        time: String,
+        from: String?,
+        subject: String?,
+        address: List<String>?,
+        body: String?,
+        attachments: Elements?,
     ) : this(
         id,
         conversationId,
         time,
-        header[0].text(),
-        header[1].text(),
-        header[2].text(),
-        header[3].text(),
-        header[4].text(),
-        header[5].text(),
-        frame.toString().substringBefore("<hr>"),
-        frame.select("table tbody").toString()
+        from,
+        subject,
+        address,
+        body,
+        attachments?.eachText(),
+        attachments?.eachAttr("[href]"),
     )
 }

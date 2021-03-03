@@ -8,8 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.database.MailDatabase
-import github.sachin2dehury.owlmail.others.Constants
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -19,8 +19,11 @@ object DatabaseModule {
     @Provides
     fun provideMailDatabase(
         @ApplicationContext context: Context
-    ) = Room.databaseBuilder(context, MailDatabase::class.java, Constants.MAIL_DATABASE)
-        .fallbackToDestructiveMigration().build()
+    ) = Room.databaseBuilder(
+        context,
+        MailDatabase::class.java,
+        context.getString(R.string.database_name)
+    ).fallbackToDestructiveMigration().build()
 
     @ActivityRetainedScoped
     @Provides

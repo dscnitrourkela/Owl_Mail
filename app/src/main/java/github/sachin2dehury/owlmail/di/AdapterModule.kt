@@ -19,12 +19,16 @@ object AdapterModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMailBoxAdapter(colors: IntArray) = MailBoxAdapter(colors)
+    fun provideMailBoxAdapter(@ApplicationContext context: Context, colors: IntArray) =
+        MailBoxAdapter(context, colors)
 
     @ActivityRetainedScoped
     @Provides
-    fun provideMailItemsAdapter(colors: IntArray, attachmentAdapter: AttachmentAdapter) =
-        MailItemsAdapter(colors, attachmentAdapter)
+    fun provideMailItemsAdapter(
+        @ApplicationContext context: Context,
+        colors: IntArray,
+        attachmentAdapter: AttachmentAdapter
+    ) = MailItemsAdapter(context, colors, attachmentAdapter)
 
     @ActivityRetainedScoped
     @Provides

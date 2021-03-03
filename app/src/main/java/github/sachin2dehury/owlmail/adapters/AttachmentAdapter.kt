@@ -9,10 +9,10 @@ import github.sachin2dehury.owlmail.databinding.AttachmentsBinding
 
 class AttachmentAdapter : RecyclerView.Adapter<AttachmentAdapter.AttachmentViewHolder>() {
 
-    var onItemClickListener: ((Int) -> Unit)? = null
+    var onItemClickListener: ((String) -> Unit)? = null
 
-    var attachments: String? = null
-    private var list = attachments?.split(") ") ?: emptyList()
+    var attachmentsName: List<String> = emptyList()
+    var attachmentsLink: List<String> = emptyList()
 
     class AttachmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -24,12 +24,12 @@ class AttachmentAdapter : RecyclerView.Adapter<AttachmentAdapter.AttachmentViewH
     override fun onBindViewHolder(holder: AttachmentViewHolder, position: Int) {
         val binding = AttachmentsBinding.bind(holder.itemView)
         binding.apply {
-            buttonAttachment.text = list[position]
+            buttonAttachment.text = attachmentsName[position]
             buttonAttachment.setOnClickListener {
-                onItemClickListener?.let { onClick -> onClick(position + 2) }
+                onItemClickListener?.let { onClick -> onClick(attachmentsLink[position]) }
             }
         }
     }
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = attachmentsName.size
 }
