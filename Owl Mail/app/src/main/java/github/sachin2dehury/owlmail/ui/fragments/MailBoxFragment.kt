@@ -3,6 +3,7 @@ package github.sachin2dehury.owlmail.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -29,7 +30,7 @@ class MailBoxFragment : Fragment(R.layout.fragment_mail_box) {
     private var _binding: FragmentMailBoxBinding? = null
     private val binding: FragmentMailBoxBinding get() = _binding!!
 
-    private val viewModel: MailBoxViewModel by viewModels()
+    private val viewModel: MailBoxViewModel by activityViewModels()
 
     private val args: MailBoxFragmentArgs by navArgs()
 

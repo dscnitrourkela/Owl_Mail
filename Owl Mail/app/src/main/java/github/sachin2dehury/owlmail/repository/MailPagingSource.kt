@@ -21,41 +21,43 @@ class MailPagingSource(
     private val mailApi: MailApi,
     private val mailDao: MailDao
 ) : PagingSource<Int, Mail>() {
-    override fun getRefreshKey(state: PagingState<Int, Mail>) = state.anchorPosition
+    override fun getRefreshKey(state: PagingState<Int, Mail>) = 0
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Mail> {
         val page = params.key ?: 0
-        val result = getMails(box, request, page) ?: emptyList()
         return try {
-            LoadResult.Page(
-                result,
-                if (page > 0) page - 1 else null,
-                if (page < 100) page + 1 else null
-            )
+            getMails(box, request, page)
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
 
-    private suspend fun getMails(box: Byte, request: String, page: Int) =
+    private suspend fun getMails(box: Byte, request: String, page: Int): LoadResult<Int, Mail> =
         when (isInternetConnected(context)) {
             true -> {
                 val month = getMonth(page)
                 val mails =
                     mailApi.getMails(request, ApiConstants.MONTH_QUERY + month).body()?.mails
                 mails?.let { mailDao.insertMails(it) }
-                mails
+                LoadResult.Page(
+                    mails ?: emptyList(),
+                    if (page > 0) page - 1 else null,
+                    if (page < 100) page + 1 else null
+                )
             }
-            else -> mailDao.getMails(box).first()
+            else -> {
+                val mails = mailDao.getMails(box).first()
+                LoadResult.Page(mails, null, null)
+            }
         }
 
     @SuppressLint("SimpleDateFormat")
-    private fun getMonth(page: Int): String {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MONTH, -page)
-        val firstDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
-        calendar.set(Calendar.DAY_OF_MONTH, firstDay)
-        val simpleDateFormat = SimpleDateFormat(context.getString(R.string.zimbra_month_format))
-        return simpleDateFormat.format(calendar.time)
+    private fun getMonth(page: Int) =
+        SimpleDateFormat(context.getString(R.string.zimbra_month_format)).format(getCalender(page).time)
+
+    private fun getCalender(page: Int) = Calendar.getInstance().apply {
+        add(Calendar.MONTH, -page)
+        val firstDay = getActualMinimum(Calendar.DAY_OF_MONTH)
+        set(Calendar.DAY_OF_MONTH, firstDay)
     }
 }
