@@ -32,7 +32,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Theme")?.apply {
-            setDefaultValue(viewModel.isDarkThemeEnabled.value ?: false)
+            setDefaultValue(viewModel.darkThemeState.value ?: true)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveThemeState(value as Boolean).invokeOnCompletion {
                     viewModel.syncState()
@@ -43,9 +43,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         preferenceManager.findPreference<SwitchPreferenceCompat>("Sync")?.apply {
-            setDefaultValue(viewModel.shouldSync.value ?: false)
+            setDefaultValue(viewModel.syncState.value ?: true)
             setOnPreferenceChangeListener { _, value ->
                 viewModel.saveSyncState(value as Boolean).invokeOnCompletion {
+                    viewModel.syncState()
+                }
+                true
+            }
+        }
+
+        preferenceManager.findPreference<SwitchPreferenceCompat>("Analytics")?.apply {
+            setDefaultValue(viewModel.analyticsState.value ?: true)
+            setOnPreferenceChangeListener { _, value ->
+                viewModel.saveAnalyticsState(value as Boolean).invokeOnCompletion {
                     viewModel.syncState()
                 }
                 true

@@ -129,6 +129,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+    //Ads
+    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+
     //WebKit
     implementation 'androidx.webkit:webkit:1.4.0'
 
