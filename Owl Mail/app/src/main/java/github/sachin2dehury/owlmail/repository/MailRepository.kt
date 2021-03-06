@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
@@ -25,38 +26,15 @@ class MailRepository(
 
     @ExperimentalPagingApi
     fun getSearchMails(request: String) =
-        Pager(pagerConfig, 0, { SearchMailPagingSource(context, request, mailApi, mailDao) }).flow
+        getPager(SearchMailPagingSource(context, request, mailApi, mailDao))
 
     @ExperimentalPagingApi
     fun getParsedMails(conversationId: Int) =
-        Pager(
-            pagerConfig,
-            0,
-            {
-                ParsedMailPagingSource(
-                    context,
-                    conversationId,
-                    mailApi,
-                    mailDao,
-                    parsedMailDao
-                )
-            }).flow
+        getPager(ParsedMailPagingSource(context, conversationId, mailApi, mailDao, parsedMailDao))
 
     @ExperimentalPagingApi
     fun getMails(request: String) =
-        Pager(
-            pagerConfig,
-            0,
-            { MailPagingSource(getBox(request), context, request, mailApi, mailDao) }).flow
-
-    private fun getBox(request: String) = when (request) {
-        context.getString(R.string.inbox) -> 2
-        context.getString(R.string.trash) -> 3
-        context.getString(R.string.junk) -> 4
-        context.getString(R.string.sent) -> 5
-        context.getString(R.string.draft) -> 6
-        else -> 0
-    }.toByte()
+        getPager(MailPagingSource(getBox(request), context, request, mailApi, mailDao))
 
     suspend fun login() = try {
         val response = mailApi.login()
@@ -89,4 +67,16 @@ class MailRepository(
         basicAuthInterceptor.credential = ""
         basicAuthInterceptor.token = ""
     }
+
+    private fun <T : Any> getPager(pagingSource: PagingSource<Int, T>) =
+        Pager(pagerConfig, 0, { pagingSource }).flow
+
+    fun getBox(request: String) = when (request) {
+        context.getString(R.string.inbox) -> 2
+        context.getString(R.string.trash) -> 3
+        context.getString(R.string.junk) -> 4
+        context.getString(R.string.sent) -> 5
+        context.getString(R.string.draft) -> 6
+        else -> 0
+    }.toByte()
 }

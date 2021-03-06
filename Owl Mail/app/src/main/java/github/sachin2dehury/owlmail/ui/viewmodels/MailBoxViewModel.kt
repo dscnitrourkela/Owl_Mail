@@ -14,6 +14,8 @@ class MailBoxViewModel @Inject constructor(
 ) : ViewModel() {
 
     @ExperimentalPagingApi
-    fun getMails(request: String) = mailRepository.getMails(request).cachedIn(viewModelScope)
-
+    fun getMails(request: String) = when (mailRepository.getBox(request)) {
+        0.toByte() -> mailRepository.getSearchMails(request).cachedIn(viewModelScope)
+        else -> mailRepository.getMails(request).cachedIn(viewModelScope)
+    }
 }

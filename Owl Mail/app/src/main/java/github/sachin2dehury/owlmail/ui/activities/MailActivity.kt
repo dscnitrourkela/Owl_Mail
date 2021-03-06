@@ -112,7 +112,7 @@ class MailActivity : AppCompatActivity() {
             result?.let { enableDarkTheme(it) }
         })
         viewModel.shouldSync.observe(this, { result ->
-            result?.let { enableSyncService(it, viewModel.getBundle()) }
+            result?.let { enableSyncService(it, viewModel.getBundle(this)) }
         })
     }
 

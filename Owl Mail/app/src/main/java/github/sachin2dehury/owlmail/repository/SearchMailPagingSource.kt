@@ -8,7 +8,6 @@ import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.utils.isInternetConnected
 import kotlinx.coroutines.flow.first
-import java.util.*
 
 class SearchMailPagingSource(
     private val context: Context,
@@ -32,21 +31,11 @@ class SearchMailPagingSource(
             true -> {
                 val mails = mailApi.searchMails(request).body()?.mails
                 mails?.let { mailDao.insertMails(it) }
-                LoadResult.Page(
-                    mails ?: emptyList(),
-                    if (page > 0) page - 1 else null,
-                    if (page < 100) page + 1 else null
-                )
+                LoadResult.Page(mails ?: emptyList(), null, null)
             }
             else -> {
                 val mails = mailDao.searchMails(request).first()
                 LoadResult.Page(mails, null, null)
             }
         }
-
-    private fun getCalender(page: Int) = Calendar.getInstance().apply {
-        add(Calendar.MONTH, -page)
-        val firstDay = getActualMinimum(Calendar.DAY_OF_MONTH)
-        set(Calendar.DAY_OF_MONTH, firstDay)
-    }
 }

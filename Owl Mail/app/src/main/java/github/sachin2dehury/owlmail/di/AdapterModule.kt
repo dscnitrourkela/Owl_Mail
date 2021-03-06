@@ -25,10 +25,9 @@ object AdapterModule {
     @ActivityRetainedScoped
     @Provides
     fun provideMailItemsAdapter(
-        @ApplicationContext context: Context,
         colors: IntArray,
         attachmentAdapter: AttachmentAdapter
-    ) = MailItemsAdapter(context, colors, attachmentAdapter)
+    ) = MailItemsAdapter(colors, attachmentAdapter)
 
     @ActivityRetainedScoped
     @Provides

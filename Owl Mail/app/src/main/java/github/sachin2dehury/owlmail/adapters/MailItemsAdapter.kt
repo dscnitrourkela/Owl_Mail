@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.webkit.WebSettingsCompat
@@ -21,18 +20,12 @@ import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.utils.showToast
 
 class MailItemsAdapter(
-    private val context: Context,
     private val colors: IntArray,
     private val attachmentAdapter: AttachmentAdapter,
 ) : PagingDataAdapter<ParsedMail, MailItemsAdapter.MailItemsViewHolder>(
-
-    object : DiffUtil.ItemCallback<ParsedMail>() {
-
+    object : DiffCallBack<ParsedMail>() {
         override fun areItemsTheSame(oldItem: ParsedMail, newItem: ParsedMail) =
             oldItem.id == newItem.id
-
-        override fun areContentsTheSame(oldItem: ParsedMail, newItem: ParsedMail) =
-            oldItem.hashCode() == newItem.hashCode()
     }) {
 
     private val colorsLength = colors.lastIndex

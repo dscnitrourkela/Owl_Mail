@@ -1,5 +1,6 @@
 package github.sachin2dehury.owlmail.ui.viewmodels
 
+import android.content.Context
 import androidx.core.os.persistableBundleOf
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,10 +38,9 @@ class SettingsViewModel @Inject constructor(
 
     fun syncState() = _forceUpdate.postValue(true)
 
-    fun getBundle() = persistableBundleOf(
-//        ApiConstants.KEY_SHOULD_SYNC to shouldSync.value,
-//        ApiConstants.KEY_SYNC_SERVICE to System.currentTimeMillis(),
-//        ApiConstants.KEY_TOKEN to mailRepository.getToken(),
-//        ApiConstants.KEY_CREDENTIAL to mailRepository.getCredential()
+    fun getBundle(context: Context) = persistableBundleOf(
+        context.getString(R.string.key_should_sync) to shouldSync.value,
+        context.getString(R.string.key_token) to mailRepository.getToken(),
+        context.getString(R.string.key_credential) to mailRepository.getCredential()
     )
 }
