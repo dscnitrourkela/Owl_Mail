@@ -1,7 +1,6 @@
 package github.sachin2dehury.owlmail.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -115,8 +114,8 @@ class MailItemsAdapter(
         binding.webView.apply {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
                 val darkMode = when (AppCompatDelegate.getDefaultNightMode()) {
-                    AppCompatDelegate.MODE_NIGHT_YES -> WebSettingsCompat.FORCE_DARK_ON
-                    else -> WebSettingsCompat.FORCE_DARK_OFF
+                    AppCompatDelegate.MODE_NIGHT_NO -> WebSettingsCompat.FORCE_DARK_OFF
+                    else -> WebSettingsCompat.FORCE_DARK_ON
                 }
                 WebSettingsCompat.setForceDark(this.settings, darkMode)
             }
