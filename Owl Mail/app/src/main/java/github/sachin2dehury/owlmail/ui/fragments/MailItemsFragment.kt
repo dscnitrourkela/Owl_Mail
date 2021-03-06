@@ -16,10 +16,13 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.adapters.MailItemsAdapter
 import github.sachin2dehury.owlmail.databinding.FragmentMailItemsBinding
 import github.sachin2dehury.owlmail.ui.viewmodels.MailItemsViewModel
+import github.sachin2dehury.owlmail.utils.showSnackbar
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -32,6 +35,8 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
     private val viewModel: MailItemsViewModel by viewModels()
 
     private val args: MailItemsFragmentArgs by navArgs()
+
+    private var job: Job? = null
 
     @Inject
     lateinit var mailItemsAdapter: MailItemsAdapter
@@ -47,7 +52,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         setContent()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            mailItemsAdapter.refresh()
+            getJob()
         }
     }
 
@@ -64,6 +69,16 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
         layoutManager = LinearLayoutManager(context)
     }
 
+    @ExperimentalPagingApi
+    private fun getJob() {
+        job?.cancel()
+        job = lifecycleScope.launch {
+            viewModel.getParsedMails(args.conversationId).collectLatest {
+                mailItemsAdapter.submitData(it)
+            }
+        }
+    }
+
     @InternalCoroutinesApi
     @ExperimentalPagingApi
     private fun setContent() {
@@ -72,16 +87,15 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
                 binding.swipeRefreshLayout.isRefreshing = loadStates.refresh is LoadState.Loading
             }
         }
-        lifecycleScope.launchWhenCreated {
-            viewModel.getParsedMails(args.conversationId).collectLatest {
-                mailItemsAdapter.submitData(it)
+        getJob()
+        mailItemsAdapter.addLoadStateListener { loadState ->
+            val errorState = loadState.source.append as? LoadState.Error
+                ?: loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
+            errorState?.let {
+                it.error.message?.let { message -> binding.root.showSnackbar(message) }
             }
-        }
-        lifecycleScope.launchWhenCreated {
-            mailItemsAdapter.loadStateFlow
-                .distinctUntilChangedBy { it.refresh }
-                .filter { it.refresh is LoadState.NotLoading }
-                .collectLatest { binding.recyclerViewMailBox.scrollToPosition(0) }
         }
     }
 

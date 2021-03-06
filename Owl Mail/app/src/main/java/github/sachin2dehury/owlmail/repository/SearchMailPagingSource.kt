@@ -20,22 +20,22 @@ class SearchMailPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Mail> {
         val page = params.key ?: 0
         return try {
-            val result = getMails(request) ?: emptyList()
-            LoadResult.Page(
-                result, if (page > 0) page - 1 else null,
-                if (page < 100) page + 1 else null
-            )
+            getMails(request, page)
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
 
-    private suspend fun getMails(request: String) = when (isInternetConnected(context)) {
-        true -> {
-            val mails = mailApi.searchMails(request).body()?.mails
-            mails?.let { mailDao.insertMails(it) }
-            mails
+    private suspend fun getMails(request: String, page: Int): LoadResult<Int, Mail> =
+        when (isInternetConnected(context)) {
+            true -> {
+                val mails = mailApi.searchMails(request).body()?.mails
+                mails?.let { mailDao.insertMails(it) }
+                LoadResult.Page(mails ?: emptyList(), null, null)
+            }
+            else -> {
+                val mails = mailDao.searchMails(request).first()
+                LoadResult.Page(mails, null, null)
+            }
         }
-        else -> mailDao.searchMails(request).first()
-    }
 }

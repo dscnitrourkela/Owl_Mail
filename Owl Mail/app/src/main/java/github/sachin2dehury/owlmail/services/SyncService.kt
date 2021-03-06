@@ -83,13 +83,6 @@ class SyncService : JobService() {
                     mail.id
                 )
             }
-
-            val sender = mail.addresses?.last()
-            notificationExt.notify(
-                "New Mail From ${sender?.firstName}",
-                mail.subject ?: "",
-                mail.id
-            )
         }
     }
 }

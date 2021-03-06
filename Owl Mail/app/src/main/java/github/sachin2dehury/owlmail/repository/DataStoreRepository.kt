@@ -17,9 +17,6 @@ class DataStoreRepository(
             settings[stringPreferencesKey(context.getString(key))] = value
         }
 
-    suspend fun saveLastSync(key: Int, value: Long) =
-        dataStore.edit { settings -> settings[longPreferencesKey(context.getString(key))] = value }
-
     suspend fun saveState(key: Int, value: Boolean) =
         dataStore.edit { settings ->
             settings[booleanPreferencesKey(context.getString(key))] = value
@@ -27,9 +24,6 @@ class DataStoreRepository(
 
     fun readCredential(key: Int) =
         flow { emit(dataStore.data.first()[stringPreferencesKey(context.getString(key))]) }
-
-    fun readLastSync(key: Int) =
-        flow { emit(dataStore.data.first()[longPreferencesKey(context.getString(key))]) }
 
     fun readState(key: Int) =
         flow { emit(dataStore.data.first()[booleanPreferencesKey(context.getString(key))]) }

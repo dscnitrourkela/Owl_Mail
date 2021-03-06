@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
@@ -18,14 +17,9 @@ import java.text.SimpleDateFormat
 
 class MailBoxAdapter(private val context: Context, private val colors: IntArray) :
     PagingDataAdapter<Mail, MailBoxAdapter.MailBoxViewHolder>(
-
-        object : DiffUtil.ItemCallback<Mail>() {
-
+        object : DiffCallBack<Mail>() {
             override fun areItemsTheSame(oldItem: Mail, newItem: Mail) =
                 oldItem.id == newItem.id
-
-            override fun areContentsTheSame(oldItem: Mail, newItem: Mail) =
-                oldItem.hashCode() == newItem.hashCode()
         }) {
 
     private var onItemClickListener: ((Mail) -> Unit)? = null
