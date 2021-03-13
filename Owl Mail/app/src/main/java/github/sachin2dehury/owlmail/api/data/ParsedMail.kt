@@ -17,8 +17,7 @@ data class ParsedMail(
     val subject: String?,
     val address: List<String>?,
     val body: String?,
-    val attachmentsName: List<String>?,
-    val attachmentsLink: List<String>?,
+    val attachments: String?,
 ) {
 
     @SuppressLint("SimpleDateFormat")
@@ -34,7 +33,6 @@ data class ParsedMail(
         mail.select(".zo_unread").text(),
         mail.select("#d_div .View.address").eachText(),
         mail.select(".msgwrap").toString(),
-        mail.select(".View.attachments").eachText(),
-        mail.select(".View.attachments [href]").eachAttr("href"),
+        mail.select(".View.attachments").toString()
     )
 }

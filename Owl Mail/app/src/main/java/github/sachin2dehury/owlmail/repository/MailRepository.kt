@@ -8,6 +8,7 @@ import androidx.paging.PagingSource
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.calls.BasicAuthInterceptor
 import github.sachin2dehury.owlmail.api.calls.MailApi
+import github.sachin2dehury.owlmail.api.data.Mail
 import github.sachin2dehury.owlmail.api.database.MailDao
 import github.sachin2dehury.owlmail.api.database.ParsedMailDao
 import github.sachin2dehury.owlmail.others.Resource
@@ -36,7 +37,7 @@ class MailRepository(
     fun getMails(request: String) =
         getPager(MailPagingSource(getBox(request), context, request, mailApi, mailDao))
 
-    suspend fun login() = try {
+    suspend fun login(): Resource<List<Mail>> = try {
         val response = mailApi.login()
         if (response.isSuccessful && response.code() == 200) {
             Resource.success(response.body()?.mails)

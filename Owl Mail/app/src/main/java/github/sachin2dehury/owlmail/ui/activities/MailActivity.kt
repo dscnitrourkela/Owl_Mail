@@ -107,7 +107,7 @@ class MailActivity : AppCompatActivity() {
         R.id.newFeaturesFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.new_features))
         R.id.privacyPolicyFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.privacy_policy))
         R.id.termsAndConditionsFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.terms_conditions))
-        else -> NavGraphDirections.actionToAuthFragment()
+        else -> NavGraphDirections.actionToUrlFragment()
     }
 
     private fun subscribeToObservers() {

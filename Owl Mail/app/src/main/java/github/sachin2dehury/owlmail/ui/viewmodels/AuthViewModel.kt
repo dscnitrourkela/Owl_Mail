@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.api.data.Mail
+import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.others.Resource
 import github.sachin2dehury.owlmail.repository.DataStoreRepository
 import github.sachin2dehury.owlmail.repository.MailRepository
@@ -39,8 +40,9 @@ class AuthViewModel @Inject constructor(
 
     fun saveLogIn() = CoroutineScope(Dispatchers.IO).launch {
         dataStoreRepository.apply {
-            mailRepository.getCredential().let { saveCredential(R.string.key_credential, it) }
-            mailRepository.getToken().let { saveCredential(R.string.key_token, it) }
+            saveCredential(R.string.key_credential, mailRepository.getCredential())
+            saveCredential(R.string.key_token, mailRepository.getToken())
+            ApiConstants.BASE_URL?.let { saveCredential(R.string.key_url, it) }
             saveState(R.string.key_should_sync, true)
         }
     }

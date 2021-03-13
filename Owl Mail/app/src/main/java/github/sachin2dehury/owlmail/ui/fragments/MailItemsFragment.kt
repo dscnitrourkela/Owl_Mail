@@ -20,8 +20,6 @@ import github.sachin2dehury.owlmail.utils.showSnackbar
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,7 +57,7 @@ class MailItemsFragment : Fragment(R.layout.fragment_mail_items) {
     private fun setupRecyclerView() = binding.recyclerViewMailBox.apply {
         mailItemsAdapter.view = binding.textViewMailSubject
         mailItemsAdapter.id = args.id
-        mailItemsAdapter.token = viewModel.getToken()
+        mailItemsAdapter.token = viewModel.getToken().substringAfter('=')
         mailItemsAdapter.css =
             requireContext().assets.open("Font").bufferedReader().use { it.readText() }
         mailItemsAdapter.setupOnItemClickListener { link ->

@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.NavGraphDirections
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentAuthBinding
+import github.sachin2dehury.owlmail.others.ApiConstants
 import github.sachin2dehury.owlmail.others.Status
 import github.sachin2dehury.owlmail.ui.viewmodels.AuthViewModel
 import github.sachin2dehury.owlmail.utils.hideKeyBoard
@@ -27,6 +29,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private val viewModel: AuthViewModel by viewModels()
 
+    private val args: AuthFragmentArgs by navArgs()
+
     private var credential: String? = null
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -38,6 +42,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         viewModel.resetLogin()
 
         binding.buttonLogin.setOnClickListener {
+            ApiConstants.BASE_URL = args.url
             getCredential()
             credential?.let { it1 -> viewModel.login(it1) }
             binding.root.hideKeyBoard()

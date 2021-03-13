@@ -25,8 +25,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val navOptions = NavOptions.Builder()
                     .setPopUpTo(R.id.settingsFragment, true)
                     .build()
-                NavGraphDirections.actionToAuthFragment()
-                findNavController().navigate(NavGraphDirections.actionToAuthFragment(), navOptions)
+                findNavController().navigate(NavGraphDirections.actionToUrlFragment(), navOptions)
                 true
             }
         }

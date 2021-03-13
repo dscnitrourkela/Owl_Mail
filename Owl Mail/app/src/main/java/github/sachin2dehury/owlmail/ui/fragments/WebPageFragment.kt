@@ -10,7 +10,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.FragmentWebViewBinding
 import github.sachin2dehury.owlmail.others.ApiConstants
-import github.sachin2dehury.owlmail.others.debugLog
 import github.sachin2dehury.owlmail.ui.viewmodels.WebPageViewModel
 import javax.inject.Inject
 
@@ -47,7 +46,6 @@ class WebPageFragment : Fragment(R.layout.fragment_web_view) {
             settings.loadsImagesAutomatically = true
             settings.setSupportZoom(true)
             setInitialScale(100)
-            debugLog(url + ApiConstants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
             loadUrl(url + ApiConstants.AUTH_FROM_TOKEN + viewModel.token.substringAfter('='))
             zoomOut()
         }
