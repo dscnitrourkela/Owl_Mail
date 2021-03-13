@@ -18,28 +18,37 @@ class SettingsViewModel @Inject constructor(
 
     private val _forceUpdate = MutableLiveData(false)
 
-    val isDarkThemeEnabled = _forceUpdate.switchMap {
+    val darkThemeState = _forceUpdate.switchMap {
         dataStoreRepository.readState(R.string.key_dark_theme)
             .asLiveData(viewModelScope.coroutineContext)
     }
 
-    val shouldSync = _forceUpdate.switchMap {
+    val syncState = _forceUpdate.switchMap {
         dataStoreRepository.readState(R.string.key_should_sync)
             .asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun saveThemeState(isDarkThemeEnabled: Boolean) = viewModelScope.launch {
-        dataStoreRepository.saveState(R.string.key_dark_theme, isDarkThemeEnabled)
+    val analyticsState = _forceUpdate.switchMap {
+        dataStoreRepository.readState(R.string.key_analytics)
+            .asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun saveSyncState(shouldSync: Boolean) = viewModelScope.launch {
-        dataStoreRepository.saveState(R.string.key_should_sync, shouldSync)
+    fun saveThemeState(enabled: Boolean) = viewModelScope.launch {
+        dataStoreRepository.saveState(R.string.key_dark_theme, enabled)
+    }
+
+    fun saveSyncState(enabled: Boolean) = viewModelScope.launch {
+        dataStoreRepository.saveState(R.string.key_should_sync, enabled)
+    }
+
+    fun saveAnalyticsState(enabled: Boolean) = viewModelScope.launch {
+        dataStoreRepository.saveState(R.string.key_analytics, enabled)
     }
 
     fun syncState() = _forceUpdate.postValue(true)
 
     fun getBundle(context: Context) = persistableBundleOf(
-        context.getString(R.string.key_should_sync) to shouldSync.value,
+        context.getString(R.string.key_should_sync) to syncState.value,
         context.getString(R.string.key_token) to mailRepository.getToken(),
         context.getString(R.string.key_credential) to mailRepository.getCredential()
     )

@@ -17,7 +17,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
-        versionName "v1.2-alpha"
+        versionName "v1.3-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -87,8 +87,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
 
     // Navigation Component
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
 
     //OkHttp
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
@@ -100,7 +100,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     // Activity KTX for viewModels()
-    implementation "androidx.activity:activity-ktx:1.2.0"
+    implementation "androidx.activity:activity-ktx:1.2.1"
 
     //Dagger - Hilt
     implementation 'com.google.dagger:hilt-android:2.33-beta'
@@ -108,11 +108,11 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
 
     // Room
-    implementation "androidx.room:room-runtime:2.3.0-beta02"
-    kapt "androidx.room:room-compiler:2.3.0-beta02"
+    implementation "androidx.room:room-runtime:2.3.0-beta03"
+    kapt "androidx.room:room-compiler:2.3.0-beta03"
 
     // Kotlin Extensions and Coroutines support for Room
-    implementation "androidx.room:room-ktx:2.3.0-beta02"
+    implementation "androidx.room:room-ktx:2.3.0-beta03"
 
     // Preferences DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0-alpha06"
@@ -129,6 +129,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+    //Ads
+    implementation 'com.google.android.gms:play-services-ads:19.7.0'
+
     //WebKit
     implementation 'androidx.webkit:webkit:1.4.0'
 
@@ -136,5 +139,5 @@ dependencies {
     implementation "androidx.preference:preference-ktx:1.1.1"
 
     //Paging Library
-    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-beta01'
+    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-beta02'
 }

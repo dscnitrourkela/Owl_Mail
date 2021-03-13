@@ -22,4 +22,12 @@
             app:summary="Change how the app syncs with server"
             app:title="Sync Automatically" />
     </PreferenceCategory>
+
+    <PreferenceCategory app:title="Developer">
+        <SwitchPreferenceCompat
+            app:icon="@drawable/ic_baseline_analytics_24"
+            app:key="Analytics"
+            app:summary="Anonymously send app data to our Servers"
+            app:title="Analytics" />
+    </PreferenceCategory>
 </PreferenceScreen>

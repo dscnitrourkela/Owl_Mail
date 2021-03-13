@@ -12,7 +12,7 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.ui.viewmodels.SplashViewModel
 
 @AndroidEntryPoint
-class SplashFragment : Fragment(R.layout.fragment_about) {
+class SplashFragment : Fragment(R.layout.fragment_url) {
 
     private val viewModel: SplashViewModel by viewModels()
 
@@ -33,7 +33,7 @@ class SplashFragment : Fragment(R.layout.fragment_about) {
                         navOptions
                     )
                     false -> findNavController().navigate(
-                        NavGraphDirections.actionToAuthFragment(),
+                        NavGraphDirections.actionToUrlFragment(),
                         navOptions
                     )
                 }

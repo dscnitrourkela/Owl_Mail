@@ -35,7 +35,8 @@ class NotificationExt(private val context: Context) {
         NotificationCompat.Builder(context, context.getString(R.string.notification_id)).apply {
             priority = NotificationCompat.PRIORITY_DEFAULT
             setStyle(NotificationCompat.BigTextStyle())
-            setSmallIcon(R.drawable.ic_owl_mail)
+            setColorized(true)
+            setSmallIcon(R.drawable.ic_launcher_foreground)
             setContentTitle(title)
             setContentText(subject)
             setContentIntent(pendingIntent)

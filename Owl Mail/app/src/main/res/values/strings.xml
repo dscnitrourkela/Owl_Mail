@@ -29,6 +29,7 @@
     <string name="data_store_name">MAIL_CREDENTIAL</string>
     <string name="key_credential">KEY_CREDENTIAL</string>
     <string name="key_token">KEY_TOKEN</string>
+    <string name="key_url">KEY_URL</string>
     <string name="key_should_sync">KEY_SYNC_SERVICE</string>
     <string name="key_dark_theme">KEY_DARK_THEME</string>
     <string name="key_analytics">KEY_ANALYTICS</string>
@@ -42,4 +43,5 @@
 
     <string name="notification_id">NITR Mail Notification Sync</string>
     <string name="notification_channel">NITR Mail Notification</string>
+    <string name="enter_mail_url">Enter Mail Url</string>
 </resources>

@@ -2,7 +2,7 @@ package github.sachin2dehury.owlmail.others
 
 object ApiConstants {
 
-    const val BASE_URL = "https://mail.nitrkl.ac.in/"
+    var BASE_URL: String? = null
     const val HOME_URL = "home/~/"
     const val MOBILE_URL = "m/zmain"
     const val HTML_URL = "h/printmessage"

@@ -8,11 +8,19 @@
     <fragment
         android:id="@+id/splashFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.SplashFragment"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_url" />
+    <fragment
+        android:id="@+id/urlFragment"
+        android:name="github.sachin2dehury.owlmail.ui.fragments.UrlFragment"
+        tools:layout="@layout/fragment_url" />
     <fragment
         android:id="@+id/authFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.AuthFragment"
-        tools:layout="@layout/fragment_auth" />
+        tools:layout="@layout/fragment_auth">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/mailBoxFragment"
         android:name="github.sachin2dehury.owlmail.ui.fragments.MailBoxFragment"
@@ -56,8 +64,15 @@
         tools:layout="@xml/root_preferences" />
 
     <action
+        android:id="@+id/action_to_urlFragment"
+        app:destination="@id/urlFragment" />
+    <action
         android:id="@+id/action_to_authFragment"
-        app:destination="@id/authFragment" />
+        app:destination="@id/authFragment">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </action>
     <action
         android:id="@+id/action_to_mailBoxFragment"
         app:destination="@id/mailBoxFragment">

@@ -9,6 +9,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
@@ -18,6 +20,7 @@ import github.sachin2dehury.owlmail.R
 import github.sachin2dehury.owlmail.databinding.ActivityMailBinding
 import github.sachin2dehury.owlmail.ui.viewmodels.SettingsViewModel
 import github.sachin2dehury.owlmail.utils.*
+
 
 @AndroidEntryPoint
 class MailActivity : AppCompatActivity() {
@@ -44,7 +47,7 @@ class MailActivity : AppCompatActivity() {
 
         subscribeToObservers()
 
-        enableFirebase(false)
+        loadAds()
     }
 
     private fun enableFirebase(shouldEnable: Boolean) {
@@ -104,14 +107,13 @@ class MailActivity : AppCompatActivity() {
         R.id.newFeaturesFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.new_features))
         R.id.privacyPolicyFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.privacy_policy))
         R.id.termsAndConditionsFragment -> NavGraphDirections.actionToWebViewFragment(getString(R.string.terms_conditions))
-        else -> NavGraphDirections.actionToAuthFragment()
+        else -> NavGraphDirections.actionToUrlFragment()
     }
 
     private fun subscribeToObservers() {
-        viewModel.isDarkThemeEnabled.observe(this, { result ->
-            result?.let { enableDarkTheme(it) }
-        })
-        viewModel.shouldSync.observe(this, { result ->
+        viewModel.darkThemeState.observe(this, { result -> result?.let { enableDarkTheme(it) } })
+        viewModel.analyticsState.observe(this, { result -> result?.let { enableFirebase(it) } })
+        viewModel.syncState.observe(this, { result ->
             result?.let { enableSyncService(it, viewModel.getBundle(this)) }
         })
     }
@@ -119,6 +121,11 @@ class MailActivity : AppCompatActivity() {
     private fun enableDrawer(shouldEnable: Boolean) {
         binding.drawerLayout.setDrawerLockMode(if (shouldEnable) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         toggle.isDrawerIndicatorEnabled = shouldEnable
+    }
+
+    private fun loadAds() {
+        MobileAds.initialize(this)
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
